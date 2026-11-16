@@ -1,9 +1,24 @@
-export default function Input({ label, error, ...props }) {
+import { CircleAlert } from 'lucide-react'
+
+export default function Input({ label, icon, right, error, ...props }) {
   return (
-    <label className="field">
-      <span className="field-label">{label}</span>
-      <input className={`field-input ${error ? 'has-error' : ''}`} {...props} />
-      {error && <span className="field-error">{error}</span>}
-    </label>
+    <div className="field">
+      <label className="field-label" htmlFor={props.id}>{label}</label>
+      <div className={`field-box${error ? ' has-error' : ''}`}>
+        {icon}
+        <input
+          className="field-input"
+          aria-invalid={error ? 'true' : undefined}
+          {...props}
+        />
+        {right}
+      </div>
+      {error && (
+        <span className="field-error" role="alert">
+          <CircleAlert size={15} />
+          {error}
+        </span>
+      )}
+    </div>
   )
 }

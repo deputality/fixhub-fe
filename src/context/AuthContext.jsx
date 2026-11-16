@@ -12,13 +12,18 @@ export function AuthProvider({ children }) {
     return saved ? JSON.parse(saved) : null
   })
 
-  async function login(email, password) {
-    const { token, user } = await authApi.login(email, password)
+  function saveSession({ token, user }) {
     localStorage.setItem('token', token)
     localStorage.setItem('user', JSON.stringify(user))
     setUser(user)
     return user
   }
+
+  const login = async (email, password) =>
+    saveSession(await authApi.login(email, password))
+
+  const register = async (data) =>
+    saveSession(await authApi.register(data))
 
   function logout() {
     localStorage.removeItem('token')
@@ -27,7 +32,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   )
