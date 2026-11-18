@@ -7,6 +7,9 @@ import {
 import { useAuth } from '../context/AuthContext'
 import Button from '../components/Button'
 import Input from '../components/Input'
+import { requestGoogleAccessToken } from '../utils/google'
+
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
 
 // если выгрузил логотип в SVG, поставь '/logo.svg'
 const LOGO_SRC = '/logo.svg'
@@ -51,7 +54,7 @@ function validate({ fullName, email, password }, isRegister) {
 export default function AuthPage() {
   const { pathname } = useLocation()
   const isRegister = pathname === '/register'
-  const { login, register } = useAuth()
+  const { login, register, loginWithGoogle } = useAuth()
   const navigate = useNavigate()
 
   const [fullName, setFullName] = useState('')
@@ -62,6 +65,7 @@ export default function AuthPage() {
   const [error, setError] = useState('')
   const [fieldErrors, setFieldErrors] = useState({})
   const [loading, setLoading] = useState(false)
+  const [googleLoading, setGoogleLoading] = useState(false)
 
   function resetFeedback() {
     setError('')
@@ -102,6 +106,23 @@ export default function AuthPage() {
       setError(err.error ?? 'Не удалось выполнить запрос. Попробуйте ещё раз')
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function handleGoogle() {
+    setError('')
+    setGoogleLoading(true)
+    try {
+      const accessToken = await requestGoogleAccessToken(GOOGLE_CLIENT_ID)
+      // роль отправляем только со страницы регистрации
+      await loginWithGoogle(accessToken, isRegister ? role : undefined)
+      navigate('/')
+    } catch (err) {
+      // окно закрыто пользователем — это не ошибка
+      if (err?.type === 'popup_closed' || err?.error === 'access_denied') return
+      setError(err?.error ?? err?.message ?? 'Не удалось войти через Google')
+    } finally {
+      setGoogleLoading(false)
     }
   }
 
@@ -250,7 +271,15 @@ export default function AuthPage() {
 
             <div className="divider"><span>или</span></div>
 
-            <Button type="button" variant="outline" block disabled title="Скоро">
+            <Button
+              type="button"
+              variant="outline"
+              block
+              loading={googleLoading}
+              disabled={!GOOGLE_CLIENT_ID}
+              title={GOOGLE_CLIENT_ID ? undefined : 'Не задан VITE_GOOGLE_CLIENT_ID'}
+              onClick={handleGoogle}
+            >
               <span key={mode} className="swap">
                 {isRegister ? 'Зарегистрироваться через Google' : 'Войти через Google'}
               </span>

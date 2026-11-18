@@ -172,12 +172,12 @@ export default function CartPage() {
     try {
       await createOrder({
         address: address.trim(),
-        phone: phone.trim(),
-        customerName: name.trim(),
+        contactPhone: phone.trim(),
+        contactName: name.trim(),
       })
       setCount(0)
       show('Заказ оформлен')
-      navigate('/')
+      navigate('/orders')
     } catch (err) {
       if (handleAuthError(err)) return
       setFormError(err?.error ?? 'Не удалось оформить заказ. Попробуйте ещё раз')

@@ -5,3 +5,7 @@ export const login = (email, password) =>
 
 export const register = (data) =>
   api('/api/auth/register', { method: 'POST', body: data, auth: false })
+
+// accessToken получаем от Google, role нужна только при первой регистрации
+export const googleLogin = (accessToken, role) =>
+  api('/api/auth/google', { method: 'POST', body: { accessToken, role }, auth: false })

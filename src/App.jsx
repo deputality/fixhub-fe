@@ -7,6 +7,9 @@ import ProtectedRoute from './routes/ProtectedRoute'
 import AuthPage from './pages/AuthPage'
 import CartPage from './pages/CartPage'
 import CatalogPage from './pages/CatalogPage'
+import ServicePage from './pages/ServicePage'
+import OrdersPage from './pages/OrdersPage'
+import CabinetLayout from './components/CabinetLayout'
 
 function Soon({ title }) {
   return (
@@ -36,7 +39,7 @@ export default function App() {
           <Route path="/" element={<CatalogPage />} />
           <Route path="/login" element={<AuthPage />} />
           <Route path="/register" element={<AuthPage />} />
-          <Route path="/services/:id" element={<Soon title="Страница услуги" />} />
+          <Route path="/services/:id" element={<ServicePage />} />
           <Route
             path="/cart"
             element={
@@ -45,6 +48,16 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            element={
+              <ProtectedRoute roles={['Client']}>
+                <CabinetLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="/orders" element={<OrdersPage />} />
+            <Route path="/profile" element={<Soon title="Профиль" />} />
+          </Route>
           <Route path="/how" element={<Soon title="Как это работает" />} />
           <Route path="/about" element={<Soon title="О нас" />} />
           <Route path="/contacts" element={<Soon title="Контакты" />} />
