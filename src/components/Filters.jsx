@@ -1,7 +1,8 @@
-import { Fragment, useState } from 'react'
-import { ChevronDown, Star } from 'lucide-react'
+import { useState } from 'react'
+import { Star } from 'lucide-react'
 import Button from './Button'
 import PriceRange from './PriceRange'
+import Select from './Select'
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max)
 
@@ -15,6 +16,18 @@ export default function Filters({ categories, bounds, applied, onApply, onReset 
 
   const roots = categories.filter((c) => !c.parentId)
   const childrenOf = (id) => categories.filter((c) => c.parentId === id)
+
+  const categoryOptions = [
+    { value: '', label: 'Все категории' },
+    ...roots.flatMap((root) => [
+      { value: String(root.id), label: root.name },
+      ...childrenOf(root.id).map((child) => ({
+        value: String(child.id),
+        label: child.name,
+        depth: 1,
+      })),
+    ]),
+  ]
 
   function handleSubmit(e) {
     e.preventDefault()
@@ -32,20 +45,12 @@ export default function Filters({ categories, bounds, applied, onApply, onReset 
 
       <div className="filter-group">
         <label htmlFor="f-category">Категория</label>
-        <div className="select-wrap">
-          <select id="f-category" value={category} onChange={(e) => setCategory(e.target.value)}>
-            <option value="">Все категории</option>
-            {roots.map((root) => (
-              <Fragment key={root.id}>
-                <option value={root.id}>{root.name}</option>
-                {childrenOf(root.id).map((child) => (
-                  <option key={child.id} value={child.id}>— {child.name}</option>
-                ))}
-              </Fragment>
-            ))}
-          </select>
-          <ChevronDown size={18} />
-        </div>
+        <Select
+          id="f-category"
+          value={category}
+          onChange={setCategory}
+          options={categoryOptions}
+        />
       </div>
 
       <div className="filter-group">

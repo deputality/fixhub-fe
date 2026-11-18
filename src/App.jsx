@@ -5,6 +5,7 @@ import Header from './components/Header'
 import ScrollTop from './components/ScrollTop'
 import ProtectedRoute from './routes/ProtectedRoute'
 import AuthPage from './pages/AuthPage'
+import CartPage from './pages/CartPage'
 import CatalogPage from './pages/CatalogPage'
 
 function Soon({ title }) {
@@ -30,7 +31,7 @@ export default function App() {
       {!isAuthPage && <Header />}
 
       <div className="app-main">
-        <div key={pathname} className="page-fade">
+        <div key={isAuthPage ? 'auth' : pathname} className="page-fade">
         <Routes>
           <Route path="/" element={<CatalogPage />} />
           <Route path="/login" element={<AuthPage />} />
@@ -40,7 +41,7 @@ export default function App() {
             path="/cart"
             element={
               <ProtectedRoute roles={['Client']}>
-                <Soon title="Корзина" />
+                <CartPage />
               </ProtectedRoute>
             }
           />

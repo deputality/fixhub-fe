@@ -54,7 +54,7 @@ export function CartProvider({ children }) {
   }, [user, isClient, navigate, show, logout])
 
   return (
-    <CartContext.Provider value={{ count: isClient ? loadedCount : 0, addToCart }}>
+    <CartContext.Provider value={{ count: isClient ? loadedCount : 0, setCount: setLoadedCount, addToCart }}>
       {children}
     </CartContext.Provider>
   )

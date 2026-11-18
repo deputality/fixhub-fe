@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { ChevronDown, CircleAlert, Search, SearchX } from 'lucide-react'
+import { CircleAlert, Search, SearchX } from 'lucide-react'
 import { getCatalog, getCategories } from '../api/catalog'
 import { useCart } from '../context/CartContext'
 import { resolveCategoryMeta } from '../utils/categoryMeta'
 import Button from '../components/Button'
 import Filters from '../components/Filters'
 import Pagination from '../components/Pagination'
+import Select from '../components/Select'
 import ServiceCard from '../components/ServiceCard'
 
 const PAGE_SIZE = 6
@@ -257,18 +258,13 @@ export default function CatalogPage() {
           <section ref={listRef} className="catalog-main">
             <div className="catalog-top">
               <span className="found">{data ? <>Найдено: <b>{data.totalCount}</b></> : ''}</span>
-              <div className="select-wrap sort">
-                <select
-                  value={sort}
-                  onChange={(e) => update({ sort: e.target.value })}
-                  aria-label="Сортировка"
-                >
-                  {SORTS.map((s) => (
-                    <option key={s.value} value={s.value}>{s.label}</option>
-                  ))}
-                </select>
-                <ChevronDown size={18} />
-              </div>
+              <Select
+                className="sort"
+                value={sort}
+                onChange={(value) => update({ sort: value })}
+                options={SORTS}
+                ariaLabel="Сортировка"
+              />
             </div>
 
             {content}
