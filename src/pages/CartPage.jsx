@@ -177,7 +177,7 @@ export default function CartPage() {
       })
       setCount(0)
       show('Заказ оформлен')
-      navigate('/')
+      navigate('/orders')
     } catch (err) {
       if (handleAuthError(err)) return
       setFormError(err?.error ?? 'Не удалось оформить заказ. Попробуйте ещё раз')

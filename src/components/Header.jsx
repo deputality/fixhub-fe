@@ -3,6 +3,7 @@ import { Link, NavLink } from 'react-router-dom'
 import { ShoppingCart } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
+import UserMenu from './UserMenu'
 
 // если заменил логотип на SVG, поставь '/logo.svg'
 const LOGO_SRC = '/logo.svg'
@@ -42,7 +43,9 @@ export default function Header() {
             </Link>
           )}
 
-          {user ? (
+          {user?.role === 'Client' ? (
+            <UserMenu />
+          ) : user ? (
             <>
               <span className="user-name">{user.fullName}</span>
               <button className="btn btn-outline btn-sm" onClick={logout}>Выйти</button>
