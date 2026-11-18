@@ -109,6 +109,7 @@ export default function AuthPage() {
 
   return (
     <div className="auth-layout">
+      <div className="auth-bg" aria-hidden="true"><i /><i /><i /></div>
       <Link to="/" className="auth-logo">
         <img src={LOGO_SRC} alt="FixHub" />
       </Link>
@@ -241,9 +242,9 @@ export default function AuthPage() {
               </div>
             )}
 
-            <Button type="submit" block disabled={loading}>
+            <Button type="submit" block loading={loading}>
               <span key={mode + loading} className="swap">
-                {loading ? 'Подождите...' : isRegister ? 'Зарегистрироваться' : 'Войти'}
+                 {loading ? 'Подождите' : isRegister ? 'Зарегистрироваться' : 'Войти'}
               </span>
             </Button>
 

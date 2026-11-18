@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { ShoppingCart } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
@@ -10,9 +11,17 @@ export default function Header() {
   const { user, logout } = useAuth()
   const { count } = useCart()
   const showCart = !user || user.role === 'Client'
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   return (
-    <header className="site-header">
+    <header className={`site-header${scrolled ? ' scrolled' : ''}`}>
       <div className="container site-header-inner">
         <Link to="/" className="site-logo">
           <img src={LOGO_SRC} alt="FixHub" />
@@ -26,8 +35,10 @@ export default function Header() {
         <div className="header-actions">
           {showCart && (
             <Link to="/cart" className="cart-link" aria-label="Корзина">
-              <ShoppingCart size={30} strokeWidth={1.8} />
-              {count > 0 && <span className="cart-badge">{count}</span>}
+              <ShoppingCart size={28} strokeWidth={1.8} />
+              {count > 0 && (
+                <span key={count} className="cart-badge">{count}</span>
+              )}
             </Link>
           )}
 

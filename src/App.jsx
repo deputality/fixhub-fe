@@ -1,8 +1,11 @@
+import { useEffect } from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import Footer from './components/Footer'
 import Header from './components/Header'
+import ScrollTop from './components/ScrollTop'
 import ProtectedRoute from './routes/ProtectedRoute'
 import AuthPage from './pages/AuthPage'
+import CartPage from './pages/CartPage'
 import CatalogPage from './pages/CatalogPage'
 
 function Soon({ title }) {
@@ -18,11 +21,17 @@ export default function App() {
   const { pathname } = useLocation()
   const isAuthPage = pathname === '/login' || pathname === '/register'
 
+  // при переходе на другую страницу возвращаемся наверх
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }, [pathname])
+
   return (
     <div className="app-shell">
       {!isAuthPage && <Header />}
 
       <div className="app-main">
+        <div key={isAuthPage ? 'auth' : pathname} className="page-fade">
         <Routes>
           <Route path="/" element={<CatalogPage />} />
           <Route path="/login" element={<AuthPage />} />
@@ -32,7 +41,7 @@ export default function App() {
             path="/cart"
             element={
               <ProtectedRoute roles={['Client']}>
-                <Soon title="Корзина" />
+                <CartPage />
               </ProtectedRoute>
             }
           />
@@ -40,9 +49,11 @@ export default function App() {
           <Route path="/about" element={<Soon title="О нас" />} />
           <Route path="/contacts" element={<Soon title="Контакты" />} />
         </Routes>
+        </div>
       </div>
 
       {!isAuthPage && <Footer />}
+      <ScrollTop />
     </div>
   )
 }
