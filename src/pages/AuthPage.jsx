@@ -96,12 +96,11 @@ export default function AuthPage() {
 
     setLoading(true)
     try {
-      if (isRegister) {
-        await register({ email: email.trim(), password, fullName: fullName.trim(), role })
-      } else {
-        await login(email.trim(), password)
-      }
-      navigate('/')
+      const user = isRegister
+        ? await register({ email: email.trim(), password, fullName: fullName.trim(), role })
+        : await login(email.trim(), password)
+      // администратор попадает сразу в свою панель
+      navigate(user.role === 'Admin' ? '/admin' : '/')
     } catch (err) {
       setError(err.error ?? 'Не удалось выполнить запрос. Попробуйте ещё раз')
     } finally {
@@ -115,8 +114,8 @@ export default function AuthPage() {
     try {
       const accessToken = await requestGoogleAccessToken(GOOGLE_CLIENT_ID)
       // роль отправляем только со страницы регистрации
-      await loginWithGoogle(accessToken, isRegister ? role : undefined)
-      navigate('/')
+      const user = await loginWithGoogle(accessToken, isRegister ? role : undefined)
+      navigate(user.role === 'Admin' ? '/admin' : '/')
     } catch (err) {
       // окно закрыто пользователем — это не ошибка
       if (err?.type === 'popup_closed' || err?.error === 'access_denied') return
