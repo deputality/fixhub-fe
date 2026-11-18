@@ -10,6 +10,8 @@ import CatalogPage from './pages/CatalogPage'
 import ServicePage from './pages/ServicePage'
 import OrdersPage from './pages/OrdersPage'
 import CabinetLayout from './components/CabinetLayout'
+import AdminLayout from './components/AdminLayout'
+import AdminPage from './pages/AdminPage'
 
 function Soon({ title }) {
   return (
@@ -20,9 +22,21 @@ function Soon({ title }) {
   )
 }
 
+function AdminSoon({ title }) {
+  return (
+    <div className="admin-soon">
+      <h1>{title}</h1>
+      <p>Этот раздел появится на следующем этапе.</p>
+    </div>
+  )
+}
+
 export default function App() {
   const { pathname } = useLocation()
   const isAuthPage = pathname === '/login' || pathname === '/register'
+  // у админки свой layout с боковым меню, общая шапка и подвал не нужны
+  const isAdminPage = pathname === '/admin' || pathname.startsWith('/admin/')
+  const hideChrome = isAuthPage || isAdminPage
 
   // при переходе на другую страницу возвращаемся наверх
   useEffect(() => {
@@ -31,10 +45,10 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      {!isAuthPage && <Header />}
+      {!hideChrome && <Header />}
 
       <div className="app-main">
-        <div key={isAuthPage ? 'auth' : pathname} className="page-fade">
+        <div key={isAuthPage ? 'auth' : isAdminPage ? 'admin' : pathname} className="page-fade">
         <Routes>
           <Route path="/" element={<CatalogPage />} />
           <Route path="/login" element={<AuthPage />} />
@@ -58,6 +72,20 @@ export default function App() {
             <Route path="/orders" element={<OrdersPage />} />
             <Route path="/profile" element={<Soon title="Профиль" />} />
           </Route>
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute roles={['Admin']}>
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<AdminPage />} />
+            <Route path="categories" element={<AdminSoon title="Категории" />} />
+            <Route path="reviews" element={<AdminSoon title="Отзывы" />} />
+            <Route path="stats" element={<AdminSoon title="Статистика" />} />
+            <Route path="settings" element={<AdminSoon title="Настройки" />} />
+          </Route>
           <Route path="/how" element={<Soon title="Как это работает" />} />
           <Route path="/about" element={<Soon title="О нас" />} />
           <Route path="/contacts" element={<Soon title="Контакты" />} />
@@ -65,7 +93,7 @@ export default function App() {
         </div>
       </div>
 
-      {!isAuthPage && <Footer />}
+      {!hideChrome && <Footer />}
       <ScrollTop />
     </div>
   )
