@@ -30,24 +30,26 @@ export function CartProvider({ children }) {
   const addToCart = useCallback(async (serviceId) => {
     if (!user) {
       navigate('/login')
-      return
+      return false
     }
     if (!isClient) {
       show('Корзина доступна только клиентам', 'error')
-      return
+      return false
     }
     try {
       const cart = await cartApi.addToCart(serviceId)
       setLoadedCount(cart.items.length)
       show('Услуга добавлена в корзину')
+      return true
     } catch (err) {
       if (err.status === 401) {
         logout()
         show('Сессия истекла, войдите снова', 'error')
         navigate('/login')
-        return
+        return false
       }
       show(err.error ?? 'Не удалось добавить в корзину', 'error')
+      return false
     }
   }, [user, isClient, navigate, show, logout])
 

@@ -148,7 +148,16 @@ export default function CatalogPage() {
   } else if (!data) {
     content = (
       <div className="grid">
-        {Array.from({ length: PAGE_SIZE }, (_, i) => <div key={i} className="skeleton" />)}
+       {Array.from({ length: PAGE_SIZE }, (_, i) => (
+          <div key={i} className="skeleton-card" aria-hidden="true">
+             <div className="skeleton sk-photo" />
+             <div className="sk-body">
+                <div className="skeleton sk-line" />
+                <div className="skeleton sk-line short" />
+                <div className="skeleton sk-line tiny" />
+    </div>
+  </div>
+))}
       </div>
     )
   } else if (data.items.length === 0) {
@@ -247,7 +256,7 @@ export default function CatalogPage() {
 
           <section ref={listRef} className="catalog-main">
             <div className="catalog-top">
-              <span className="found">{data ? `Найдено: ${data.totalCount}` : ''}</span>
+              <span className="found">{data ? <>Найдено: <b>{data.totalCount}</b></> : ''}</span>
               <div className="select-wrap sort">
                 <select
                   value={sort}

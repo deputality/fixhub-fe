@@ -30,6 +30,9 @@ export default function Footer() {
           ))}
         </div>
       </div>
+      <div className="footer-copy">
+        <div className="container">© {new Date().getFullYear()} FixHub. Все права защищены.</div>
+      </div>
     </footer>
   )
 }

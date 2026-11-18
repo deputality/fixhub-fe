@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ShoppingCart, Star } from 'lucide-react'
+import { Check, ShoppingCart, Sparkles, Star } from 'lucide-react'
 
 const UNITS = { Hour: 'час', Piece: 'шт.' }
 
@@ -16,18 +16,59 @@ function initials(name) {
 
 export default function ServiceCard({ service, meta, index, onAdd }) {
   const [imageFailed, setImageFailed] = useState(false)
+  const [imageLoaded, setImageLoaded] = useState(false)
+  const [added, setAdded] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const timer = useRef(null)
+
+  useEffect(() => () => clearTimeout(timer.current), [])
+
   const src = !imageFailed && (service.photoUrl || meta.image)
   const Icon = meta.icon
   const link = `/services/${service.id}`
 
+  async function handleAdd() {
+    if (busy) return
+    setBusy(true)
+    const ok = await onAdd(service.id)
+    setBusy(false)
+    if (ok) {
+      setAdded(true)
+      clearTimeout(timer.current)
+      timer.current = setTimeout(() => setAdded(false), 1800)
+    }
+  }
+
   return (
-    <article className="card" style={{ animationDelay: `${index * 50}ms` }}>
+    <article className="card" style={{ animationDelay: `${index * 70}ms` }}>
       <Link to={link} className="card-photo" style={{ '--cat': meta.color }} aria-label={service.title}>
         {src ? (
-          <img src={src} alt="" loading="lazy" onError={() => setImageFailed(true)} />
+          <img
+            src={src}
+            alt=""
+            loading="lazy"
+            className={imageLoaded ? 'loaded' : ''}
+            onLoad={() => setImageLoaded(true)}
+            onError={() => setImageFailed(true)}
+          />
         ) : (
           <Icon size={46} strokeWidth={1.6} />
         )}
+
+        <span className="card-pill">
+          {service.rating != null ? (
+            <>
+              <Star size={14} fill="#f59e0b" stroke="#f59e0b" />
+              <b>{Number(service.rating).toFixed(1)}</b>
+              <span>({service.reviewCount})</span>
+            </>
+          ) : (
+            <>
+              <Sparkles size={14} />
+              <b>Новая</b>
+            </>
+          )}
+        </span>
       </Link>
 
       <div className="card-body">
@@ -42,24 +83,21 @@ export default function ServiceCard({ service, meta, index, onAdd }) {
         </div>
 
         <div className="card-bottom">
-          <div>
-            <div className="card-rating">
-              {service.rating != null ? (
-                <>
-                  <Star size={16} fill="#f59e0b" stroke="#f59e0b" />
-                  <b>{Number(service.rating).toFixed(1)}</b>
-                  <span>({service.reviewCount})</span>
-                </>
-              ) : (
-                <span className="no-rating">Нет отзывов</span>
-              )}
-            </div>
-            <div className="card-price">от {service.price} BYN/{UNITS[service.unit] ?? ''}</div>
+          <div className="card-price">
+            <small>от</small> {service.price} BYN
+            <span>/{UNITS[service.unit] ?? ''}</span>
           </div>
 
-          <button type="button" className="btn-cart" onClick={() => onAdd(service.id)}>
-            <ShoppingCart size={16} />
-            В корзину
+          <button
+            type="button"
+            className={`btn-cart${added ? ' added' : ''}`}
+            onClick={handleAdd}
+            disabled={busy}
+          >
+            <span className="btn-cart-icon">
+              {added ? <Check size={16} /> : <ShoppingCart size={16} />}
+            </span>
+            {added ? 'Добавлено' : 'В корзину'}
           </button>
         </div>
       </div>
