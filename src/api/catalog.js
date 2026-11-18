@@ -9,3 +9,8 @@ export function getCatalog(params) {
 }
 
 export const getCategories = () => api('/api/categories', { auth: false })
+
+export const getService = (id) => api(`/api/catalog/${id}`, { auth: false })
+
+export const getServiceReviews = (id, page = 1, pageSize = 10) =>
+  api(`/api/catalog/${id}/reviews?page=${page}&pageSize=${pageSize}`, { auth: false })

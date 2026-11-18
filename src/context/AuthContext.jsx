@@ -25,6 +25,9 @@ export function AuthProvider({ children }) {
   const register = async (data) =>
     saveSession(await authApi.register(data))
 
+  const loginWithGoogle = async (accessToken, role) =>
+    saveSession(await authApi.googleLogin(accessToken, role))
+
   function logout() {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
@@ -32,7 +35,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout }}>
+    <AuthContext.Provider value={{ user, login, register, loginWithGoogle, logout }}>
       {children}
     </AuthContext.Provider>
   )

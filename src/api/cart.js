@@ -2,8 +2,9 @@ import { api } from './client'
 
 export const getCart = () => api('/api/cart')
 
-export const addToCart = (serviceId) =>
-  api('/api/cart/items', { method: 'POST', body: { serviceId, quantity: 1 } })
+// extra (необязательно): { quantity, desiredDate, comment }
+export const addToCart = (serviceId, extra = {}) =>
+  api('/api/cart/items', { method: 'POST', body: { serviceId, quantity: 1, ...extra } })
 
 // изменить позицию: { quantity, comment, desiredDate }
 export const updateCartItem = (itemId, body) =>
@@ -12,7 +13,7 @@ export const updateCartItem = (itemId, body) =>
 export const removeCartItem = (itemId) =>
   api(`/api/cart/items/${itemId}`, { method: 'DELETE' })
 
-// оформить заказ из корзины: { address, phone, customerName }
+// оформить заказ из корзины: { address, contactPhone, contactName }
 export const createOrder = (body) =>
   api('/api/orders', { method: 'POST', body })
 

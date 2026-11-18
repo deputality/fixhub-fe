@@ -7,6 +7,7 @@ import ProtectedRoute from './routes/ProtectedRoute'
 import AuthPage from './pages/AuthPage'
 import CartPage from './pages/CartPage'
 import CatalogPage from './pages/CatalogPage'
+import ServicePage from './pages/ServicePage'
 
 function Soon({ title }) {
   return (
@@ -36,7 +37,7 @@ export default function App() {
           <Route path="/" element={<CatalogPage />} />
           <Route path="/login" element={<AuthPage />} />
           <Route path="/register" element={<AuthPage />} />
-          <Route path="/services/:id" element={<Soon title="Страница услуги" />} />
+          <Route path="/services/:id" element={<ServicePage />} />
           <Route
             path="/cart"
             element={

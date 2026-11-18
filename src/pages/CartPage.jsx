@@ -172,8 +172,8 @@ export default function CartPage() {
     try {
       await createOrder({
         address: address.trim(),
-        phone: phone.trim(),
-        customerName: name.trim(),
+        contactPhone: phone.trim(),
+        contactName: name.trim(),
       })
       setCount(0)
       show('Заказ оформлен')

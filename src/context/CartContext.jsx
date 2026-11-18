@@ -27,7 +27,7 @@ export function CartProvider({ children }) {
     return () => { cancelled = true }
   }, [isClient, user?.id])
 
-  const addToCart = useCallback(async (serviceId) => {
+  const addToCart = useCallback(async (serviceId, extra) => {
     if (!user) {
       navigate('/login')
       return false
@@ -37,7 +37,7 @@ export function CartProvider({ children }) {
       return false
     }
     try {
-      const cart = await cartApi.addToCart(serviceId)
+      const cart = await cartApi.addToCart(serviceId, extra)
       setLoadedCount(cart.items.length)
       show('Услуга добавлена в корзину')
       return true
