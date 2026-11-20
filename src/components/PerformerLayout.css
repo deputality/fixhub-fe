@@ -1,0 +1,64 @@
+/* ===== каркас панели мастера ===== */
+.pf { min-height: 100vh; display: flex; flex-direction: column; }
+.pf-top { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; gap: 36px; height: 68px; padding: 0 28px;
+  background: rgba(255, 255, 255, .9); backdrop-filter: saturate(180%) blur(14px); border-bottom: 1px solid #e9eef8; }
+.pf-logo img { display: block; height: 38px; width: auto; transition: transform .3s var(--ease-out); }
+.pf-logo:hover img { transform: scale(1.05); }
+.pf-top-nav { display: flex; gap: 32px; }
+.pf-top-nav a { position: relative; padding: 6px 0; color: var(--navy); font-weight: 500; }
+.pf-top-nav a:hover { color: var(--blue); }
+.pf-top-right { margin-left: auto; display: flex; align-items: center; gap: 18px; }
+
+.pf-body { flex: 1; display: grid; grid-template-columns: 240px minmax(0, 1fr); }
+.pf-side { background: #fff; border-right: 1px solid #e9eef8; padding: 18px 12px 24px; }
+.pf-side-inner { position: sticky; top: 86px; }
+.pf-me { display: flex; align-items: center; gap: 12px; padding: 4px 8px 18px; }
+.pf-me-avatar { width: 48px; height: 48px; font-size: 16px; }
+.pf-me-name { font-size: 15px; font-weight: 600; line-height: 1.25; }
+.pf-me-role { margin-top: 2px; font-size: 12px; color: #94a3b8; }
+
+.pf-nav { display: flex; flex-direction: column; gap: 4px; }
+.pf-nav a, .pf-nav button { display: flex; align-items: center; gap: 14px; width: 100%; padding: 12px 14px; border: none; border-radius: 10px;
+  background: none; color: #334155; font: inherit; font-size: 14px; text-align: left; cursor: pointer;
+  transition: background .2s, color .2s, transform .2s var(--ease-out); }
+.pf-nav a:hover, .pf-nav button:hover { background: #eef3fd; color: var(--blue); transform: translateX(3px); }
+.pf-nav a.active { background: #e4edff; color: var(--blue); font-weight: 600; transform: none; }
+.pf-sep { height: 1px; margin: 10px 8px; background: #e9eef8; }
+.pf-badge { margin-left: auto; min-width: 22px; height: 22px; padding: 0 6px; display: flex; align-items: center; justify-content: center;
+  border-radius: 999px; background: #ef4444; color: #fff; font-size: 12px; font-weight: 700; animation: pop .4s var(--spring); }
+
+.pf-content { min-width: 0; padding: 30px 32px 56px; }
+
+/* колокольчик */
+.bell { position: relative; }
+.bell-btn { position: relative; display: flex; padding: 6px; border: none; border-radius: 10px; background: none; color: var(--navy);
+  cursor: pointer; transition: background .2s, transform .25s var(--spring); }
+.bell-btn:hover { background: #eef3fd; transform: rotate(-12deg) scale(1.08); }
+.bell-badge { position: absolute; top: -2px; right: -2px; min-width: 18px; height: 18px; padding: 0 5px; display: flex; align-items: center;
+  justify-content: center; border-radius: 999px; background: #ef4444; color: #fff; font-size: 11px; font-weight: 700; border: 2px solid #fff;
+  box-sizing: content-box; animation: pop .45s var(--spring); }
+.bell-list { position: absolute; right: 0; top: calc(100% + 10px); z-index: 60; width: 340px; max-height: 420px; overflow-y: auto; padding: 6px;
+  background: #fff; border: 1px solid #e9eef8; border-radius: 14px; box-shadow: var(--sh-lg); animation: rise .2s var(--ease-out); }
+.bell-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px 10px; font-size: 14px; }
+.bell-head button { border: none; background: none; color: var(--blue); font: inherit; font-size: 12px; cursor: pointer; }
+.bell-head button:hover { text-decoration: underline; }
+.bell-empty { padding: 22px 10px; text-align: center; font-size: 13px; color: var(--muted); }
+.bell-item { display: flex; flex-direction: column; gap: 4px; width: 100%; padding: 10px; border: none; border-radius: 10px; background: none;
+  font: inherit; font-size: 13px; line-height: 1.4; text-align: left; color: #334155; cursor: pointer; transition: background .2s; }
+.bell-item:hover { background: #eef3fd; }
+.bell-item.unread { background: #f3f7ff; color: var(--navy); font-weight: 500; }
+.bell-item small { font-size: 11px; font-weight: 400; color: #94a3b8; }
+
+@media (max-width: 900px) {
+  .pf-top { padding: 0 14px; gap: 14px; }
+  .pf-top-nav, .pf-top-right .user-name { display: none; }
+  .pf-body { grid-template-columns: minmax(0, 1fr); }
+  .pf-side { padding: 8px 12px; border-right: none; border-bottom: 1px solid #e9eef8; }
+  .pf-side-inner { position: static; }
+  .pf-me { display: none; }
+  .pf-nav { flex-direction: row; overflow-x: auto; }
+  .pf-nav a, .pf-nav button { width: auto; white-space: nowrap; }
+  .pf-sep { display: none; }
+  .pf-content { padding: 20px 14px 40px; }
+  .bell-list { width: min(340px, 92vw); }
+}

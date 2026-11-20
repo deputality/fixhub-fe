@@ -43,7 +43,7 @@ export default function Header() {
             </Link>
           )}
 
-          {user?.role === 'Client' ? (
+          {user?.role === 'Client' || user?.role === 'Performer' ? (
             <UserMenu />
           ) : user ? (
             <>

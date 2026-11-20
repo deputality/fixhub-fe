@@ -12,6 +12,10 @@ import OrdersPage from './pages/OrdersPage'
 import CabinetLayout from './components/CabinetLayout'
 import AdminLayout from './components/AdminLayout'
 import AdminPage from './pages/AdminPage'
+import PerformerLayout from './components/PerformerLayout'
+import PerformerHome from './pages/PerformerHome'
+import { PerformerOrdersPage, PerformerReviewsPage, PerformerServicesPage } from './pages/PerformerSections'
+import ProfilePage from './pages/ProfilePage'
 
 function Soon({ title }) {
   return (
@@ -36,7 +40,9 @@ export default function App() {
   const isAuthPage = pathname === '/login' || pathname === '/register'
   // у админки свой layout с боковым меню, общая шапка и подвал не нужны
   const isAdminPage = pathname === '/admin' || pathname.startsWith('/admin/')
-  const hideChrome = isAuthPage || isAdminPage
+  // у панели мастера тоже свой layout: шапка и боковое меню внутри
+  const isPerformerPage = pathname === '/performer' || pathname.startsWith('/performer/')
+  const hideChrome = isAuthPage || isAdminPage || isPerformerPage
 
   // при переходе на другую страницу возвращаемся наверх
   useEffect(() => {
@@ -48,7 +54,7 @@ export default function App() {
       {!hideChrome && <Header />}
 
       <div className="app-main">
-        <div key={isAuthPage ? 'auth' : isAdminPage ? 'admin' : pathname} className="page-fade">
+        <div key={isAuthPage ? 'auth' : isAdminPage ? 'admin' : isPerformerPage ? 'performer' : pathname} className="page-fade">
         <Routes>
           <Route path="/" element={<CatalogPage />} />
           <Route path="/login" element={<AuthPage />} />
@@ -70,7 +76,21 @@ export default function App() {
             }
           >
             <Route path="/orders" element={<OrdersPage />} />
-            <Route path="/profile" element={<Soon title="Профиль" />} />
+            <Route path="/profile" element={<ProfilePage />} />
+          </Route>
+          <Route
+            path="/performer"
+            element={
+              <ProtectedRoute roles={['Performer']}>
+                <PerformerLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<PerformerHome />} />
+            <Route path="services" element={<PerformerServicesPage />} />
+            <Route path="orders" element={<PerformerOrdersPage />} />
+            <Route path="reviews" element={<PerformerReviewsPage />} />
+            <Route path="profile" element={<ProfilePage />} />
           </Route>
           <Route
             path="/admin"

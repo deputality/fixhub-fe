@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ChevronDown, ClipboardList, LogOut, User } from 'lucide-react'
+import { ChevronDown, ClipboardList, LayoutDashboard, LogOut, User } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import './UserMenu.css'
 
@@ -36,8 +36,17 @@ export default function UserMenu() {
 
       {open && (
         <div className="user-menu-list">
-          <Link to="/orders" onClick={() => setOpen(false)}><ClipboardList size={18} /> Мои заказы</Link>
-          <Link to="/profile" onClick={() => setOpen(false)}><User size={18} /> Профиль</Link>
+          {user.role === 'Performer' ? (
+            <>
+              <Link to="/performer" onClick={() => setOpen(false)}><LayoutDashboard size={18} /> Панель мастера</Link>
+              <Link to="/performer/profile" onClick={() => setOpen(false)}><User size={18} /> Профиль</Link>
+            </>
+          ) : (
+            <>
+              <Link to="/orders" onClick={() => setOpen(false)}><ClipboardList size={18} /> Мои заказы</Link>
+              <Link to="/profile" onClick={() => setOpen(false)}><User size={18} /> Профиль</Link>
+            </>
+          )}
           <button type="button" onClick={() => { setOpen(false); logout(); navigate('/') }}>
             <LogOut size={18} /> Выйти
           </button>

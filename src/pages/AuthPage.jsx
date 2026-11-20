@@ -51,6 +51,12 @@ function validate({ fullName, email, password }, isRegister) {
   return errors
 }
 
+function homeFor(role) {
+  if (role === 'Admin') return '/admin'
+  if (role === 'Performer') return '/performer'
+  return '/'
+}
+
 export default function AuthPage() {
   const { pathname } = useLocation()
   const isRegister = pathname === '/register'
@@ -100,7 +106,7 @@ export default function AuthPage() {
         ? await register({ email: email.trim(), password, fullName: fullName.trim(), role })
         : await login(email.trim(), password)
       // администратор попадает сразу в свою панель
-      navigate(user.role === 'Admin' ? '/admin' : '/')
+      navigate(homeFor(user.role))
     } catch (err) {
       setError(err.error ?? 'Не удалось выполнить запрос. Попробуйте ещё раз')
     } finally {
@@ -115,7 +121,7 @@ export default function AuthPage() {
       const accessToken = await requestGoogleAccessToken(GOOGLE_CLIENT_ID)
       // роль отправляем только со страницы регистрации
       const user = await loginWithGoogle(accessToken, isRegister ? role : undefined)
-      navigate(user.role === 'Admin' ? '/admin' : '/')
+      navigate(homeFor(user.role))
     } catch (err) {
       // окно закрыто пользователем — это не ошибка
       if (err?.type === 'popup_closed' || err?.error === 'access_denied') return
