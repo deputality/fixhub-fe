@@ -70,7 +70,7 @@
 .adm-search input::placeholder { color: #64748b; }
 
 .table-wrap { overflow-x: auto; }
-.adm-table { width: 100%; min-width: 900px; border-collapse: collapse; transition: opacity .2s; }
+.adm-table { width: 100%; min-width: 1060px; border-collapse: collapse; transition: opacity .2s; }
 .adm-table.is-loading { opacity: .5; }
 .adm-table thead th { padding: 12px 14px; background: #f1f5fd; text-align: left; font-size: 13px; font-weight: 500; color: #0f172a; white-space: nowrap; }
 .adm-table thead th:first-child { border-radius: 8px 0 0 8px; }
@@ -127,3 +127,20 @@
   .adm-search, .period { width: 100%; }
   .panel-foot { justify-content: center; }
 }
+
+/* проверка мастеров */
+.adm-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.adm-tab { padding: 7px 16px; border: 1px solid var(--border); border-radius: 999px; background: #fff;
+  font: inherit; font-size: 13px; color: #334155; cursor: pointer;
+  transition: background .2s, color .2s, border-color .2s; }
+.adm-tab:hover { border-color: #c5d3ee; background: #f8faff; }
+.adm-tab.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+.st-verified { background: #dbe7ff; color: #2563eb; }
+.st-unverified { background: #eef2f9; color: #64748b; }
+
+.cell-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.act-btn.verify { border: 1px solid #2563eb; color: #2563eb; }
+.act-btn.verify:hover:not(:disabled) { background: #eff5ff; }
+.act-btn.unverify { border: 1px solid #94a3b8; color: #475569; }
+.act-btn.unverify:hover:not(:disabled) { background: #f8fafc; }

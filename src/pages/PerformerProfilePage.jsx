@@ -161,7 +161,7 @@ export default function PerformerProfilePage() {
           <h1>Мой профиль</h1>
           <p>Расскажите о себе, чтобы клиенты выбирали вас с уверенностью.</p>
         </div>
-        <Link to="/" className="pp-view">Посмотреть профиль</Link>
+        <Link to={`/performers/${profile.id}`} className="pp-view">Посмотреть профиль</Link>
       </div>
 
       <section className="pp-card pp-summary">

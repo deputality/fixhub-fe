@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
   BadgeCheck, Briefcase, Camera, ChevronRight, CircleAlert, Droplet,
-  Minus, Plus, ShieldCheck, ShoppingCart, Star,
+  Minus, Plus, ShieldCheck, ShieldOff, ShoppingCart, Star,
 } from 'lucide-react'
 import { getCategories, getService, getServiceReviews } from '../api/catalog'
 import { useCart } from '../context/CartContext'
@@ -202,13 +202,26 @@ export default function ServicePage() {
             </div>
 
             <div className="sp-master">
-              <span className="avatar sp-avatar">{initials(service.performerName)}</span>
+              <Link to={`/performers/${service.performerId}`} className="avatar sp-avatar" aria-label="Профиль мастера">
+                {service.performerAvatarUrl
+                  ? <img src={service.performerAvatarUrl} alt="" />
+                  : initials(service.performerName)}
+              </Link>
               <div className="sp-master-info">
-                <div className="sp-master-name">{service.performerName}</div>
-                <div className="sp-master-role">Частный мастер</div>
+                <Link to={`/performers/${service.performerId}`} className="sp-master-name">
+                  {service.performerName}
+                </Link>
+                <div className="sp-master-role">{service.performerSpecialization || 'Частный мастер'}</div>
+                <Link to={`/performers/${service.performerId}`} className="sp-master-link">
+                  Профиль и все услуги <ChevronRight size={13} />
+                </Link>
               </div>
               <div className="sp-master-side">
-                <span className="sp-verified"><BadgeCheck size={18} /> Проверенный специалист</span>
+                {service.performerIsVerified ? (
+                  <span className="sp-verified"><BadgeCheck size={18} /> Проверенный специалист</span>
+                ) : (
+                  <span className="sp-verified off"><ShieldOff size={18} /> Не проверен</span>
+                )}
                 {service.performerRating != null && (
                   <span className="sp-master-rate">
                     <Star size={14} fill="#f59e0b" stroke="#f59e0b" />

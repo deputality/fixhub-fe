@@ -5,11 +5,19 @@ export const getAdminStats = () => api('/api/admin/stats')
 // заказы по дням за последние N дней, дни без заказов приходят с нулём
 export const getOrdersByDay = (days) => api(`/api/admin/stats/orders-by-day?days=${days}`)
 
-export function getAdminUsers({ search, page, pageSize }) {
+// role: 'Performer' и т.п.; isVerified: true, false или undefined (все)
+export function getAdminUsers({ search, role, isVerified, page, pageSize }) {
   const qs = new URLSearchParams({ page, pageSize })
   if (search) qs.set('search', search)
+  if (role) qs.set('role', role)
+  if (isVerified !== undefined) qs.set('isVerified', isVerified)
   return api(`/api/admin/users?${qs}`)
 }
+
+// отметка «Проверенный мастер» (только для исполнителей)
+export const verifyUser = (id) => api(`/api/admin/users/${id}/verify`, { method: 'POST' })
+
+export const unverifyUser = (id) => api(`/api/admin/users/${id}/unverify`, { method: 'POST' })
 
 export const blockUser = (id) => api(`/api/admin/users/${id}/block`, { method: 'POST' })
 

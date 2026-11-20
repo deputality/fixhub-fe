@@ -22,6 +22,7 @@ import { PerformerOrdersPage, PerformerReviewsPage, PerformerServicesPage } from
 import ProfilePage from './pages/ProfilePage'
 import PerformerProfilePage from './pages/PerformerProfilePage'
 import OrderSentPage from './pages/OrderSentPage'
+import PerformerPublicPage from './pages/PerformerPublicPage'
 
 function Soon({ title }) {
   return (
@@ -57,6 +58,7 @@ export default function App() {
           <Route path="/login" element={<AuthPage />} />
           <Route path="/register" element={<AuthPage />} />
           <Route path="/services/:id" element={<ServicePage />} />
+          <Route path="/performers/:id" element={<PerformerPublicPage />} />
           <Route
             path="/cart"
             element={

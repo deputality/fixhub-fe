@@ -14,3 +14,7 @@ export const getService = (id) => api(`/api/catalog/${id}`, { auth: false })
 
 export const getServiceReviews = (id, page = 1, pageSize = 10) =>
   api(`/api/catalog/${id}/reviews?page=${page}&pageSize=${pageSize}`, { auth: false })
+
+// публичная страница мастера: { id, fullName, specialization, experienceYears, city, serviceArea,
+//   bio, avatarUrl, isVerified, createdAt, rating, reviewCount, completedOrders, servicesCount }
+export const getPerformer = (id) => api(`/api/performers/${id}`, { auth: false })

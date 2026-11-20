@@ -2,9 +2,11 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   ArrowDown, ArrowUp, Ban, Calendar, CircleAlert, CircleCheck, ClipboardList,
-  Coins, Minus, Search, Star, Users,
+  Coins, Minus, Search, ShieldCheck, ShieldOff, Star, Users,
 } from 'lucide-react'
-import { blockUser, getAdminStats, getAdminUsers, getOrdersByDay, unblockUser } from '../api/admin'
+import {
+  blockUser, getAdminStats, getAdminUsers, getOrdersByDay, unblockUser, unverifyUser, verifyUser,
+} from '../api/admin'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import Pagination from '../components/Pagination'
@@ -24,6 +26,13 @@ const ROLES = {
   Performer: { label: 'Исполнитель', cls: 'role-performer' },
   Admin: { label: 'Админ', cls: 'role-admin' },
 }
+
+// быстрые фильтры над таблицей пользователей
+const USER_TABS = [
+  { id: 'all', label: 'Все' },
+  { id: 'performers', label: 'Мастера', role: 'Performer' },
+  { id: 'pending', label: 'Ждут проверки', role: 'Performer', isVerified: false },
+]
 
 const num = (n) => n.toLocaleString('ru-RU')
 const money = (n) => n.toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -313,6 +322,7 @@ function UsersPanel({ onAuthError }) {
   const [page, setPage] = useState(1)
   const [reload, setReload] = useState(0)
   const [busyId, setBusyId] = useState(null)
+  const [tab, setTab] = useState('all')
   const [data, setData] = useState({ key: null, items: [], total: 0, totalPages: 0, error: '' })
 
   // запрос уходит не на каждую букву, а когда человек перестал печатать
@@ -324,11 +334,12 @@ function UsersPanel({ onAuthError }) {
     return () => clearTimeout(t)
   }, [search])
 
-  const key = `${query}|${page}|${reload}`
+  const key = `${query}|${tab}|${page}|${reload}`
 
   useEffect(() => {
     let cancelled = false
-    getAdminUsers({ search: query, page, pageSize: PAGE_SIZE })
+    const { role, isVerified } = USER_TABS.find((t) => t.id === tab)
+    getAdminUsers({ search: query, role, isVerified, page, pageSize: PAGE_SIZE })
       .then((res) => {
         if (cancelled) return
         setData({ key, items: res.items, total: res.totalCount, totalPages: res.totalPages, error: '' })
@@ -338,7 +349,7 @@ function UsersPanel({ onAuthError }) {
         setData({ key, items: [], total: 0, totalPages: 0, error: err?.error ?? 'Не удалось загрузить пользователей' })
       })
     return () => { cancelled = true }
-  }, [key, query, page, onAuthError])
+  }, [key, query, tab, page, onAuthError])
 
   // пока ключ загруженных данных не совпал с текущим, показываем старые строки приглушёнными
   const loading = data.key !== key
@@ -356,6 +367,31 @@ function UsersPanel({ onAuthError }) {
     }
   }
 
+  async function toggleVerify(user) {
+    setBusyId(user.id)
+    try {
+      const updated = user.isVerified ? await unverifyUser(user.id) : await verifyUser(user.id)
+      setData((d) => ({
+        ...d,
+        // во вкладке «Ждут проверки» подтверждённый мастер сразу уходит из списка
+        items: tab === 'pending' && updated.isVerified
+          ? d.items.filter((u) => u.id !== updated.id)
+          : d.items.map((u) => (u.id === updated.id ? updated : u)),
+        total: tab === 'pending' && updated.isVerified ? Math.max(0, d.total - 1) : d.total,
+      }))
+      show(updated.isVerified ? 'Мастер подтверждён' : 'Отметка проверки снята')
+    } catch (err) {
+      if (!onAuthError(err)) show(err?.error ?? 'Не удалось выполнить действие', 'error')
+    } finally {
+      setBusyId(null)
+    }
+  }
+
+  function changeTab(id) {
+    setTab(id)
+    setPage(1)
+  }
+
   return (
     <section className="adm-panel">
       <div className="panel-head">
@@ -371,6 +407,21 @@ function UsersPanel({ onAuthError }) {
             maxLength={100}
           />
         </label>
+      </div>
+
+      <div className="adm-tabs" role="tablist" aria-label="Фильтр пользователей">
+        {USER_TABS.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            role="tab"
+            aria-selected={tab === t.id}
+            className={`adm-tab${tab === t.id ? ' active' : ''}`}
+            onClick={() => changeTab(t.id)}
+          >
+            {t.label}
+          </button>
+        ))}
       </div>
 
       {data.error ? (
@@ -391,6 +442,7 @@ function UsersPanel({ onAuthError }) {
                 <th>Имя</th>
                 <th>Роль</th>
                 <th>Статус</th>
+                <th>Проверка</th>
                 <th>Дата регистрации</th>
                 <th>Действия</th>
               </tr>
@@ -415,20 +467,42 @@ function UsersPanel({ onAuthError }) {
                         {u.isBlocked ? 'Заблокирован' : 'Активен'}
                       </span>
                     </td>
+                    <td>
+                      {u.role === 'Performer' ? (
+                        <span className={`pill ${u.isVerified ? 'st-verified' : 'st-unverified'}`}>
+                          {u.isVerified ? 'Проверен' : 'Не проверен'}
+                        </span>
+                      ) : (
+                        <span className="cell-none">—</span>
+                      )}
+                    </td>
                     <td className="cell-date">{formatDateTime(u.createdAt)}</td>
                     <td>
                       {u.role === 'Admin' ? (
                         <span className="cell-none">—</span>
                       ) : (
-                        <button
-                          type="button"
-                          className={`act-btn ${u.isBlocked ? 'unblock' : 'block'}`}
-                          disabled={busy}
-                          onClick={() => toggleBlock(u)}
-                        >
-                          {u.isBlocked ? <CircleCheck size={15} /> : <Ban size={15} />}
-                          {u.isBlocked ? 'Разблокировать' : 'Заблокировать'}
-                        </button>
+                        <div className="cell-actions">
+                          {u.role === 'Performer' && (
+                            <button
+                              type="button"
+                              className={`act-btn ${u.isVerified ? 'unverify' : 'verify'}`}
+                              disabled={busy}
+                              onClick={() => toggleVerify(u)}
+                            >
+                              {u.isVerified ? <ShieldOff size={15} /> : <ShieldCheck size={15} />}
+                              {u.isVerified ? 'Снять проверку' : 'Подтвердить'}
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            className={`act-btn ${u.isBlocked ? 'unblock' : 'block'}`}
+                            disabled={busy}
+                            onClick={() => toggleBlock(u)}
+                          >
+                            {u.isBlocked ? <CircleCheck size={15} /> : <Ban size={15} />}
+                            {u.isBlocked ? 'Разблокировать' : 'Заблокировать'}
+                          </button>
+                        </div>
                       )}
                     </td>
                   </tr>
@@ -436,10 +510,10 @@ function UsersPanel({ onAuthError }) {
               })}
 
               {!loading && data.items.length === 0 && (
-                <tr className="row-empty"><td colSpan={7}>Никого не нашли. Попробуйте изменить запрос.</td></tr>
+                <tr className="row-empty"><td colSpan={8}>Никого не нашли. Попробуйте изменить запрос или фильтр.</td></tr>
               )}
               {data.key === null && Array.from({ length: PAGE_SIZE }, (_, i) => (
-                <tr key={`sk-${i}`} className="row-skel"><td colSpan={7}><i className="skel" /></td></tr>
+                <tr key={`sk-${i}`} className="row-skel"><td colSpan={8}><i className="skel" /></td></tr>
               ))}
             </tbody>
           </table>

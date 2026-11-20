@@ -58,6 +58,7 @@ export default function NotificationsBell() {
     }
     if (n.orderId) navigate('/performer/orders')
     else if (n.reviewId) navigate('/performer/reviews')
+    else if (n.type === 'ProfileVerified') navigate('/performer/profile')
   }
 
   async function readAll() {

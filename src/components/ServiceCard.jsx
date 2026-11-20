@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Check, ShoppingCart, Sparkles, Star } from 'lucide-react'
+import { BadgeCheck, Check, ShoppingCart, Sparkles, Star } from 'lucide-react'
 
 const UNITS = { Hour: 'час', Piece: 'шт.' }
 
@@ -14,7 +14,8 @@ function initials(name) {
     .toUpperCase()
 }
 
-export default function ServiceCard({ service, meta, index, onAdd }) {
+// hideMaster: на странице самого мастера его данные в карточке не повторяем
+export default function ServiceCard({ service, meta, index, onAdd, hideMaster = false }) {
   const [imageFailed, setImageFailed] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
   const [added, setAdded] = useState(false)
@@ -74,13 +75,24 @@ export default function ServiceCard({ service, meta, index, onAdd }) {
       <div className="card-body">
         <Link to={link} className="card-title">{service.title}</Link>
 
-        <div className="card-master">
-          <span className="avatar">{initials(service.performerName)}</span>
-          <div>
-            <div className="master-name">{service.performerName}</div>
-            <div className="master-role">Частный мастер</div>
-          </div>
-        </div>
+        {!hideMaster && (
+          <Link to={`/performers/${service.performerId}`} className="card-master" aria-label={`Профиль мастера ${service.performerName}`}>
+            <span className="avatar">
+              {service.performerAvatarUrl
+                ? <img src={service.performerAvatarUrl} alt="" />
+                : initials(service.performerName)}
+            </span>
+            <div>
+              <div className="master-name">
+                {service.performerName}
+                {service.performerIsVerified && (
+                  <BadgeCheck size={15} className="master-ok" aria-label="Проверенный мастер" />
+                )}
+              </div>
+              <div className="master-role">{service.performerSpecialization || 'Частный мастер'}</div>
+            </div>
+          </Link>
+        )}
 
         <div className="card-bottom">
           <div className="card-price">
