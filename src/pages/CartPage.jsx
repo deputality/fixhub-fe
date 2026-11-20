@@ -170,14 +170,25 @@ export default function CartPage() {
 
     setSubmitting(true)
     try {
-      await createOrder({
-        address: address.trim(),
-        contactPhone: phone.trim(),
-        contactName: name.trim(),
+      const contact = { name: name.trim(), phone: phone.trim(), address: address.trim() }
+      const orders = await createOrder({
+        address: contact.address,
+        contactPhone: contact.phone,
+        contactName: contact.name,
       })
       setCount(0)
-      show('Заказ оформлен')
-      navigate('/orders')
+
+      // фото и единицы измерения нужны странице «Заявки отправлены», в ответе заказа их нет
+      const snapshot = items.map((item) => {
+        const meta = resolveCategoryMeta(item.categoryId, byId)
+        return {
+          serviceId: item.serviceId,
+          unit: item.unit,
+          photo: item.photoUrl || meta.image,
+          color: meta.color,
+        }
+      })
+      navigate('/cart/sent', { replace: true, state: { orders, contact, services: snapshot } })
     } catch (err) {
       if (handleAuthError(err)) return
       setFormError(err?.error ?? 'Не удалось оформить заказ. Попробуйте ещё раз')

@@ -1,6 +1,8 @@
 export async function api(path, { method = 'GET', body, auth = true } = {}) {
   const headers = {}
-  if (body) headers['Content-Type'] = 'application/json'
+  // файлы уходят как FormData, браузер сам ставит нужный Content-Type
+  const isForm = body instanceof FormData
+  if (body && !isForm) headers['Content-Type'] = 'application/json'
 
   const token = localStorage.getItem('token')
   if (auth && token) headers.Authorization = `Bearer ${token}`
@@ -8,7 +10,7 @@ export async function api(path, { method = 'GET', body, auth = true } = {}) {
   const res = await fetch(path, {
     method,
     headers,
-    body: body ? JSON.stringify(body) : undefined,
+    body: body ? (isForm ? body : JSON.stringify(body)) : undefined,
   })
 
   if (res.status === 204) return null

@@ -12,6 +12,17 @@ import OrdersPage from './pages/OrdersPage'
 import CabinetLayout from './components/CabinetLayout'
 import AdminLayout from './components/AdminLayout'
 import AdminPage from './pages/AdminPage'
+import AdminCategories from './pages/AdminCategories'
+import AdminReviews from './pages/AdminReviews'
+import AdminStats from './pages/AdminStats'
+import AdminSettings from './pages/AdminSettings'
+import PerformerLayout from './components/PerformerLayout'
+import PerformerHome from './pages/PerformerHome'
+import { PerformerOrdersPage, PerformerReviewsPage, PerformerServicesPage } from './pages/PerformerSections'
+import ProfilePage from './pages/ProfilePage'
+import PerformerProfilePage from './pages/PerformerProfilePage'
+import OrderSentPage from './pages/OrderSentPage'
+import PerformerPublicPage from './pages/PerformerPublicPage'
 
 function Soon({ title }) {
   return (
@@ -22,21 +33,14 @@ function Soon({ title }) {
   )
 }
 
-function AdminSoon({ title }) {
-  return (
-    <div className="admin-soon">
-      <h1>{title}</h1>
-      <p>Этот раздел появится на следующем этапе.</p>
-    </div>
-  )
-}
-
 export default function App() {
   const { pathname } = useLocation()
   const isAuthPage = pathname === '/login' || pathname === '/register'
   // у админки свой layout с боковым меню, общая шапка и подвал не нужны
   const isAdminPage = pathname === '/admin' || pathname.startsWith('/admin/')
-  const hideChrome = isAuthPage || isAdminPage
+  // у панели мастера тоже свой layout: шапка и боковое меню внутри
+  const isPerformerPage = pathname === '/performer' || pathname.startsWith('/performer/')
+  const hideChrome = isAuthPage || isAdminPage || isPerformerPage
 
   // при переходе на другую страницу возвращаемся наверх
   useEffect(() => {
@@ -48,12 +52,13 @@ export default function App() {
       {!hideChrome && <Header />}
 
       <div className="app-main">
-        <div key={isAuthPage ? 'auth' : isAdminPage ? 'admin' : pathname} className="page-fade">
+        <div key={isAuthPage ? 'auth' : isAdminPage ? 'admin' : isPerformerPage ? 'performer' : pathname} className="page-fade">
         <Routes>
           <Route path="/" element={<CatalogPage />} />
           <Route path="/login" element={<AuthPage />} />
           <Route path="/register" element={<AuthPage />} />
           <Route path="/services/:id" element={<ServicePage />} />
+          <Route path="/performers/:id" element={<PerformerPublicPage />} />
           <Route
             path="/cart"
             element={
@@ -70,7 +75,23 @@ export default function App() {
             }
           >
             <Route path="/orders" element={<OrdersPage />} />
-            <Route path="/profile" element={<Soon title="Профиль" />} />
+            <Route path="/cart/sent" element={<OrderSentPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+          </Route>
+          <Route
+            path="/performer"
+            element={
+              <ProtectedRoute roles={['Performer']}>
+                <PerformerLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<PerformerHome />} />
+            <Route path="services" element={<PerformerServicesPage />} />
+            <Route path="orders" element={<PerformerOrdersPage />} />
+            <Route path="reviews" element={<PerformerReviewsPage />} />
+            <Route path="profile" element={<PerformerProfilePage />} />
+            <Route path="settings" element={<Soon title="Настройки" />} />
           </Route>
           <Route
             path="/admin"
@@ -81,10 +102,10 @@ export default function App() {
             }
           >
             <Route index element={<AdminPage />} />
-            <Route path="categories" element={<AdminSoon title="Категории" />} />
-            <Route path="reviews" element={<AdminSoon title="Отзывы" />} />
-            <Route path="stats" element={<AdminSoon title="Статистика" />} />
-            <Route path="settings" element={<AdminSoon title="Настройки" />} />
+            <Route path="categories" element={<AdminCategories />} />
+            <Route path="reviews" element={<AdminReviews />} />
+            <Route path="stats" element={<AdminStats />} />
+            <Route path="settings" element={<AdminSettings />} />
           </Route>
           <Route path="/how" element={<Soon title="Как это работает" />} />
           <Route path="/about" element={<Soon title="О нас" />} />

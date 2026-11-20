@@ -1,4 +1,4 @@
-import { Camera, GraduationCap, Monitor, SprayCan, Wrench } from 'lucide-react'
+import { Camera, GraduationCap, Monitor, SprayCan, Wrench, Zap } from 'lucide-react'
 import FaucetIcon from '../components/FaucetIcon'
 
 // «сантехник» должна стоять раньше «техник», иначе «Сантехника» попадёт в ремонт техники
@@ -8,6 +8,7 @@ const RULES = [
   { keys: ['клининг', 'уборк'], icon: SprayCan, color: '#16a34a', image: '/categories/cleaning.jpg' },
   { keys: ['репетитор'], icon: GraduationCap, color: '#f59e0b', image: '/categories/tutoring.jpg' },
   { keys: ['фото'], icon: Camera, color: '#ef4444', image: '/categories/photo.jpg' },
+  { keys: ['электрик'], icon: Zap, color: '#eab308', image: null },
   { keys: ['компьютер'], icon: Monitor, color: '#0ea5e9', image: null },
 ]
 

@@ -28,6 +28,15 @@ export function AuthProvider({ children }) {
   const loginWithGoogle = async (accessToken, role) =>
     saveSession(await authApi.googleLogin(accessToken, role))
 
+  // обновить имя и телефон в шапке после сохранения профиля
+  function updateUser(changes) {
+    setUser((prev) => {
+      const next = { ...prev, ...changes }
+      localStorage.setItem('user', JSON.stringify(next))
+      return next
+    })
+  }
+
   function logout() {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
@@ -35,7 +44,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, register, loginWithGoogle, logout }}>
+    <AuthContext.Provider value={{ user, login, register, loginWithGoogle, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   )

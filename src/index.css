@@ -464,7 +464,10 @@ a.btn { display: inline-flex; align-items: center; justify-content: center; }
 .card-master { display: flex; align-items: center; gap: 10px; }
 .avatar { width: 38px; height: 38px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
   border-radius: 50%; background: linear-gradient(135deg, #dbe7ff, #e6e1ff); color: var(--blue); font-size: 13px; font-weight: 700; }
-.master-name { font-size: 13px; font-weight: 600; }
+.card-master:hover .master-name { color: var(--blue); }
+.avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+.master-name { display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600; transition: color .2s; }
+.master-ok { flex-shrink: 0; color: var(--blue); }
 .master-role { font-size: 11px; color: #94a3b8; }
 .card-bottom { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 8px;
   padding-top: 12px; border-top: 1px dashed #e6ecf7; }

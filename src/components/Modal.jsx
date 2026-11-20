@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import './Modal.css'
 
@@ -14,7 +15,8 @@ export default function Modal({ title, onClose, children }) {
     }
   }, [onClose])
 
-  return (
+  // рисуем окно прямо в body: так затемнение всегда на весь экран, даже внутри карточек с анимацией
+  return createPortal(
     <div className="modal-overlay" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
       <div className="modal" role="dialog" aria-modal="true" aria-label={title}>
         <div className="modal-head">
@@ -25,6 +27,7 @@ export default function Modal({ title, onClose, children }) {
         </div>
         {children}
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }
