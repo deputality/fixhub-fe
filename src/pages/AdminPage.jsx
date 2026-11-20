@@ -453,21 +453,21 @@ function UsersPanel({ onAuthError }) {
                 const busy = busyId === u.id
                 return (
                   <tr key={u.id}>
-                    <td className="cell-id">#{u.id}</td>
-                    <td>
+                    <td className="cell-id" data-label="ID">#{u.id}</td>
+                    <td className="cell-main">
                       <div className="cell-email">
                         <span className="mini-avatar">{initials(u.fullName)}</span>
-                        <a href={`mailto:${u.email}`}>{u.email}</a>
+                        <a href={`mailto:${u.email}`} title={u.email}>{u.email}</a>
                       </div>
                     </td>
-                    <td>{u.fullName}</td>
-                    <td><span className={`pill ${role.cls}`}>{role.label}</span></td>
-                    <td>
+                    <td data-label="Имя">{u.fullName}</td>
+                    <td data-label="Роль"><span className={`pill ${role.cls}`}>{role.label}</span></td>
+                    <td data-label="Статус">
                       <span className={`pill ${u.isBlocked ? 'st-blocked' : 'st-active'}`}>
                         {u.isBlocked ? 'Заблокирован' : 'Активен'}
                       </span>
                     </td>
-                    <td>
+                    <td data-label="Проверка">
                       {u.role === 'Performer' ? (
                         <span className={`pill ${u.isVerified ? 'st-verified' : 'st-unverified'}`}>
                           {u.isVerified ? 'Проверен' : 'Не проверен'}
@@ -476,8 +476,8 @@ function UsersPanel({ onAuthError }) {
                         <span className="cell-none">—</span>
                       )}
                     </td>
-                    <td className="cell-date">{formatDateTime(u.createdAt)}</td>
-                    <td>
+                    <td className="cell-date" data-label="Регистрация">{formatDateTime(u.createdAt)}</td>
+                    <td className="cell-act">
                       {u.role === 'Admin' ? (
                         <span className="cell-none">—</span>
                       ) : (

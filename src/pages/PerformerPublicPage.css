@@ -36,7 +36,8 @@
 .mp-about p { margin: 0; font-size: 15px; line-height: 1.6; color: #475569; white-space: pre-line; }
 
 .mp-services h2 span { padding: 2px 10px; border-radius: 999px; background: #e4edff; color: var(--blue); font-size: 13px; font-weight: 600; }
-.mp-empty { margin: 0; padding: 32px 0; text-align: center; color: var(--muted); font-size: 14px; }
+.mp-empty { margin: 0; padding: 36px 16px; text-align: center; color: var(--muted); font-size: 14px;
+  background: #fff; border: 1px dashed #d5def0; border-radius: 14px; }
 
 @media (max-width: 900px) {
   .mp-head { flex-wrap: wrap; }
@@ -44,5 +45,13 @@
   .mp-stat { padding: 0 20px 0 0; }
 }
 @media (max-width: 560px) {
-  .mp-head { flex-direction: column; align-items: flex-start; }
+  .mp-page { padding-bottom: 36px; }
+  .mp-card { padding: 18px; }
+  .mp-head { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .mp-ava { width: 84px; height: 84px; font-size: 28px; }
+  .mp-main h1 { font-size: 22px; overflow-wrap: anywhere; }
+  .mp-role { font-size: 14px; }
+  .mp-stats { gap: 8px; }
+  .mp-stat b { font-size: 22px; }
+  .mp-about h2, .mp-services h2 { font-size: 18px; }
 }

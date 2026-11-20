@@ -125,7 +125,7 @@ export default function PerformerPublicPage() {
 
         <div className="mp-stats">
           <div className="mp-stat">
-            <b><Star size={20} fill="#f59e0b" stroke="#f59e0b" />{p.rating != null ? Number(p.rating).toFixed(1) : '—'}</b>
+            <b><Star size={20} fill={p.rating != null ? '#f59e0b' : 'none'} stroke={p.rating != null ? '#f59e0b' : '#cbd5e1'} />{p.rating != null ? Number(p.rating).toFixed(1) : '—'}</b>
             <span>{p.reviewCount > 0
               ? `${p.reviewCount} ${plural(p.reviewCount, 'отзыв', 'отзыва', 'отзывов')}`
               : 'Пока нет отзывов'}</span>
