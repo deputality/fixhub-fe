@@ -2,11 +2,11 @@
 
 .adm-side { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column;
   padding: 20px 12px 22px; background: #0b1a4a; }
-/* логотип тёмный, поэтому кладём его на светлую плашку */
-.adm-logo { align-self: flex-start; display: inline-flex; margin: 0 0 24px 2px; padding: 6px 10px;
-  border-radius: 10px; background: #fff; transition: transform .3s var(--ease-out); }
+/* логотип для тёмного фона (белое «Hub»), плашка не нужна */
+.adm-logo { align-self: flex-start; display: inline-flex; margin: 0 0 24px 2px; padding: 4px 2px;
+  transition: transform .3s var(--ease-out); }
 .adm-logo:hover { transform: scale(1.04); }
-.adm-logo img { display: block; height: 28px; width: auto; }
+.adm-logo img { display: block; height: 40px; width: auto; }
 
 .adm-nav, .adm-bottom { display: flex; flex-direction: column; gap: 6px; }
 .adm-bottom { margin-top: auto; }

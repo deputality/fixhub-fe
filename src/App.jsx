@@ -20,6 +20,7 @@ import PerformerLayout from './components/PerformerLayout'
 import PerformerHome from './pages/PerformerHome'
 import { PerformerOrdersPage, PerformerReviewsPage, PerformerServicesPage } from './pages/PerformerSections'
 import ProfilePage from './pages/ProfilePage'
+import PerformerProfilePage from './pages/PerformerProfilePage'
 import OrderSentPage from './pages/OrderSentPage'
 
 function Soon({ title }) {
@@ -87,7 +88,8 @@ export default function App() {
             <Route path="services" element={<PerformerServicesPage />} />
             <Route path="orders" element={<PerformerOrdersPage />} />
             <Route path="reviews" element={<PerformerReviewsPage />} />
-            <Route path="profile" element={<ProfilePage />} />
+            <Route path="profile" element={<PerformerProfilePage />} />
+            <Route path="settings" element={<Soon title="Настройки" />} />
           </Route>
           <Route
             path="/admin"

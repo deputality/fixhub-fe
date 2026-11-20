@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import NotificationsBell from './NotificationsBell'
 import './AdminLayout.css'
 
-const LOGO_SRC = '/logo.svg'
+const LOGO_SRC = '/logo-admin.svg'
 
 const NAV = [
   { to: '/admin', label: 'Пользователи', icon: Users, end: true },
