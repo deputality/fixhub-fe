@@ -12,25 +12,21 @@ import OrdersPage from './pages/OrdersPage'
 import CabinetLayout from './components/CabinetLayout'
 import AdminLayout from './components/AdminLayout'
 import AdminPage from './pages/AdminPage'
+import AdminCategories from './pages/AdminCategories'
+import AdminReviews from './pages/AdminReviews'
+import AdminStats from './pages/AdminStats'
+import AdminSettings from './pages/AdminSettings'
 import PerformerLayout from './components/PerformerLayout'
 import PerformerHome from './pages/PerformerHome'
 import { PerformerOrdersPage, PerformerReviewsPage, PerformerServicesPage } from './pages/PerformerSections'
 import ProfilePage from './pages/ProfilePage'
+import OrderSentPage from './pages/OrderSentPage'
 
 function Soon({ title }) {
   return (
     <div className="container soon">
       <h1>{title}</h1>
       <p>Эта страница появится на следующем этапе.</p>
-    </div>
-  )
-}
-
-function AdminSoon({ title }) {
-  return (
-    <div className="admin-soon">
-      <h1>{title}</h1>
-      <p>Этот раздел появится на следующем этапе.</p>
     </div>
   )
 }
@@ -76,6 +72,7 @@ export default function App() {
             }
           >
             <Route path="/orders" element={<OrdersPage />} />
+            <Route path="/cart/sent" element={<OrderSentPage />} />
             <Route path="/profile" element={<ProfilePage />} />
           </Route>
           <Route
@@ -101,10 +98,10 @@ export default function App() {
             }
           >
             <Route index element={<AdminPage />} />
-            <Route path="categories" element={<AdminSoon title="Категории" />} />
-            <Route path="reviews" element={<AdminSoon title="Отзывы" />} />
-            <Route path="stats" element={<AdminSoon title="Статистика" />} />
-            <Route path="settings" element={<AdminSoon title="Настройки" />} />
+            <Route path="categories" element={<AdminCategories />} />
+            <Route path="reviews" element={<AdminReviews />} />
+            <Route path="stats" element={<AdminStats />} />
+            <Route path="settings" element={<AdminSettings />} />
           </Route>
           <Route path="/how" element={<Soon title="Как это работает" />} />
           <Route path="/about" element={<Soon title="О нас" />} />

@@ -1,6 +1,7 @@
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { Bell, ChartColumn, LayoutGrid, LogOut, Settings, Star, Users } from 'lucide-react'
+import { ChartColumn, LayoutGrid, LogOut, Settings, Star, Users } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import NotificationsBell from './NotificationsBell'
 import './AdminLayout.css'
 
 const LOGO_SRC = '/logo.svg'
@@ -12,8 +13,12 @@ const NAV = [
   { to: '/admin/stats', label: 'Статистика', icon: ChartColumn },
 ]
 
+function initials(name = '') {
+  return name.split(' ').filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase()
+}
+
 export default function AdminLayout() {
-  const { logout } = useAuth()
+  const { user, logout } = useAuth()
   const navigate = useNavigate()
 
   function handleLogout() {
@@ -44,9 +49,11 @@ export default function AdminLayout() {
 
       <div className="adm-main">
         <header className="adm-top">
-          <button type="button" className="adm-bell" aria-label="Уведомления">
-            <Bell size={28} strokeWidth={1.6} />
-          </button>
+          <NotificationsBell />
+          <Link to="/admin/settings" className="adm-user" aria-label="Настройки профиля">
+            <span className="adm-avatar">{initials(user?.fullName)}</span>
+            <span className="adm-role">Администратор</span>
+          </Link>
         </header>
 
         <div className="adm-content">

@@ -23,7 +23,8 @@
   cursor: pointer; transition: background .2s, transform .25s var(--spring); }
 .adm-bell:hover { background: #eef3fd; transform: rotate(-12deg) scale(1.08); }
 
-.adm-menu-btn { gap: 14px; padding: 4px 10px 4px 4px; }
+.adm-user { display: flex; align-items: center; gap: 14px; padding: 4px 10px 4px 4px; border-radius: 999px; transition: background .2s; }
+.adm-user:hover { background: #eef3fd; }
 .adm-avatar { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;
   border-radius: 50%; background: #22d3ee; color: #fff; font-size: 22px; font-weight: 500; }
 .adm-role { font-size: 13px; color: #1e3a8a; }

@@ -3,15 +3,15 @@ export default function Button({
   block = false,
   loading = false,
   disabled,
+  className = '',
   children,
   ...props
 }) {
+  // className дописываем к базовым классам, иначе он затирает стили кнопки
+  const classes = `btn btn-${variant}${block ? ' btn-block' : ''}${loading ? ' is-loading' : ''}${className ? ` ${className}` : ''}`
+
   return (
-    <button
-      className={`btn btn-${variant}${block ? ' btn-block' : ''}${loading ? ' is-loading' : ''}`}
-      disabled={disabled || loading}
-      {...props}
-    >
+    <button className={classes} disabled={disabled || loading} {...props}>
       {loading && <span className="spinner" aria-hidden="true" />}
       {children}
     </button>
