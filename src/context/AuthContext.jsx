@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import * as authApi from '../api/auth'
 
 const AuthContext = createContext(null)
@@ -8,9 +8,22 @@ export const useAuth = () => useContext(AuthContext)
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('user')
-    return saved ? JSON.parse(saved) : null
+    try {
+      const saved = localStorage.getItem('user')
+      return saved ? JSON.parse(saved) : null
+    } catch {
+      // повреждённое значение в localStorage не должно ронять приложение
+      localStorage.removeItem('user')
+      return null
+    }
   })
+
+  // сервер ответил 401 (токен истёк): выходим и в памяти, не только в localStorage
+  useEffect(() => {
+    const onUnauthorized = () => setUser(null)
+    window.addEventListener('fixhub:unauthorized', onUnauthorized)
+    return () => window.removeEventListener('fixhub:unauthorized', onUnauthorized)
+  }, [])
 
   function saveSession({ token, user }) {
     localStorage.setItem('token', token)

@@ -20,6 +20,8 @@ export async function api(path, { method = 'GET', body, auth = true } = {}) {
     if (res.status === 401 && auth) {
       localStorage.removeItem('token')
       localStorage.removeItem('user')
+      // AuthContext слушает это событие и сбрасывает пользователя в памяти
+      window.dispatchEvent(new Event('fixhub:unauthorized'))
     }
     throw data ?? { status: res.status, error: 'Ошибка запроса' }
   }

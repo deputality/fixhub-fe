@@ -23,19 +23,17 @@ import ProfilePage from './pages/ProfilePage'
 import PerformerProfilePage from './pages/PerformerProfilePage'
 import OrderSentPage from './pages/OrderSentPage'
 import PerformerPublicPage from './pages/PerformerPublicPage'
-
-function Soon({ title }) {
-  return (
-    <div className="container soon">
-      <h1>{title}</h1>
-      <p>Эта страница появится на следующем этапе.</p>
-    </div>
-  )
-}
+import HowItWorksPage from './pages/HowItWorksPage'
+import AboutPage from './pages/AboutPage'
+import ContactsPage from './pages/ContactsPage'
+import NotFoundPage from './pages/NotFoundPage'
+import ForgotPasswordPage from './pages/ForgotPasswordPage'
+import ResetPasswordPage from './pages/ResetPasswordPage'
+import PerformerSettingsPage from './pages/PerformerSettingsPage'
 
 export default function App() {
   const { pathname } = useLocation()
-  const isAuthPage = pathname === '/login' || pathname === '/register'
+  const isAuthPage = ['/login', '/register', '/forgot-password', '/reset-password'].includes(pathname)
   // у админки свой layout с боковым меню, общая шапка и подвал не нужны
   const isAdminPage = pathname === '/admin' || pathname.startsWith('/admin/')
   // у панели мастера тоже свой layout: шапка и боковое меню внутри
@@ -57,6 +55,8 @@ export default function App() {
           <Route path="/" element={<CatalogPage />} />
           <Route path="/login" element={<AuthPage />} />
           <Route path="/register" element={<AuthPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/services/:id" element={<ServicePage />} />
           <Route path="/performers/:id" element={<PerformerPublicPage />} />
           <Route
@@ -91,7 +91,7 @@ export default function App() {
             <Route path="orders" element={<PerformerOrdersPage />} />
             <Route path="reviews" element={<PerformerReviewsPage />} />
             <Route path="profile" element={<PerformerProfilePage />} />
-            <Route path="settings" element={<Soon title="Настройки" />} />
+            <Route path="settings" element={<PerformerSettingsPage />} />
           </Route>
           <Route
             path="/admin"
@@ -107,9 +107,10 @@ export default function App() {
             <Route path="stats" element={<AdminStats />} />
             <Route path="settings" element={<AdminSettings />} />
           </Route>
-          <Route path="/how" element={<Soon title="Как это работает" />} />
-          <Route path="/about" element={<Soon title="О нас" />} />
-          <Route path="/contacts" element={<Soon title="Контакты" />} />
+          <Route path="/how" element={<HowItWorksPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/contacts" element={<ContactsPage />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
         </div>
       </div>

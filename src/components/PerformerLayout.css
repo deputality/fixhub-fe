@@ -52,6 +52,11 @@
 .bell-item.unread { background: #f3f7ff; color: var(--navy); font-weight: 500; }
 .bell-item small { font-size: 11px; font-weight: 400; color: #94a3b8; }
 
+/* на телефоне список уведомлений привязан к краям экрана, а не к колокольчику: иначе уезжает за левый край */
+@media (max-width: 560px) {
+  .bell-list { position: fixed; left: 12px; right: 12px; width: auto; }
+}
+
 @media (max-width: 900px) {
   .pf-top { padding: 0 14px; gap: 14px; }
   .pf-logo img { height: 32px; }

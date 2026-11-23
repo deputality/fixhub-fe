@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { CircleAlert, ClipboardList, Star } from 'lucide-react'
+import { CircleAlert, ClipboardList, Phone, Star } from 'lucide-react'
 import { cancelOrder, createReview, getMyOrders, getMyReviews } from '../api/orders'
 import { getCategories, getService } from '../api/catalog'
 import { useAuth } from '../context/AuthContext'
@@ -264,6 +264,11 @@ export default function OrdersPage() {
           <span className="avatar">{initials(order.performerName)}</span>
           <div>
             <div className="ord-master-name">{order.performerName}</div>
+            {order.performerPhone && (
+              <a className="ord-master-phone" href={`tel:${order.performerPhone.replace(/[^\d+]/g, '')}`}>
+                <Phone size={13} /> {order.performerPhone}
+              </a>
+            )}
             {service?.performerRating != null && (
               <div className="ord-master-rate">
                 <Star size={13} fill="#f59e0b" stroke="#f59e0b" />

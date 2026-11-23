@@ -55,7 +55,7 @@ export default function CartPage() {
   const [formError, setFormError] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
-  const minDate = useMemo(todayIso, [])
+  const minDate = useMemo(() => todayIso(), [])
 
   // свежие значения для обработчиков без лишних зависимостей эффекта
   const live = useRef({})

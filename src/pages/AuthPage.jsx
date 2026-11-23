@@ -57,8 +57,18 @@ function homeFor(role) {
   return '/'
 }
 
+// куда вести после входа: на страницу, с которой выкинуло на вход, если она подходит роли
+function targetFor(role, from) {
+  if (typeof from !== 'string' || !from.startsWith('/')) return homeFor(role)
+  const isAdminPath = from === '/admin' || from.startsWith('/admin/')
+  const isPerformerPath = from === '/performer' || from.startsWith('/performer/')
+  if (role === 'Admin') return isAdminPath ? from : homeFor(role)
+  if (role === 'Performer') return isPerformerPath ? from : homeFor(role)
+  return isAdminPath || isPerformerPath || from.startsWith('/login') || from.startsWith('/register') ? homeFor(role) : from
+}
+
 export default function AuthPage() {
-  const { pathname } = useLocation()
+  const { pathname, state } = useLocation()
   const isRegister = pathname === '/register'
   const { login, register, loginWithGoogle } = useAuth()
   const navigate = useNavigate()
@@ -106,7 +116,7 @@ export default function AuthPage() {
         ? await register({ email: email.trim(), password, fullName: fullName.trim(), role })
         : await login(email.trim(), password)
       // администратор попадает сразу в свою панель
-      navigate(homeFor(user.role))
+      navigate(targetFor(user.role, state?.from))
     } catch (err) {
       setError(err.error ?? 'Не удалось выполнить запрос. Попробуйте ещё раз')
     } finally {
@@ -121,7 +131,7 @@ export default function AuthPage() {
       const accessToken = await requestGoogleAccessToken(GOOGLE_CLIENT_ID)
       // роль отправляем только со страницы регистрации
       const user = await loginWithGoogle(accessToken, isRegister ? role : undefined)
-      navigate(homeFor(user.role))
+      navigate(targetFor(user.role, state?.from))
     } catch (err) {
       // окно закрыто пользователем — это не ошибка
       if (err?.type === 'popup_closed' || err?.error === 'access_denied') return
@@ -234,6 +244,10 @@ export default function AuthPage() {
                 </button>
               }
             />
+
+            {!isRegister && (
+              <div className="forgot-row"><Link to="/forgot-password">Забыли пароль?</Link></div>
+            )}
 
             {/* выбор роли: плавно появляется только при регистрации */}
             <div className={`collapse${isRegister ? ' open' : ''}`} aria-hidden={!isRegister}>

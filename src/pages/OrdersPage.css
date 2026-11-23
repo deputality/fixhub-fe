@@ -29,6 +29,8 @@
 
 .ord-master { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .ord-master-name { font-size: 13px; font-weight: 500; }
+.ord-master-phone { display: inline-flex; align-items: center; gap: 5px; margin-top: 3px; font-size: 12px; color: var(--blue); }
+.ord-master-phone:hover { text-decoration: underline; }
 .ord-master-rate { display: flex; align-items: center; gap: 4px; margin-top: 3px; font-size: 12px; }
 .ord-master-rate i { font-style: normal; color: #94a3b8; }
 
