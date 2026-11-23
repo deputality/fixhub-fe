@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
-import { ShoppingCart } from 'lucide-react'
+import { Link, NavLink, useLocation } from 'react-router-dom'
+import { Menu, ShoppingCart, X } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
 import UserMenu from './UserMenu'
@@ -13,6 +13,17 @@ export default function Header() {
   const { count } = useCart()
   const showCart = !user || user.role === 'Client'
   const [scrolled, setScrolled] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const { pathname } = useLocation()
+
+  // меню закрывается при переходе на другую страницу и по Escape
+  useEffect(() => setMenuOpen(false), [pathname])
+  useEffect(() => {
+    if (!menuOpen) return undefined
+    const onKey = (e) => e.key === 'Escape' && setMenuOpen(false)
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [menuOpen])
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8)
@@ -59,8 +70,24 @@ export default function Header() {
               <Link to="/register" className="btn btn-primary btn-sm">Регистрация</Link>
             </>
           )}
+
+          <button
+            type="button" className="burger" aria-label={menuOpen ? 'Закрыть меню' : 'Открыть меню'}
+            aria-expanded={menuOpen} onClick={() => setMenuOpen((o) => !o)}
+          >
+            {menuOpen ? <X size={26} /> : <Menu size={26} />}
+          </button>
         </div>
       </div>
+
+      {menuOpen && (
+        <nav className="mobile-nav" aria-label="Меню">
+          <NavLink to="/" end>Каталог</NavLink>
+          <NavLink to="/how">Как это работает</NavLink>
+          <NavLink to="/about">О нас</NavLink>
+          <NavLink to="/contacts">Контакты</NavLink>
+        </nav>
+      )}
     </header>
   )
 }

@@ -235,6 +235,10 @@ export default function AuthPage() {
               }
             />
 
+            {!isRegister && (
+              <div className="forgot-row"><Link to="/forgot-password">Забыли пароль?</Link></div>
+            )}
+
             {/* выбор роли: плавно появляется только при регистрации */}
             <div className={`collapse${isRegister ? ' open' : ''}`} aria-hidden={!isRegister}>
               <div className="collapse-inner">

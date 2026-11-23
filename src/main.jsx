@@ -6,6 +6,7 @@ import { CartProvider } from './context/CartContext'
 import { ToastProvider } from './context/ToastContext'
 import App from './App'
 import './index.css'
+import './responsive.css'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
