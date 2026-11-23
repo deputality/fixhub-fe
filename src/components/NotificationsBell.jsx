@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Bell } from 'lucide-react'
 import {
@@ -17,6 +17,7 @@ export default function NotificationsBell() {
   const [open, setOpen] = useState(false)
   const [items, setItems] = useState(null)
   const ref = useRef(null)
+  const [phoneTop, setPhoneTop] = useState(null)
 
   const refreshCount = useCallback(() => {
     getUnreadCount().then((d) => setCount(d.count)).catch(() => {})
@@ -28,6 +29,23 @@ export default function NotificationsBell() {
     const t = setInterval(refreshCount, POLL_MS)
     return () => clearInterval(t)
   }, [refreshCount])
+
+  // на телефоне список растягивается на ширину экрана прямо под колокольчиком,
+  // иначе он уезжает за левый край
+  useLayoutEffect(() => {
+    if (!open || !window.matchMedia('(max-width: 560px)').matches) { setPhoneTop(null); return }
+    const place = () => {
+      const r = ref.current?.getBoundingClientRect()
+      if (r) setPhoneTop(Math.round(r.bottom + 10))
+    }
+    place()
+    window.addEventListener('resize', place)
+    window.addEventListener('scroll', place, true)
+    return () => {
+      window.removeEventListener('resize', place)
+      window.removeEventListener('scroll', place, true)
+    }
+  }, [open])
 
   useEffect(() => {
     if (!open) return
@@ -77,7 +95,7 @@ export default function NotificationsBell() {
       </button>
 
       {open && (
-        <div className="bell-list">
+        <div className="bell-list" style={phoneTop != null ? { top: phoneTop, maxHeight: `calc(100vh - ${phoneTop + 16}px)` } : undefined}>
           <div className="bell-head">
             <b>Уведомления</b>
             {count > 0 && <button type="button" onClick={readAll}>Прочитать все</button>}

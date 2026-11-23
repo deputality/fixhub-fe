@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { CircleAlert, Eye, EyeOff, Info, LayoutGrid, Plus, Search } from 'lucide-react'
+import { Check, CircleAlert, Eye, EyeOff, Info, LayoutGrid, Plus, RotateCcw, Search } from 'lucide-react'
 import {
   createCategory, deleteCategory, getAdminCategories, hideCategory, showCategory, updateCategory,
 } from '../api/admin'
 import { useToast } from '../context/ToastContext'
+import { CATEGORY_ICONS, COLOR_PRESETS, HEX_COLOR } from '../utils/categoryIcons'
 import { resolveCategoryMeta } from '../utils/categoryMeta'
 import { useAuthGuard } from '../utils/useAuthGuard'
 import Button from '../components/Button'
@@ -101,11 +102,92 @@ function StatCard({ icon, tone, label, value, note, loading }) {
   )
 }
 
+// Выбор значка и цвета категории с живым предпросмотром (так её увидят клиенты в каталоге).
+// Пустые значения = «автоматически»: стиль берётся от родителя или подбирается по названию.
+function StylePicker({ draft, all, icon, color, onIcon, onColor }) {
+  const meta = useMemo(() => {
+    const byId = Object.fromEntries(all.map((c) => [c.id, c]))
+    byId[draft.id] = { ...draft, icon, color }
+    return resolveCategoryMeta(draft.id, byId)
+  }, [all, draft, icon, color])
+
+  const Icon = meta.icon
+  const custom = HEX_COLOR.test(color) && !COLOR_PRESETS.includes(color.toLowerCase())
+
+  return (
+    <div className="as-style">
+      <div className="as-style-head">
+        <span className="field-label">Оформление</span>
+        {(icon || color) && (
+          <button type="button" className="as-style-reset" onClick={() => { onIcon(''); onColor('') }}>
+            <RotateCcw size={13} /> Подобрать автоматически
+          </button>
+        )}
+      </div>
+
+      <div className="as-preview" aria-label="Предпросмотр">
+        <span className="chip-icon" style={{ '--c': meta.color }}><Icon size={22} /></span>
+        <span className="as-preview-name">{draft.name.trim() || 'Название категории'}</span>
+        <span className="as-preview-tile" style={{ '--cat': meta.color }} aria-hidden="true"><Icon size={20} /></span>
+      </div>
+
+      <div className="as-style-block">
+        <span className="as-style-label">Иконка{!icon && <em>сейчас подобрана автоматически</em>}</span>
+        <div className="as-icons" role="group" aria-label="Иконка категории">
+          {CATEGORY_ICONS.map(({ key, label, icon: I }) => (
+            <button
+              key={key}
+              type="button"
+              className={`as-icon-btn${icon === key ? ' active' : ''}`}
+              aria-pressed={icon === key}
+              aria-label={label}
+              title={label}
+              onClick={() => onIcon(icon === key ? '' : key)}
+            >
+              <I size={20} />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="as-style-block">
+        <span className="as-style-label">Цвет{!color && <em>сейчас подобран автоматически</em>}</span>
+        <div className="as-colors" role="group" aria-label="Цвет категории">
+          {COLOR_PRESETS.map((c) => (
+            <button
+              key={c}
+              type="button"
+              className={`as-color-btn${color.toLowerCase() === c ? ' active' : ''}`}
+              style={{ '--c': c }}
+              aria-pressed={color.toLowerCase() === c}
+              aria-label={`Цвет ${c}`}
+              onClick={() => onColor(color.toLowerCase() === c ? '' : c)}
+            >
+              <Check size={15} strokeWidth={3} />
+            </button>
+          ))}
+          <label className={`as-color-own${custom ? ' active' : ''}`} style={custom ? { '--c': color } : undefined} title="Свой цвет">
+            <input
+              type="color"
+              value={HEX_COLOR.test(color) ? color : meta.color}
+              onChange={(e) => onColor(e.target.value)}
+              aria-label="Свой цвет"
+            />
+            {custom && <Check size={15} strokeWidth={3} />}
+          </label>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function CategoryForm({ category, all, onClose, onSaved, onDelete, onAuthError }) {
   const { show } = useToast()
   const isEdit = Boolean(category?.id)
   const [name, setName] = useState(category?.name ?? '')
   const [parentId, setParentId] = useState(category?.parentId ?? '')
+  const [icon, setIcon] = useState(category?.icon ?? '')
+  const [color, setColor] = useState(category?.color ?? '')
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
 
@@ -124,7 +206,12 @@ function CategoryForm({ category, all, onClose, onSaved, onDelete, onAuthError }
 
     setSaving(true)
     setError('')
-    const body = { name: name.trim(), parentId: parentId === '' ? null : Number(parentId) }
+    const body = {
+      name: name.trim(),
+      parentId: parentId === '' ? null : Number(parentId),
+      icon: icon || null,
+      color: color || null,
+    }
     try {
       if (isEdit) await updateCategory(category.id, body)
       else await createCategory(body)
@@ -138,7 +225,7 @@ function CategoryForm({ category, all, onClose, onSaved, onDelete, onAuthError }
   }
 
   return (
-    <Modal title={isEdit ? 'Редактировать категорию' : 'Новая категория'} onClose={onClose}>
+    <Modal size="lg" title={isEdit ? 'Редактировать категорию' : 'Новая категория'} onClose={onClose}>
       <form onSubmit={submit} noValidate>
         {error && <div className="form-alert as-form-alert" role="alert"><CircleAlert size={18} /><span>{error}</span></div>}
 
@@ -152,6 +239,15 @@ function CategoryForm({ category, all, onClose, onSaved, onDelete, onAuthError }
             <label className="field-label" htmlFor="cat-parent">Родительская категория</label>
             <Select id="cat-parent" value={parentId} onChange={setParentId} options={options} />
           </div>
+
+          <StylePicker
+            draft={{ id: category?.id ?? -1, name, parentId: parentId === '' ? null : Number(parentId) }}
+            all={all}
+            icon={icon}
+            color={color}
+            onIcon={setIcon}
+            onColor={setColor}
+          />
         </div>
 
         <div className="modal-actions as-modal-actions">
