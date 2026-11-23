@@ -6,8 +6,11 @@ import {
 import { useToast } from '../../context/ToastContext'
 import { useAuthGuard } from '../../utils/useAuthGuard'
 import Button from '../../components/Button'
+import ChatButton from '../../components/ChatButton'
 import Modal from '../../components/Modal'
+import OrderChat from '../../components/OrderChat'
 import Pagination from '../../components/Pagination'
+import { useUnreadChats } from '../../utils/useUnreadChats'
 
 const PAGE_SIZE = 5
 
@@ -57,6 +60,8 @@ export default function OrdersPanel({ onChanged }) {
   const [page, setPage] = useState(1)
   const [busyId, setBusyId] = useState(null)
   const [rejectTarget, setRejectTarget] = useState(null)
+  const [chatOrder, setChatOrder] = useState(null)
+  const { unread, refresh: refreshUnread } = useUnreadChats()
 
   useEffect(() => {
     let cancelled = false
@@ -190,7 +195,10 @@ export default function OrdersPanel({ onChanged }) {
                   <span className="avatar">{order.clientName.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase()}</span>
                   <div>
                     <div className="pf-order-client-name">{order.contactName || order.clientName}</div>
-                    <div className="pf-order-phone"><Phone size={13} /> {order.contactPhone}</div>
+                    <div className="pf-order-phone">
+                      <Phone size={13} />{' '}
+                      <a href={`tel:${order.contactPhone.replace(/[^\d+]/g, '')}`}>{order.contactPhone}</a>
+                    </div>
                   </div>
                 </div>
 
@@ -201,7 +209,10 @@ export default function OrdersPanel({ onChanged }) {
 
                 <div className="pf-order-sum">{order.totalAmount} BYN</div>
 
-                <div className="pf-order-actions">{renderActions(order)}</div>
+                <div className="pf-order-actions">
+                  {renderActions(order)}
+                  <ChatButton count={unread[order.id]} onClick={() => setChatOrder(order)} />
+                </div>
               </li>
             )
           })}
@@ -213,6 +224,16 @@ export default function OrdersPanel({ onChanged }) {
           <span className="pf-total">Всего заказов: {orders.length}</span>
           <Pagination page={current} totalPages={totalPages} onChange={setPage} />
         </div>
+      )}
+
+      {chatOrder && (
+        <OrderChat
+          order={chatOrder}
+          title={chatOrder.items[0]?.serviceTitle}
+          peerName={chatOrder.contactName || chatOrder.clientName}
+          peerPhone={chatOrder.contactPhone}
+          onClose={() => { setChatOrder(null); refreshUnread() }}
+        />
       )}
 
       {rejectTarget && (
