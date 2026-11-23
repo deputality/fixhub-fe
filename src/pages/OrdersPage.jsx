@@ -6,7 +6,10 @@ import { getCategories, getService } from '../api/catalog'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { resolveCategoryMeta } from '../utils/categoryMeta'
+import { useUnreadChats } from '../utils/useUnreadChats'
 import Button from '../components/Button'
+import ChatButton from '../components/ChatButton'
+import OrderChat from '../components/OrderChat'
 import Modal from '../components/Modal'
 import Pagination from '../components/Pagination'
 import './OrdersPage.css'
@@ -138,6 +141,8 @@ export default function OrdersPage() {
   const [cancelTarget, setCancelTarget] = useState(null)
   const [cancelBusy, setCancelBusy] = useState(false)
   const [reviewTarget, setReviewTarget] = useState(null)
+  const [chatOrder, setChatOrder] = useState(null)
+  const { unread, refresh: refreshUnread } = useUnreadChats()
 
   const live = useRef({})
   useEffect(() => { live.current = { logout, navigate, show } })
@@ -215,6 +220,7 @@ export default function OrdersPage() {
 
     return (
       <>
+        <ChatButton count={unread[order.id]} onClick={() => setChatOrder(order)} />
         {order.status === 'New' && (
           <button type="button" className="ord-btn ord-btn-cancel" onClick={() => setCancelTarget(order)}>
             Отменить
@@ -268,6 +274,9 @@ export default function OrdersPage() {
               <a className="ord-master-phone" href={`tel:${order.performerPhone.replace(/[^\d+]/g, '')}`}>
                 <Phone size={13} /> {order.performerPhone}
               </a>
+            )}
+            {!order.performerPhone && order.status === 'New' && (
+              <div className="ord-master-hint">Телефон мастера появится после подтверждения заказа</div>
             )}
             {service?.performerRating != null && (
               <div className="ord-master-rate">
@@ -367,6 +376,17 @@ export default function OrdersPage() {
             <Button variant="danger" onClick={confirmCancel} loading={cancelBusy}>Отменить заказ</Button>
           </div>
         </Modal>
+      )}
+
+      {chatOrder && (
+        <OrderChat
+          order={chatOrder}
+          title={chatOrder.items[0]?.serviceTitle}
+          peerName={chatOrder.performerName}
+          peerPhone={chatOrder.performerPhone}
+          peerHint="Телефон мастера станет виден после подтверждения заказа"
+          onClose={() => { setChatOrder(null); refreshUnread() }}
+        />
       )}
 
       {reviewTarget && (
