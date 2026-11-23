@@ -39,19 +39,26 @@ export default function PerformerPublicPage() {
   const { addToCart } = useCart()
   const servicesRef = useRef(null)
 
-  const [state, setState] = useState({ status: 'loading', performer: null, error: '' })
+  // результат загрузки помнит, для какого мастера он получен: пока id другой, показываем загрузку
+  const [loaded, setLoaded] = useState({ id: null, performer: null, error: '' })
   const [categories, setCategories] = useState([])
-  const [page, setPage] = useState(1)
+  // номер страницы услуг тоже привязан к мастеру и сбрасывается на первую при смене id
+  const [pageState, setPageState] = useState({ id: null, page: 1 })
+  const page = pageState.id === id ? pageState.page : 1
+  const setPage = (next) => setPageState({ id, page: next })
+
+  let state
+  if (loaded.id !== id) state = { status: 'loading', performer: null, error: '' }
+  else if (loaded.error) state = { status: 'error', performer: null, error: loaded.error }
+  else state = { status: 'ready', performer: loaded.performer, error: '' }
   const [services, setServices] = useState({ key: null, data: null, error: '' })
 
   useEffect(() => {
     let cancelled = false
-    setState({ status: 'loading', performer: null, error: '' })
-    setPage(1)
     getPerformer(id)
-      .then((performer) => { if (!cancelled) setState({ status: 'ready', performer, error: '' }) })
+      .then((performer) => { if (!cancelled) setLoaded({ id, performer, error: '' }) })
       .catch((err) => {
-        if (!cancelled) setState({ status: 'error', performer: null, error: err?.error ?? 'Не удалось загрузить профиль мастера' })
+        if (!cancelled) setLoaded({ id, performer: null, error: err?.error ?? 'Не удалось загрузить профиль мастера' })
       })
     getCategories().then((c) => { if (!cancelled) setCategories(c) }).catch(() => {})
     return () => { cancelled = true }

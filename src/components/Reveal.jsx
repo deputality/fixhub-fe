@@ -3,15 +3,12 @@ import { useEffect, useRef, useState } from 'react'
 // Блок появляется с анимацией, когда доезжает до экрана
 export default function Reveal({ as: Tag = 'div', className = '', children, ...props }) {
   const ref = useRef(null)
-  const [shown, setShown] = useState(false)
+  // в браузере без IntersectionObserver блок сразу показан
+  const [shown, setShown] = useState(() => !('IntersectionObserver' in window))
 
   useEffect(() => {
     const el = ref.current
-    if (!el) return undefined
-    if (!('IntersectionObserver' in window)) {
-      setShown(true)
-      return undefined
-    }
+    if (!el || !('IntersectionObserver' in window)) return undefined
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
         setShown(true)

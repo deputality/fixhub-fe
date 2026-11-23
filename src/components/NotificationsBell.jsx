@@ -33,8 +33,9 @@ export default function NotificationsBell() {
   // на телефоне список растягивается на ширину экрана прямо под колокольчиком,
   // иначе он уезжает за левый край
   useLayoutEffect(() => {
-    if (!open || !window.matchMedia('(max-width: 560px)').matches) { setPhoneTop(null); return }
+    if (!open) return undefined
     const place = () => {
+      if (!window.matchMedia('(max-width: 560px)').matches) { setPhoneTop(null); return }
       const r = ref.current?.getBoundingClientRect()
       if (r) setPhoneTop(Math.round(r.bottom + 10))
     }

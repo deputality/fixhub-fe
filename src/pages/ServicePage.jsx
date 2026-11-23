@@ -12,7 +12,6 @@ import './ServicePage.css'
 
 const MAX_QTY = 99
 const PREVIEW_REVIEWS = 3
-const REVIEWS_PAGE = 10
 const UNITS = { Hour: 'час', Piece: 'шт.' }
 
 // Блок «преимуществ» под описанием. В базе таких данных пока нет —
@@ -66,7 +65,7 @@ export default function ServicePage() {
   const [comment, setComment] = useState('')
   const [adding, setAdding] = useState(false)
 
-  const minDate = useMemo(todayIso, [])
+  const minDate = useMemo(() => todayIso(), [])
 
   // услуга + категории + первые отзывы
   useEffect(() => {

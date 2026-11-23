@@ -13,14 +13,15 @@ export default function Header() {
   const { count } = useCart()
   const showCart = !user || user.role === 'Client'
   const [scrolled, setScrolled] = useState(false)
-  const [menuOpen, setMenuOpen] = useState(false)
+  // запоминаем, на какой странице открыто меню: при переходе на другую оно закрывается само
+  const [menuPath, setMenuPath] = useState(null)
   const { pathname } = useLocation()
+  const menuOpen = menuPath === pathname
 
-  // меню закрывается при переходе на другую страницу и по Escape
-  useEffect(() => setMenuOpen(false), [pathname])
+  // меню закрывается по Escape
   useEffect(() => {
     if (!menuOpen) return undefined
-    const onKey = (e) => e.key === 'Escape' && setMenuOpen(false)
+    const onKey = (e) => e.key === 'Escape' && setMenuPath(null)
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
   }, [menuOpen])
@@ -73,7 +74,7 @@ export default function Header() {
 
           <button
             type="button" className="burger" aria-label={menuOpen ? 'Закрыть меню' : 'Открыть меню'}
-            aria-expanded={menuOpen} onClick={() => setMenuOpen((o) => !o)}
+            aria-expanded={menuOpen} onClick={() => setMenuPath((p) => (p === pathname ? null : pathname))}
           >
             {menuOpen ? <X size={26} /> : <Menu size={26} />}
           </button>
