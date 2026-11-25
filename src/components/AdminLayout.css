@@ -31,18 +31,32 @@
 
 .adm-content { min-width: 0; padding: 0 30px 56px; }
 
-@media (max-width: 900px) {
-  .adm { grid-template-columns: minmax(0, 1fr); }
-  .adm-side { position: static; height: auto; flex-direction: row; align-items: center; gap: 8px;
-    padding: 10px 12px; overflow-x: auto; }
-  .adm-logo { display: none; }
-  .adm-nav, .adm-bottom { flex-direction: row; margin-top: 0; }
-  .adm-bottom { margin-left: auto; }
-  .adm-side a, .adm-side button { width: auto; white-space: nowrap; }
-  .adm-top { height: 60px; padding: 0 16px; }
-  .adm-role { display: none; }
-  .adm-content { padding: 0 14px 40px; }
-}
+/* кнопка меню и затемнение нужны только на телефоне и планшете */
+.adm-burger, .adm-overlay { display: none; }
+
 /* число новых жалоб в меню */
 .adm-badge { min-width: 20px; height: 20px; margin-left: auto; padding: 0 6px; display: inline-flex; align-items: center; justify-content: center;
   border-radius: 999px; background: #ef4444; color: #fff; font-size: 11px; font-weight: 700; line-height: 1; }
+
+/* телефон и планшет: меню прячется и выезжает слева по кнопке ☰ */
+@media (max-width: 900px) {
+  .adm { grid-template-columns: minmax(0, 1fr); }
+
+  .adm-side { position: fixed; top: 0; left: 0; bottom: 0; z-index: 80; width: min(280px, 82vw); height: auto;
+    overflow-y: auto; padding: 20px 12px calc(22px + env(safe-area-inset-bottom));
+    transform: translateX(-100%); visibility: hidden;
+    transition: transform .28s var(--ease-out), visibility 0s linear .28s; }
+  .adm-side.open { transform: none; visibility: visible; box-shadow: 0 0 40px rgba(2, 6, 23, .45);
+    transition: transform .28s var(--ease-out), visibility 0s; }
+  .adm-overlay { display: block; position: fixed; inset: 0; z-index: 70; background: rgba(15, 23, 42, .5); animation: fade .2s ease-out; }
+
+  .adm-top { position: sticky; top: 0; z-index: 40; height: 60px; padding: 0 12px 0 8px; gap: 12px; background: #fff;
+    box-shadow: 0 1px 0 #e9eef8; }
+  .adm-burger { display: flex; align-items: center; justify-content: center; margin-right: auto; width: 44px; height: 44px;
+    border: none; border-radius: 10px; background: none; color: #0b1a4a; cursor: pointer; }
+  .adm-burger:hover { background: #eef3fd; }
+  .adm-role { display: none; }
+  .adm-content { padding: 0 14px 40px; }
+}
+
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }

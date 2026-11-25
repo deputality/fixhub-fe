@@ -3,6 +3,8 @@ import { ClipboardList, Heart, LogOut, User } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import './CabinetLayout.css'
 
+// Боковое меню кабинета видно на компьютере и планшете.
+// На телефоне те же разделы лежат в меню ☰ в шапке сайта (Header.jsx), второго меню на странице нет.
 export default function CabinetLayout() {
   const { logout } = useAuth()
   const navigate = useNavigate()

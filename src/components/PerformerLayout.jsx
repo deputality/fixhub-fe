@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { Briefcase, ClipboardList, House, Images, LogOut, Settings, Star, User } from 'lucide-react'
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Briefcase, ChevronDown, ClipboardList, House, Images, LogOut, Settings, Star, User } from 'lucide-react'
 import { getPerformerStats } from '../api/performer'
 import { getProfile } from '../api/profile'
 import Avatar from './Avatar'
@@ -11,10 +11,26 @@ import NotificationsBell from './NotificationsBell'
 import UserMenu from './UserMenu'
 import './PerformerLayout.css'
 
+const SECTIONS = [
+  { to: '/performer', label: 'Главная', icon: House },
+  { to: '/performer/services', label: 'Мои услуги', icon: Briefcase },
+  { to: '/performer/portfolio', label: 'Портфолио', icon: Images },
+  { to: '/performer/orders', label: 'Входящие заказы', icon: ClipboardList },
+  { to: '/performer/reviews', label: 'Отзывы', icon: Star },
+  { to: '/performer/profile', label: 'Профиль', icon: User },
+  { to: '/performer/settings', label: 'Настройки', icon: Settings },
+]
+
 export default function PerformerLayout() {
   const { user, logout, updateUser } = useAuth()
   const navigate = useNavigate()
+  const { pathname } = useLocation()
   const [stats, setStats] = useState(null)
+  // на телефоне список разделов раскрывается под полосой с названием текущего раздела
+  const [menuOpen, setMenuOpen] = useState(false)
+  const closeMenu = () => setMenuOpen(false)
+  const current = SECTIONS.find((x) => x.to !== '/performer' && (pathname === x.to || pathname.startsWith(x.to + '/'))) ?? SECTIONS[0]
+  const CurrentIcon = current.icon
   const scrolled = useScrolled()
 
   const reloadStats = useCallback(() => {
@@ -59,8 +75,18 @@ export default function PerformerLayout() {
         </div>
       </header>
 
+      {/* телефон и планшет: полоса с названием текущего раздела, по нажатию раскрывает список разделов */}
+      <button type="button" className={`pf-switch${menuOpen ? ' open' : ''}`} onClick={() => setMenuOpen((v) => !v)}
+        aria-expanded={menuOpen} aria-label="Разделы панели мастера">
+        <CurrentIcon size={20} />
+        <span>{current.label}</span>
+        {newOrders > 0 && current.to !== '/performer/orders' && <span className="pf-switch-badge">{newOrders}</span>}
+        <ChevronDown size={20} className="pf-switch-arrow" />
+      </button>
+
       <div className="pf-body">
-        <aside className="pf-side">
+        {menuOpen && <div className="pf-overlay" onClick={closeMenu} />}
+        <aside className={`pf-side${menuOpen ? ' open' : ''}`}>
           <div className="pf-side-inner">
           <div className="pf-me">
             <Avatar name={user.fullName} url={user.avatarUrl} size={52} />
@@ -71,16 +97,16 @@ export default function PerformerLayout() {
           </div>
 
           <nav className="pf-nav">
-            <NavLink to="/performer" end><House size={22} strokeWidth={1.7} /> Главная</NavLink>
-            <NavLink to="/performer/services"><Briefcase size={22} strokeWidth={1.7} /> Мои услуги</NavLink>
-            <NavLink to="/performer/portfolio"><Images size={22} strokeWidth={1.7} /> Портфолио</NavLink>
-            <NavLink to="/performer/orders">
+            <NavLink to="/performer" end onClick={closeMenu}><House size={22} strokeWidth={1.7} /> Главная</NavLink>
+            <NavLink to="/performer/services" onClick={closeMenu}><Briefcase size={22} strokeWidth={1.7} /> Мои услуги</NavLink>
+            <NavLink to="/performer/portfolio" onClick={closeMenu}><Images size={22} strokeWidth={1.7} /> Портфолио</NavLink>
+            <NavLink to="/performer/orders" onClick={closeMenu}>
               <ClipboardList size={22} strokeWidth={1.7} /> Входящие заказы
               {newOrders > 0 && <span key={newOrders} className="pf-badge">{newOrders}</span>}
             </NavLink>
-            <NavLink to="/performer/reviews"><Star size={22} strokeWidth={1.7} /> Отзывы</NavLink>
-            <NavLink to="/performer/profile"><User size={22} strokeWidth={1.7} /> Профиль</NavLink>
-            <NavLink to="/performer/settings"><Settings size={22} strokeWidth={1.7} /> Настройки</NavLink>
+            <NavLink to="/performer/reviews" onClick={closeMenu}><Star size={22} strokeWidth={1.7} /> Отзывы</NavLink>
+            <NavLink to="/performer/profile" onClick={closeMenu}><User size={22} strokeWidth={1.7} /> Профиль</NavLink>
+            <NavLink to="/performer/settings" onClick={closeMenu}><Settings size={22} strokeWidth={1.7} /> Настройки</NavLink>
             <div className="pf-sep" />
             <button type="button" onClick={handleLogout}><LogOut size={22} strokeWidth={1.7} /> Выйти</button>
           </nav>

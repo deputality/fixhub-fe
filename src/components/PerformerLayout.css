@@ -20,13 +20,34 @@
 
 .pf-content { min-width: 0; padding: 30px 32px 56px; }
 
+/* переключатель раздела и затемнение нужны только на телефоне и планшете */
+.pf-switch, .pf-overlay { display: none; }
+
+/* телефон и планшет: полоса с названием текущего раздела, по нажатию список разделов раскрывается под ней */
 @media (max-width: 900px) {
   .pf-body { grid-template-columns: minmax(0, 1fr); }
-  .pf-side { padding: 8px 12px; border-right: none; border-bottom: 1px solid #e9eef8; }
+
+  .pf-switch { display: flex; align-items: center; gap: 10px; position: sticky; top: 68px; z-index: 46; width: 100%; height: 52px;
+    padding: 0 16px; border: none; border-bottom: 1px solid #e9eef8; background: #fff; color: #0f172a;
+    font: inherit; font-size: 15px; font-weight: 600; text-align: left; cursor: pointer; }
+  .pf-switch svg:first-child { color: var(--blue); }
+  .pf-switch span:not(.pf-switch-badge) { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pf-switch-badge { min-width: 22px; height: 22px; padding: 0 6px; display: flex; align-items: center; justify-content: center;
+    border-radius: 999px; background: #ef4444; color: #fff; font-size: 12px; font-weight: 700; }
+  .pf-switch-arrow { color: #64748b; transition: transform .25s var(--ease-out); }
+  .pf-switch.open .pf-switch-arrow { transform: rotate(180deg); }
+
+  /* список разделов прижат к нижней кромке полосы (68 + 52 = 120 px); профиль мастера в нём не нужен */
+  .pf-side { position: fixed; top: 120px; left: 0; right: 0; z-index: 60; max-height: calc(100vh - 120px); overflow-y: auto;
+    padding: 8px 12px 12px; border-right: none; border-bottom: 1px solid #e3e9f5; box-shadow: 0 18px 30px rgba(15, 23, 42, .12);
+    opacity: 0; transform: translateY(-8px); visibility: hidden; pointer-events: none;
+    transition: opacity .2s, transform .2s var(--ease-out), visibility 0s linear .2s; }
+  .pf-side.open { opacity: 1; transform: none; visibility: visible; pointer-events: auto;
+    transition: opacity .2s, transform .2s var(--ease-out), visibility 0s; }
   .pf-side-inner { position: static; }
   .pf-me { display: none; }
-  .pf-nav { flex-direction: row; overflow-x: auto; }
-  .pf-nav a, .pf-nav button { width: auto; white-space: nowrap; }
-  .pf-sep { display: none; }
+  .pf-overlay { display: block; position: fixed; top: 120px; left: 0; right: 0; bottom: 0; z-index: 55; background: rgba(15, 23, 42, .4);
+    animation: fade .2s ease-out; }
+
   .pf-content { padding: 20px 14px 40px; }
 }
