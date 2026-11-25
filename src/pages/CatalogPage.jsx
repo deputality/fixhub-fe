@@ -1,16 +1,22 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
-import { CircleAlert, Search, SearchX } from 'lucide-react'
-import { getCatalog, getCategories } from '../api/catalog'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { CircleAlert, List, Map as MapIcon, Search, SearchX } from 'lucide-react'
+import { getCatalog, getCategories, getLocations } from '../api/catalog'
 import { useCart } from '../context/CartContext'
+import { useToast } from '../context/ToastContext'
 import { resolveCategoryMeta } from '../utils/categoryMeta'
+import { getUserPosition, roundCoord } from '../utils/geo'
+import { useDocumentMeta } from '../utils/useDocumentMeta'
 import Button from '../components/Button'
 import Filters from '../components/Filters'
+import MapView from '../components/MapView'
 import Pagination from '../components/Pagination'
 import Select from '../components/Select'
 import ServiceCard from '../components/ServiceCard'
 
 const PAGE_SIZE = 6
+// на карте показываем сразу много мастеров, постраничность там не нужна (максимум, который отдаёт API)
+const MAP_PAGE_SIZE = 50
 
 const SORTS = [
   { value: 'RatingDesc', label: 'Сначала популярные' },
@@ -19,6 +25,7 @@ const SORTS = [
   { value: 'PriceDesc', label: 'Сначала дорогие' },
   { value: 'TitleAsc', label: 'По названию' },
 ]
+const NEAREST = { value: 'Distance', label: 'Сначала ближайшие' }
 
 function HeroSearch({ initial, onSearch }) {
   const [value, setValue] = useState(initial)
@@ -49,6 +56,8 @@ function HeroSearch({ initial, onSearch }) {
 export default function CatalogPage() {
   const [params, setParams] = useSearchParams()
   const { addToCart } = useCart()
+  const { show } = useToast()
+  const navigate = useNavigate()
   const listRef = useRef(null)
 
   const q = params.get('q') ?? ''
@@ -56,18 +65,35 @@ export default function CatalogPage() {
   const min = params.get('min') ?? ''
   const max = params.get('max') ?? ''
   const rating = params.get('rating') ?? ''
-  const sort = params.get('sort') ?? 'RatingDesc'
-  const page = Number(params.get('page')) || 1
+  const place = params.get('place') ?? ''
+  const radius = params.get('radius') ?? ''
+  const mapView = params.get('view') === 'map'
+  const lat = Number(params.get('lat'))
+  const lng = Number(params.get('lng'))
+  // точка пользователя считается заданной, только если обе координаты числа
+  const hasGeo = params.has('lat') && params.has('lng') && Number.isFinite(lat) && Number.isFinite(lng)
+  // «Сначала ближайшие» без точки на карте сервер не примет
+  const rawSort = params.get('sort') ?? 'RatingDesc'
+  const sort = rawSort === 'Distance' && !hasGeo ? 'RatingDesc' : rawSort
+  const page = mapView ? 1 : Number(params.get('page')) || 1
   const key = params.toString()
 
   const [categories, setCategories] = useState([])
+  const [places, setPlaces] = useState([])
+  const [locating, setLocating] = useState(false)
   const [bounds, setBounds] = useState(null)
   const [result, setResult] = useState({ key: null, data: null, error: '' })
 
   // категории для чипов и фильтра
   useEffect(() => {
     getCategories().then(setCategories).catch(() => {})
+    getLocations().then(setPlaces).catch(() => {})
   }, [])
+
+  useDocumentMeta({
+    title: place ? `Услуги мастеров: ${place} | FixHub` : '',
+    description: place ? `Проверенные мастера и услуги: ${place}. Сравнивайте цены и отзывы на FixHub.` : '',
+  })
 
   // границы цены: самая дешёвая и самая дорогая услуга
   useEffect(() => {
@@ -95,9 +121,13 @@ export default function CatalogPage() {
       minPrice: min,
       maxPrice: max,
       minRating: rating,
+      location: place,
+      lat: hasGeo ? lat : '',
+      lng: hasGeo ? lng : '',
+      radiusKm: hasGeo ? radius : '',
       sort,
       page,
-      pageSize: PAGE_SIZE,
+      pageSize: mapView ? MAP_PAGE_SIZE : PAGE_SIZE,
     })
       .then((data) => { if (!cancelled) setResult({ key, data, error: '' }) })
       .catch((err) => {
@@ -106,7 +136,7 @@ export default function CatalogPage() {
         }
       })
     return () => { cancelled = true }
-  }, [key, q, category, min, max, rating, sort, page])
+  }, [key, q, category, min, max, rating, place, hasGeo, lat, lng, radius, mapView, sort, page])
 
   const byId = useMemo(
     () => Object.fromEntries(categories.map((c) => [c.id, c])),
@@ -135,8 +165,44 @@ export default function CatalogPage() {
   }
 
   function resetFilters() {
-    update({ category: '', min: '', max: '', rating: '' })
+    update({ category: '', min: '', max: '', rating: '', place: '', radius: '' })
   }
+
+  async function locate() {
+    setLocating(true)
+    try {
+      const pos = await getUserPosition()
+      update({ lat: roundCoord(pos.lat), lng: roundCoord(pos.lng), sort: 'Distance' })
+    } catch (err) {
+      show(err.message, 'error')
+    } finally {
+      setLocating(false)
+    }
+  }
+
+  function clearNear() {
+    update({ lat: '', lng: '', radius: '', sort: rawSort === 'Distance' ? '' : rawSort })
+  }
+
+  // мастера на карте: одна точка на мастера, даже если у него несколько услуг в выдаче
+  const mapMarkers = useMemo(() => {
+    const byPerformer = new Map()
+    for (const s of result.data?.items ?? []) {
+      if (s.performerLatitude == null || s.performerLongitude == null) continue
+      const entry = byPerformer.get(s.performerId) ?? { count: 0, service: s }
+      entry.count += 1
+      byPerformer.set(s.performerId, entry)
+    }
+    return [...byPerformer.values()].map(({ count, service: s }) => ({
+      id: s.performerId,
+      lat: s.performerLatitude,
+      lng: s.performerLongitude,
+      title: s.performerName,
+      subtitle: [s.performerSpecialization, s.performerCity, `услуг: ${count}`].filter(Boolean).join(' · '),
+      href: `/performers/${s.performerId}`,
+      linkText: 'Профиль и услуги',
+    }))
+  }, [result.data])
 
   let content
   if (result.error && !loading) {
@@ -249,27 +315,58 @@ export default function CatalogPage() {
               key={`${bounds ? 'ready' : 'wait'}-${key}`}
               categories={categories}
               bounds={priceBounds}
-              applied={{ category, min, max, rating }}
+              applied={{ category, min, max, rating, place, radius }}
               onApply={update}
               onReset={resetFilters}
+              places={places}
+              near={{ active: hasGeo, locating }}
+              onLocate={locate}
+              onClearNear={clearNear}
             />
           </aside>
 
           <section ref={listRef} className="catalog-main">
             <div className="catalog-top">
               <span className="found">{data ? <>Найдено: <b>{data.totalCount}</b></> : ''}</span>
-              <Select
-                className="sort"
-                value={sort}
-                onChange={(value) => update({ sort: value })}
-                options={SORTS}
-                ariaLabel="Сортировка"
-              />
+              <div className="catalog-tools">
+                <div className="view-toggle" role="group" aria-label="Вид каталога">
+                  <button type="button" className={mapView ? '' : 'active'} aria-pressed={!mapView} onClick={() => update({ view: '' })}>
+                    <List size={16} /> Списком
+                  </button>
+                  <button type="button" className={mapView ? 'active' : ''} aria-pressed={mapView} onClick={() => update({ view: 'map' })}>
+                    <MapIcon size={16} /> На карте
+                  </button>
+                </div>
+                <Select
+                  className="sort"
+                  value={sort}
+                  onChange={(value) => update({ sort: value })}
+                  options={hasGeo ? [NEAREST, ...SORTS] : SORTS}
+                  ariaLabel="Сортировка"
+                />
+              </div>
             </div>
+
+            {mapView && data && (
+              <div className="catalog-map">
+                <MapView
+                  markers={mapMarkers}
+                  user={hasGeo ? { lat, lng } : null}
+                  onOpen={(marker) => navigate(marker.href)}
+                  height={380}
+                />
+                <p className="map-note">
+                  {mapMarkers.length === 0
+                    ? 'У найденных мастеров не указано место на карте.'
+                    : 'Показаны мастера, которые указали своё место на карте (с точностью до района).'}
+                  {data.totalCount > MAP_PAGE_SIZE && ` Выведены первые ${MAP_PAGE_SIZE} из ${data.totalCount}, уточните поиск.`}
+                </p>
+              </div>
+            )}
 
             {content}
 
-            {data && <Pagination page={page} totalPages={data.totalPages} onChange={changePage} />}
+            {data && !mapView && <Pagination page={page} totalPages={data.totalPages} onChange={changePage} />}
           </section>
         </div>
       </div>

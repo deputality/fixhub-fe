@@ -2,13 +2,14 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   ArrowDown, ArrowUp, Ban, Calendar, CircleAlert, CircleCheck, ClipboardList,
-  Coins, Minus, Search, ShieldCheck, ShieldOff, Star, Users,
+  Coins, FileText, Minus, Search, ShieldCheck, ShieldOff, Star, Users,
 } from 'lucide-react'
 import {
   blockUser, getAdminStats, getAdminUsers, getOrdersByDay, unblockUser, unverifyUser, verifyUser,
 } from '../api/admin'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
+import DocumentsModal from '../components/DocumentsModal'
 import Pagination from '../components/Pagination'
 import Select from '../components/Select'
 import './AdminPage.css'
@@ -323,6 +324,7 @@ function UsersPanel({ onAuthError }) {
   const [reload, setReload] = useState(0)
   const [busyId, setBusyId] = useState(null)
   const [tab, setTab] = useState('all')
+  const [docsUser, setDocsUser] = useState(null)
   const [data, setData] = useState({ key: null, items: [], total: 0, totalPages: 0, error: '' })
 
   // запрос уходит не на каждую букву, а когда человек перестал печатать
@@ -469,9 +471,14 @@ function UsersPanel({ onAuthError }) {
                     </td>
                     <td data-label="Проверка">
                       {u.role === 'Performer' ? (
-                        <span className={`pill ${u.isVerified ? 'st-verified' : 'st-unverified'}`}>
-                          {u.isVerified ? 'Проверен' : 'Не проверен'}
-                        </span>
+                        <div className="cell-verify">
+                          <span className={`pill ${u.isVerified ? 'st-verified' : 'st-unverified'}`}>
+                            {u.isVerified ? 'Проверен' : 'Не проверен'}
+                          </span>
+                          <button type="button" className="as-docs-link" onClick={() => setDocsUser(u)}>
+                            <FileText size={13} /> Документы{u.documentsCount > 0 ? ` (${u.documentsCount})` : ''}
+                          </button>
+                        </div>
                       ) : (
                         <span className="cell-none">—</span>
                       )}
@@ -524,6 +531,14 @@ function UsersPanel({ onAuthError }) {
         <span>Всего пользователей: <b>{num(data.total)}</b></span>
         <Pagination page={page} totalPages={data.totalPages} onChange={setPage} />
       </div>
+    {docsUser && (
+        <DocumentsModal
+          user={docsUser}
+          busy={busyId === docsUser.id}
+          onToggle={async (u) => { await toggleVerify(u); setDocsUser(null) }}
+          onClose={() => setDocsUser(null)}
+        />
+      )}
     </section>
   )
 }

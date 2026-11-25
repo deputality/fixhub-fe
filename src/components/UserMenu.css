@@ -1,5 +1,5 @@
 .user-menu { position: relative; }
-.user-menu-btn { display: flex; align-items: center; gap: 10px; padding: 4px 8px 4px 4px; border: none; border-radius: 999px;
+.user-menu-btn { display: flex; align-items: center; gap: 12px; padding: 4px 10px 4px 4px; border: none; border-radius: 999px;
   background: none; color: var(--navy); font: inherit; cursor: pointer; transition: background .2s; }
 .user-menu-btn:hover { background: #eef3fd; }
 .user-menu-btn svg { transition: transform .2s; }

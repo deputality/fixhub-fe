@@ -127,3 +127,53 @@ tr:hover .as-cat-icon { transform: scale(1.08) rotate(-6deg); }
 .as-color-own { background: conic-gradient(#ef4444, #f59e0b, #84cc16, #14b8a6, #3b82f6, #8b5cf6, #ec4899, #ef4444); }
 .as-color-own.active { background: var(--c); }
 .as-color-own input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+
+
+/* документы в таблице пользователей */
+.cell-verify { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.as-docs-link { display: inline-flex; white-space: nowrap; align-items: center; gap: 5px; padding: 0; border: none; background: none; color: var(--blue);
+  font: inherit; font-size: 12px; cursor: pointer; }
+.as-docs-link:hover { text-decoration: underline; }
+@media (max-width: 760px) { .cell-verify { align-items: flex-end; } }
+
+/* журнал действий */
+.as-table-audit { min-width: 760px; }
+.as-act { display: inline-block; padding: 4px 10px; border-radius: 999px; background: #eef2f9; color: #475569; font-size: 12px; font-weight: 600; }
+.as-act.good { background: #dcfce7; color: #15803d; }
+.as-act.bad { background: #fee2e2; color: #b91c1c; }
+.as-target { display: flex; flex-direction: column; gap: 2px; }
+.as-target b { font-size: 14px; font-weight: 600; color: var(--navy); }
+.as-target span { font-size: 12px; color: #64748b; }
+@media (max-width: 760px) { .as-table-audit { min-width: 0; } .as-target { align-items: flex-end; text-align: right; } }
+
+/* жалобы */
+.as-complaints { display: flex; flex-direction: column; gap: 14px; transition: opacity .2s; }
+.as-complaints.is-loading { opacity: .55; }
+.as-complaint { display: flex; flex-direction: column; gap: 12px; padding: 16px 18px; background: #fff; border: 1px solid #e3eafa; border-radius: 14px; }
+.as-complaint-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.as-complaint-head b { font-size: 15px; color: var(--navy); }
+.as-complaint-date { margin-left: auto; font-size: 12px; color: #94a3b8; }
+.as-complaint-from { display: flex; flex-direction: column; gap: 4px; margin: 0; font-size: 14px; color: #475569; }
+.as-complaint-from > span { font-size: 12px; color: #64748b; }
+.as-complaint-from q { font-style: normal; line-height: 1.5; quotes: none; overflow-wrap: anywhere; }
+.as-complaint-from i { font-size: 13px; color: #94a3b8; }
+.as-target-box { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border-radius: 12px; background: #f6f8fd; font-size: 14px; }
+.as-target-box p { margin: 0; line-height: 1.5; color: var(--navy); overflow-wrap: anywhere; }
+.as-target-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; color: #475569; }
+.as-target-top a { color: var(--blue); font-weight: 600; }
+.as-target-top a:hover { text-decoration: underline; }
+.as-complaint-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.as-complaint-result { margin: 0; font-size: 13px; color: #64748b; }
+.as-complaints-empty { margin: 0; padding: 36px 16px; text-align: center; font-size: 14px; color: var(--muted); border: 1px dashed #d5def0; border-radius: 14px; }
+.as-complaint-skel { height: 190px; border-radius: 14px; }
+
+/* окно решения по жалобе */
+.as-decide-text { margin: 0; font-size: 14px; line-height: 1.5; color: #475569; }
+.as-check { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border: 1px solid #e3eafa; border-radius: 12px; cursor: pointer;
+  transition: background .15s, border-color .15s; }
+.as-check:hover { background: #f8faff; border-color: #c9d8f5; }
+.as-check input { width: 18px; height: 18px; margin-top: 2px; flex-shrink: 0; accent-color: var(--blue); }
+.as-check span { display: flex; flex-direction: column; gap: 2px; font-size: 13px; line-height: 1.4; color: #64748b; }
+.as-check b { font-size: 14px; color: var(--navy); }
+
+.st-new { background: #fef3c7; color: #b45309; }

@@ -1,18 +1,30 @@
 import { useState } from 'react'
-import { Star } from 'lucide-react'
+import { LocateFixed, MapPin, Star, X } from 'lucide-react'
 import Button from './Button'
 import PriceRange from './PriceRange'
 import Select from './Select'
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max)
 
-export default function Filters({ categories, bounds, applied, onApply, onReset }) {
+const RADIUS_OPTIONS = [
+  { value: '', label: 'Любое расстояние' },
+  { value: '3', label: 'до 3 км' },
+  { value: '5', label: 'до 5 км' },
+  { value: '10', label: 'до 10 км' },
+  { value: '25', label: 'до 25 км' },
+  { value: '50', label: 'до 50 км' },
+]
+
+// places — города мастеров для подсказок; near — { active, locating } для блока «Рядом со мной»
+export default function Filters({ categories, bounds, applied, onApply, onReset, places = [], near, onLocate, onClearNear }) {
   const [category, setCategory] = useState(applied.category)
   const [price, setPrice] = useState([
     applied.min !== '' ? clamp(Number(applied.min), bounds.min, bounds.max) : bounds.min,
     applied.max !== '' ? clamp(Number(applied.max), bounds.min, bounds.max) : bounds.max,
   ])
   const [rating, setRating] = useState(Number(applied.rating) || 0)
+  const [place, setPlace] = useState(applied.place ?? '')
+  const [radius, setRadius] = useState(applied.radius ?? '')
 
   const roots = categories.filter((c) => !c.parentId)
   const childrenOf = (id) => categories.filter((c) => c.parentId === id)
@@ -36,6 +48,8 @@ export default function Filters({ categories, bounds, applied, onApply, onReset 
       min: price[0] > bounds.min ? price[0] : '',
       max: price[1] < bounds.max ? price[1] : '',
       rating: rating || '',
+      place: place.trim(),
+      radius: near?.active ? radius : '',
     })
   }
 
@@ -51,6 +65,48 @@ export default function Filters({ categories, bounds, applied, onApply, onReset 
           onChange={setCategory}
           options={categoryOptions}
         />
+      </div>
+
+      <div className="filter-group">
+        <label htmlFor="f-place">Город или район</label>
+        <div className="filter-place">
+          <MapPin size={18} />
+          <input
+            id="f-place"
+            type="text"
+            list="f-place-list"
+            value={place}
+            onChange={(e) => setPlace(e.target.value)}
+            placeholder="Например, Минск"
+            maxLength={100}
+            autoComplete="off"
+          />
+        </div>
+        <datalist id="f-place-list">
+          {places.map((name) => <option key={name} value={name} />)}
+        </datalist>
+      </div>
+
+      <div className="filter-group">
+        <span className="filter-label">Рядом со мной</span>
+        {near?.active ? (
+          <>
+            <Select
+              value={radius}
+              onChange={setRadius}
+              options={RADIUS_OPTIONS}
+              ariaLabel="Радиус поиска"
+            />
+            <button type="button" className="link-btn near-off" onClick={onClearNear}>
+              <X size={14} /> Не учитывать моё местоположение
+            </button>
+          </>
+        ) : (
+          <button type="button" className="near-btn" onClick={onLocate} disabled={near?.locating}>
+            <LocateFixed size={18} />
+            {near?.locating ? 'Определяем…' : 'Найти мастеров рядом'}
+          </button>
+        )}
       </div>
 
       <div className="filter-group">

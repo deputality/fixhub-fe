@@ -1,3 +1,4 @@
+import VerificationDocs from '../components/VerificationDocs'
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { CircleCheck, Info, ShieldCheck, Star } from 'lucide-react'
@@ -9,6 +10,8 @@ import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { useAuthGuard } from '../utils/useAuthGuard'
 import Avatar from '../components/Avatar'
+import MapView from '../components/MapView'
+import { getUserPosition, roundCoord } from '../utils/geo'
 import './PerformerProfilePage.css'
 
 // в API одно поле fullName, а в макете «Имя» и «Фамилия»: делим по первому пробелу
@@ -28,6 +31,8 @@ function toForm(p) {
     experienceYears: p.experienceYears ?? '',
     city: p.city ?? '',
     serviceArea: p.serviceArea ?? '',
+    latitude: p.latitude ?? null,
+    longitude: p.longitude ?? null,
     bio: p.bio ?? '',
     avatarUrl: p.avatarUrl ?? '',
   }
@@ -85,6 +90,21 @@ export default function PerformerProfilePage() {
     setErrors((er) => ({ ...er, [key]: undefined }))
   }
 
+  // точка на карте: сервер хранит её с точностью ~1 км, поэтому округляем сразу
+  const pickPoint = (lat, lng) => setForm((f) => ({ ...f, latitude: roundCoord(lat), longitude: roundCoord(lng) }))
+  const clearPoint = () => setForm((f) => ({ ...f, latitude: null, longitude: null }))
+  async function locateMe() {
+    try {
+      const pos = await getUserPosition()
+      pickPoint(pos.lat, pos.lng)
+    } catch (err) {
+      show(err.message, 'error')
+    }
+  }
+  const point = form.latitude != null && form.longitude != null
+    ? { lat: form.latitude, lng: form.longitude }
+    : null
+
   const fullName = `${form.firstName} ${form.lastName}`.trim()
   const dirty = JSON.stringify(form) !== JSON.stringify(toForm(profile))
 
@@ -111,6 +131,8 @@ export default function PerformerProfilePage() {
         experienceYears: form.experienceYears === '' ? null : Number(form.experienceYears),
         city: form.city.trim() || null,
         serviceArea: form.serviceArea.trim() || null,
+        latitude: form.latitude,
+        longitude: form.longitude,
         avatarUrl: form.avatarUrl || null,
       })
       setProfile(saved)
@@ -237,6 +259,18 @@ export default function PerformerProfilePage() {
               <Field label="Район выезда">
                 <input className="pp-input" value={form.serviceArea} onChange={set('serviceArea')} maxLength={200} />
               </Field>
+              <div className="pp-field pp-wide">
+                <span className="pp-label">Место на карте</span>
+                <MapView height={260} picked={point} onPick={pickPoint} />
+                <div className="pp-map-actions">
+                  <button type="button" className="link-btn" onClick={locateMe}>Определить по моему местоположению</button>
+                  {point && <button type="button" className="link-btn" onClick={clearPoint}>Убрать точку</button>}
+                </div>
+                <span className="pp-hint">
+                  Нажмите на карту, чтобы поставить точку. Клиенты увидят район с точностью около 1 км,
+                  а не ваш адрес: по ней считается расстояние в поиске «Рядом со мной».
+                </span>
+              </div>
               <Field label="О себе" className="pp-wide" hint="Расскажите о своём опыте, подходе к работе и гарантиях.">
                 <textarea className="pp-input pp-textarea" rows={2} value={form.bio} onChange={set('bio')} maxLength={2000} />
               </Field>
@@ -268,6 +302,8 @@ export default function PerformerProfilePage() {
               <p className="pp-side-text">Отметка «Проверенный мастер» появится после проверки ваших данных администратором.</p>
             </section>
           )}
+
+          {!profile.isVerified && <VerificationDocs />}
 
           <section className="pp-card pp-side">
             <h2>Профиль в каталоге</h2>

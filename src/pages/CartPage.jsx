@@ -6,6 +6,7 @@ import { getCategories } from '../api/catalog'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
 import { useToast } from '../context/ToastContext'
+import { validateContact } from '../utils/contactForm'
 import { resolveCategoryMeta } from '../utils/categoryMeta'
 import Button from '../components/Button'
 import CartItem from '../components/CartItem'
@@ -26,16 +27,6 @@ function todayIso() {
   const d = new Date()
   const pad = (n) => String(n).padStart(2, '0')
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
-}
-
-function validate({ name, address, phone }) {
-  const errors = {}
-  if (!address.trim()) errors.address = 'Введите адрес'
-  const digits = phone.replace(/\D/g, '')
-  if (!phone.trim()) errors.phone = 'Введите телефон'
-  else if (digits.length < 9 || digits.length > 12) errors.phone = 'Введите корректный номер, например +375 29 857 17 12'
-  if (!name.trim()) errors.name = 'Введите имя'
-  return errors
 }
 
 export default function CartPage() {
@@ -160,7 +151,7 @@ export default function CartPage() {
     e.preventDefault()
     setFormError('')
 
-    const errors = validate({ name, address, phone })
+    const errors = validateContact({ name, address, phone })
     setFieldErrors(errors)
     const first = ['address', 'phone', 'name'].find((k) => errors[k])
     if (first) {

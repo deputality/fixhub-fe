@@ -15,10 +15,12 @@ import AdminPage from './pages/AdminPage'
 import AdminCategories from './pages/AdminCategories'
 import AdminReviews from './pages/AdminReviews'
 import AdminStats from './pages/AdminStats'
+import AdminComplaints from './pages/AdminComplaints'
+import AdminAudit from './pages/AdminAudit'
 import AdminSettings from './pages/AdminSettings'
 import PerformerLayout from './components/PerformerLayout'
 import PerformerHome from './pages/PerformerHome'
-import { PerformerOrdersPage, PerformerReviewsPage, PerformerServicesPage } from './pages/PerformerSections'
+import { PerformerOrdersPage, PerformerPortfolioPage, PerformerReviewsPage, PerformerServicesPage } from './pages/PerformerSections'
 import ProfilePage from './pages/ProfilePage'
 import PerformerProfilePage from './pages/PerformerProfilePage'
 import OrderSentPage from './pages/OrderSentPage'
@@ -30,6 +32,9 @@ import NotFoundPage from './pages/NotFoundPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 import PerformerSettingsPage from './pages/PerformerSettingsPage'
+import FavoritesPage from './pages/FavoritesPage'
+import TermsPage from './pages/TermsPage'
+import PrivacyPage from './pages/PrivacyPage'
 
 export default function App() {
   const { pathname } = useLocation()
@@ -76,6 +81,7 @@ export default function App() {
           >
             <Route path="/orders" element={<OrdersPage />} />
             <Route path="/cart/sent" element={<OrderSentPage />} />
+            <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/profile" element={<ProfilePage />} />
           </Route>
           <Route
@@ -88,6 +94,7 @@ export default function App() {
           >
             <Route index element={<PerformerHome />} />
             <Route path="services" element={<PerformerServicesPage />} />
+            <Route path="portfolio" element={<PerformerPortfolioPage />} />
             <Route path="orders" element={<PerformerOrdersPage />} />
             <Route path="reviews" element={<PerformerReviewsPage />} />
             <Route path="profile" element={<PerformerProfilePage />} />
@@ -104,12 +111,16 @@ export default function App() {
             <Route index element={<AdminPage />} />
             <Route path="categories" element={<AdminCategories />} />
             <Route path="reviews" element={<AdminReviews />} />
+            <Route path="complaints" element={<AdminComplaints />} />
+            <Route path="audit" element={<AdminAudit />} />
             <Route path="stats" element={<AdminStats />} />
             <Route path="settings" element={<AdminSettings />} />
           </Route>
           <Route path="/how" element={<HowItWorksPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contacts" element={<ContactsPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
         </div>

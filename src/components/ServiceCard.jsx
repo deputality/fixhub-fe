@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { BadgeCheck, Check, ShoppingCart, Sparkles, Star } from 'lucide-react'
+import { BadgeCheck, Check, MapPin, ShoppingCart, Sparkles, Star } from 'lucide-react'
+import { useFavorites } from '../context/FavoritesContext'
+import { formatDistance } from '../utils/geo'
+import FavoriteButton from './FavoriteButton'
 
 const UNITS = { Hour: 'час', Piece: 'шт.' }
 
@@ -21,6 +24,7 @@ export default function ServiceCard({ service, meta, index, onAdd, hideMaster = 
   const [added, setAdded] = useState(false)
   const [busy, setBusy] = useState(false)
   const timer = useRef(null)
+  const { serviceIds, toggleService } = useFavorites()
 
   useEffect(() => () => clearTimeout(timer.current), [])
 
@@ -72,6 +76,13 @@ export default function ServiceCard({ service, meta, index, onAdd, hideMaster = 
         </span>
       </Link>
 
+      <FavoriteButton
+        className="card-fav"
+        active={serviceIds.has(service.id)}
+        label={service.title}
+        onToggle={() => toggleService(service.id)}
+      />
+
       <div className="card-body">
         <Link to={link} className="card-title">{service.title}</Link>
 
@@ -89,7 +100,13 @@ export default function ServiceCard({ service, meta, index, onAdd, hideMaster = 
                   <BadgeCheck size={15} className="master-ok" aria-label="Проверенный мастер" />
                 )}
               </div>
-              <div className="master-role">{service.performerSpecialization || 'Частный мастер'}</div>
+              <div className="master-role">
+                {service.performerSpecialization || 'Частный мастер'}
+                {service.performerCity && ` · ${service.performerCity}`}
+              </div>
+              {service.distanceKm != null && (
+                <div className="master-dist"><MapPin size={11} /> {formatDistance(service.distanceKm)} от вас</div>
+              )}
             </div>
           </Link>
         )}

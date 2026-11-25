@@ -110,3 +110,10 @@
   .sp-master { flex-wrap: wrap; }
   .sp-master-side { align-items: flex-start; width: 100%; }
 }
+.sp-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.sp-top .sp-tag { align-self: center; }
+.sp-top-actions { display: flex; align-items: center; gap: 8px; }
+.sp-where { }
+.sp-where-text { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; font-size: 15px; color: #334155; }
+.sp-where-text svg { color: var(--blue); flex-shrink: 0; }
+.sp-where-note { margin: 10px 0 0; font-size: 12px; color: #94a3b8; }

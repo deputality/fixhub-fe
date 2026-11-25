@@ -47,3 +47,33 @@ export const createCategory = (body) => api('/api/categories', { method: 'POST',
 export const updateCategory = (id, body) => api(`/api/categories/${id}`, { method: 'PUT', body })
 
 export const deleteCategory = (id) => api(`/api/categories/${id}`, { method: 'DELETE' })
+
+// ---------- журнал действий
+
+// targetType: 'User' | 'Review' | 'Category' | 'Complaint' или пусто (все)
+export function getAuditLog({ targetType, page, pageSize }) {
+  const qs = new URLSearchParams({ page, pageSize })
+  if (targetType) qs.set('targetType', targetType)
+  return api(`/api/admin/audit?${qs}`)
+}
+
+// ---------- жалобы
+
+// status: 'New' | 'Resolved' | 'Rejected' или пусто (все)
+export function getAdminComplaints({ status, page, pageSize }) {
+  const qs = new URLSearchParams({ page, pageSize })
+  if (status) qs.set('status', status)
+  return api(`/api/admin/complaints?${qs}`)
+}
+
+export const getComplaintsCount = () => api('/api/admin/complaints/count')
+
+// body: { note, hideReview, blockPerformer }
+export const resolveComplaint = (id, body) => api(`/api/admin/complaints/${id}/resolve`, { method: 'POST', body })
+
+// body: { note }
+export const rejectComplaint = (id, body) => api(`/api/admin/complaints/${id}/reject`, { method: 'POST', body })
+
+// ---------- документы мастера для проверки
+
+export const getUserDocuments = (userId) => api(`/api/admin/users/${userId}/documents`)

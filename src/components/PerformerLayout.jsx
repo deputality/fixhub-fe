@@ -1,58 +1,21 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
-import {
-  Briefcase, ChevronDown, ClipboardList, Globe, House, LogOut, Settings, Star, User,
-} from 'lucide-react'
+import { Briefcase, ClipboardList, House, Images, LogOut, Settings, Star, User } from 'lucide-react'
 import { getPerformerStats } from '../api/performer'
 import { getProfile } from '../api/profile'
 import Avatar from './Avatar'
 import { useAuth } from '../context/AuthContext'
+import { LOGO_SRC } from '../utils/brand'
+import { useScrolled } from '../utils/useScrolled'
 import NotificationsBell from './NotificationsBell'
-import './UserMenu.css'
+import UserMenu from './UserMenu'
 import './PerformerLayout.css'
-
-const LOGO_SRC = '/logo-master.svg'
-
-function TopMenu({ user, onLogout }) {
-  const [open, setOpen] = useState(false)
-  const ref = useRef(null)
-
-  useEffect(() => {
-    if (!open) return
-    const onDown = (e) => { if (!ref.current?.contains(e.target)) setOpen(false) }
-    const onKey = (e) => e.key === 'Escape' && setOpen(false)
-    document.addEventListener('mousedown', onDown)
-    document.addEventListener('keydown', onKey)
-    return () => {
-      document.removeEventListener('mousedown', onDown)
-      document.removeEventListener('keydown', onKey)
-    }
-  }, [open])
-
-  return (
-    <div className="user-menu" ref={ref}>
-      <button type="button" className="user-menu-btn pf-user-btn" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
-        <Avatar name={user.fullName} url={user.avatarUrl} size={42} />
-        <span className="user-name">{user.fullName}</span>
-        <ChevronDown size={18} className={open ? 'flip' : ''} />
-      </button>
-      {open && (
-        <div className="user-menu-list">
-          <Link to="/" onClick={() => setOpen(false)}><Globe size={18} /> На сайт</Link>
-          <Link to="/performer/profile" onClick={() => setOpen(false)}><User size={18} /> Профиль</Link>
-          <button type="button" onClick={() => { setOpen(false); onLogout() }}>
-            <LogOut size={18} /> Выйти
-          </button>
-        </div>
-      )}
-    </div>
-  )
-}
 
 export default function PerformerLayout() {
   const { user, logout, updateUser } = useAuth()
   const navigate = useNavigate()
   const [stats, setStats] = useState(null)
+  const scrolled = useScrolled()
 
   const reloadStats = useCallback(() => {
     getPerformerStats().then(setStats).catch(() => {})
@@ -79,17 +42,20 @@ export default function PerformerLayout() {
 
   return (
     <div className="pf">
-      <header className="pf-top">
-        <Link to="/performer" className="pf-logo" aria-label="FixHub">
-          <img src={LOGO_SRC} alt="FixHub" />
-        </Link>
-        <nav className="pf-top-nav">
-          <Link to="/">Каталог</Link>
-          <Link to="/how">Как это работает</Link>
-        </nav>
-        <div className="pf-top-right">
-          <NotificationsBell />
-          <TopMenu user={user} onLogout={handleLogout} />
+      {/* та же шапка, что на сайте: логотип, меню и отступы совпадают, поэтому при переходе ничего не прыгает */}
+      <header className={`site-header${scrolled ? ' scrolled' : ''}`}>
+        <div className="container site-header-inner">
+          <Link to="/performer" className="site-logo" aria-label="FixHub">
+            <img src={LOGO_SRC} alt="FixHub" />
+          </Link>
+          <nav className="site-nav">
+            <NavLink to="/" end>Каталог</NavLink>
+            <NavLink to="/how">Как это работает</NavLink>
+          </nav>
+          <div className="header-actions">
+            <NotificationsBell />
+            <UserMenu inPanel />
+          </div>
         </div>
       </header>
 
@@ -107,6 +73,7 @@ export default function PerformerLayout() {
           <nav className="pf-nav">
             <NavLink to="/performer" end><House size={22} strokeWidth={1.7} /> Главная</NavLink>
             <NavLink to="/performer/services"><Briefcase size={22} strokeWidth={1.7} /> Мои услуги</NavLink>
+            <NavLink to="/performer/portfolio"><Images size={22} strokeWidth={1.7} /> Портфолио</NavLink>
             <NavLink to="/performer/orders">
               <ClipboardList size={22} strokeWidth={1.7} /> Входящие заказы
               {newOrders > 0 && <span key={newOrders} className="pf-badge">{newOrders}</span>}

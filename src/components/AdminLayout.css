@@ -26,7 +26,7 @@
 .adm-user { display: flex; align-items: center; gap: 14px; padding: 4px 10px 4px 4px; border-radius: 999px; transition: background .2s; }
 .adm-user:hover { background: #eef3fd; }
 .adm-avatar { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;
-  border-radius: 50%; background: #22d3ee; color: #fff; font-size: 22px; font-weight: 500; }
+  border-radius: 50%; background: linear-gradient(135deg, #dbe7ff, #e6e1ff); color: var(--blue); font-size: 16px; font-weight: 700; }
 .adm-role { font-size: 13px; color: #1e3a8a; }
 
 .adm-content { min-width: 0; padding: 0 30px 56px; }
@@ -43,3 +43,6 @@
   .adm-role { display: none; }
   .adm-content { padding: 0 14px 40px; }
 }
+/* число новых жалоб в меню */
+.adm-badge { min-width: 20px; height: 20px; margin-left: auto; padding: 0 6px; display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 999px; background: #ef4444; color: #fff; font-size: 11px; font-weight: 700; line-height: 1; }

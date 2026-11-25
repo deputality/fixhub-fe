@@ -4,6 +4,7 @@ import { Bell } from 'lucide-react'
 import {
   getNotifications, getUnreadCount, markAllNotificationsRead, markNotificationRead,
 } from '../api/notifications'
+import './NotificationsBell.css'
 
 const POLL_MS = 60000
 

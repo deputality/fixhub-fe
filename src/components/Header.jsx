@@ -1,22 +1,35 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
-import { Menu, ShoppingCart, X } from 'lucide-react'
+import { Heart, Menu, ShoppingCart, X } from 'lucide-react'
+import { getProfile } from '../api/profile'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
+import { useFavorites } from '../context/FavoritesContext'
+import { LOGO_SRC } from '../utils/brand'
+import { useScrolled } from '../utils/useScrolled'
+import NotificationsBell from './NotificationsBell'
 import UserMenu from './UserMenu'
 
-// если заменил логотип на SVG, поставь '/logo.svg'
-const LOGO_SRC = '/logo.svg'
-
 export default function Header() {
-  const { user, logout } = useAuth()
+  const { user, logout, updateUser } = useAuth()
   const { count } = useCart()
+  const { count: favCount } = useFavorites()
   const showCart = !user || user.role === 'Client'
-  const [scrolled, setScrolled] = useState(false)
+  const scrolled = useScrolled()
   // запоминаем, на какой странице открыто меню: при переходе на другую оно закрывается само
   const [menuPath, setMenuPath] = useState(null)
   const { pathname } = useLocation()
   const menuOpen = menuPath === pathname
+
+  // фото мастера приходит только из профиля; если ещё не загружено, подтягиваем, чтобы шапка на сайте совпадала с панелью
+  const needsAvatar = user?.role === 'Performer' && user.avatarUrl === undefined
+  useEffect(() => {
+    if (!needsAvatar) return
+    getProfile()
+      .then((p) => updateUser({ avatarUrl: p.avatarUrl ?? null, specialization: p.specialization }))
+      .catch(() => {})
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [needsAvatar])
 
   // меню закрывается по Escape
   useEffect(() => {
@@ -25,13 +38,6 @@ export default function Header() {
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
   }, [menuOpen])
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
 
   return (
     <header className={`site-header${scrolled ? ' scrolled' : ''}`}>
@@ -47,6 +53,15 @@ export default function Header() {
 
         <div className="header-actions">
           {showCart && (
+            <Link to="/favorites" className="cart-link fav-link" aria-label="Избранное">
+              <Heart size={27} strokeWidth={1.8} />
+              {favCount > 0 && (
+                <span key={favCount} className="cart-badge">{favCount}</span>
+              )}
+            </Link>
+          )}
+
+          {showCart && (
             <Link to="/cart" className="cart-link" aria-label="Корзина">
               <ShoppingCart size={28} strokeWidth={1.8} />
               {count > 0 && (
@@ -54,6 +69,8 @@ export default function Header() {
               )}
             </Link>
           )}
+
+          {user?.role === 'Performer' && <NotificationsBell />}
 
           {user?.role === 'Client' || user?.role === 'Performer' ? (
             <UserMenu />
