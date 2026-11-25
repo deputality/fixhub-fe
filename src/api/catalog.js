@@ -15,6 +15,9 @@ export const getService = (id) => api(`/api/catalog/${id}`, { auth: false })
 export const getServiceReviews = (id, page = 1, pageSize = 10) =>
   api(`/api/catalog/${id}/reviews?page=${page}&pageSize=${pageSize}`, { auth: false })
 
-// публичная страница мастера: { id, fullName, specialization, experienceYears, city, serviceArea,
+// публичная страница мастера: { id, fullName, specialization, experienceYears, city, serviceArea, latitude, longitude,
 //   bio, avatarUrl, isVerified, createdAt, rating, reviewCount, completedOrders, servicesCount }
 export const getPerformer = (id) => api(`/api/performers/${id}`, { auth: false })
+
+// города мастеров, у которых есть услуги в каталоге: подсказки для поиска по городу
+export const getLocations = () => api('/api/catalog/locations', { auth: false })

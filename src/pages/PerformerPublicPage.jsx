@@ -1,3 +1,4 @@
+import ComplaintButton from '../components/ComplaintButton'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
@@ -5,7 +6,14 @@ import {
   MapPin, ShieldOff, Star, UserRound,
 } from 'lucide-react'
 import { getCatalog, getCategories, getPerformer } from '../api/catalog'
+import { getPerformerPortfolio } from '../api/portfolio'
 import { useCart } from '../context/CartContext'
+import { useFavorites } from '../context/FavoritesContext'
+import FavoriteButton from '../components/FavoriteButton'
+import MapView from '../components/MapView'
+import ShareButton from '../components/ShareButton'
+import { useDocumentMeta } from '../utils/useDocumentMeta'
+import PortfolioGallery from '../components/PortfolioGallery'
 import { resolveCategoryMeta } from '../utils/categoryMeta'
 import Pagination from '../components/Pagination'
 import ServiceCard from '../components/ServiceCard'
@@ -37,11 +45,13 @@ function sinceText(iso) {
 export default function PerformerPublicPage() {
   const { id } = useParams()
   const { addToCart } = useCart()
+  const { performerIds, togglePerformer } = useFavorites()
   const servicesRef = useRef(null)
 
   // результат загрузки помнит, для какого мастера он получен: пока id другой, показываем загрузку
   const [loaded, setLoaded] = useState({ id: null, performer: null, error: '' })
   const [categories, setCategories] = useState([])
+  const [portfolio, setPortfolio] = useState({ id: null, items: [] })
   // номер страницы услуг тоже привязан к мастеру и сбрасывается на первую при смене id
   const [pageState, setPageState] = useState({ id: null, page: 1 })
   const page = pageState.id === id ? pageState.page : 1
@@ -61,6 +71,10 @@ export default function PerformerPublicPage() {
         if (!cancelled) setLoaded({ id, performer: null, error: err?.error ?? 'Не удалось загрузить профиль мастера' })
       })
     getCategories().then((c) => { if (!cancelled) setCategories(c) }).catch(() => {})
+    // портфолио — дополнение к профилю: если не загрузилось, страница остаётся рабочей
+    getPerformerPortfolio(id)
+      .then((items) => { if (!cancelled) setPortfolio({ id, items }) })
+      .catch(() => { if (!cancelled) setPortfolio({ id, items: [] }) })
     return () => { cancelled = true }
   }, [id])
 
@@ -76,6 +90,18 @@ export default function PerformerPublicPage() {
   }, [key, id, page])
 
   const byId = useMemo(() => Object.fromEntries(categories.map((c) => [c.id, c])), [categories])
+
+  const perf = state.performer
+  useDocumentMeta({
+    title: perf
+      ? `${perf.fullName} — ${perf.specialization || 'мастер'}${perf.city ? `, ${perf.city}` : ''} | FixHub`
+      : '',
+    description: perf
+      ? [perf.specialization, [perf.city, perf.serviceArea].filter(Boolean).join(', '), perf.bio?.slice(0, 140)]
+        .filter(Boolean).join('. ')
+      : '',
+    image: perf?.avatarUrl,
+  })
 
   if (state.status === 'loading') {
     return <div className="container mp-page"><div className="mp-skeleton" /></div>
@@ -114,7 +140,18 @@ export default function PerformerPublicPage() {
         </span>
 
         <div className="mp-main">
-          <h1>{p.fullName}</h1>
+          <div className="mp-title">
+            <h1>{p.fullName}</h1>
+            <div className="mp-title-actions">
+              <ShareButton path={`/share/performers/${p.id}`} title={p.fullName} />
+              <FavoriteButton
+                variant="pill"
+                active={performerIds.has(p.id)}
+                label={p.fullName}
+                onToggle={() => togglePerformer(p.id)}
+              />
+            </div>
+          </div>
           <div className="mp-role">{p.specialization || 'Частный мастер'}</div>
 
           {p.isVerified ? (
@@ -128,6 +165,8 @@ export default function PerformerPublicPage() {
             {p.experienceYears != null && <li><Briefcase size={16} />Опыт {yearsText(p.experienceYears)}</li>}
             <li><CalendarDays size={16} />На FixHub с {sinceText(p.createdAt)}</li>
           </ul>
+
+          <ComplaintButton kind="Performer" targetId={p.id} ownerId={p.id} label="Пожаловаться на мастера" className="mp-report" />
         </div>
 
         <div className="mp-stats">
@@ -149,6 +188,21 @@ export default function PerformerPublicPage() {
           <h2><UserRound size={20} /> О мастере</h2>
           <p>{p.bio}</p>
         </section>
+      )}
+
+      {p.latitude != null && p.longitude != null && (
+        <section className="mp-card mp-where">
+          <h2><MapPin size={20} /> Где работает мастер</h2>
+          <MapView
+            height={260}
+            markers={[{ id: p.id, lat: p.latitude, lng: p.longitude, title: p.fullName, subtitle: place }]}
+          />
+          <p className="mp-where-note">Точка показывает район, а не точный адрес мастера.</p>
+        </section>
+      )}
+
+      {portfolio.id === id && portfolio.items.length > 0 && (
+        <PortfolioGallery items={portfolio.items} />
       )}
 
       <section ref={servicesRef} className="mp-services">

@@ -1,0 +1,4 @@
+.ava { flex-shrink: 0; border-radius: 50%; object-fit: cover; background: #e6ecfb; }
+/* инициалы в том же фирменном стиле, что и .avatar на карточках сайта */
+.ava-text { display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #dbe7ff, #e6e1ff);
+  color: var(--blue); font-weight: 700; user-select: none; }

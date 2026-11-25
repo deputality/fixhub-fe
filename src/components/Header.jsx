@@ -1,22 +1,40 @@
 import { useEffect, useState } from 'react'
-import { Link, NavLink, useLocation } from 'react-router-dom'
-import { Menu, ShoppingCart, X } from 'lucide-react'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { ClipboardList, Heart, LayoutDashboard, LogOut, Menu, ShoppingCart, User, X } from 'lucide-react'
+import { getProfile } from '../api/profile'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
+import { useFavorites } from '../context/FavoritesContext'
+import { LOGO_SRC } from '../utils/brand'
+import { useScrolled } from '../utils/useScrolled'
+import NotificationsBell from './NotificationsBell'
+import Avatar from './Avatar'
 import UserMenu from './UserMenu'
 
-// если заменил логотип на SVG, поставь '/logo.svg'
-const LOGO_SRC = '/logo.svg'
-
 export default function Header() {
-  const { user, logout } = useAuth()
+  const { user, logout, updateUser } = useAuth()
   const { count } = useCart()
+  const { count: favCount } = useFavorites()
   const showCart = !user || user.role === 'Client'
-  const [scrolled, setScrolled] = useState(false)
+  const scrolled = useScrolled()
   // запоминаем, на какой странице открыто меню: при переходе на другую оно закрывается само
   const [menuPath, setMenuPath] = useState(null)
   const { pathname } = useLocation()
+  const navigate = useNavigate()
   const menuOpen = menuPath === pathname
+
+  // фото мастера приходит только из профиля; если ещё не загружено, подтягиваем, чтобы шапка на сайте совпадала с панелью
+  const needsAvatar = user?.role === 'Performer' && user.avatarUrl === undefined
+  useEffect(() => {
+    if (!needsAvatar) return
+    getProfile()
+      .then((p) => updateUser({ avatarUrl: p.avatarUrl ?? null, specialization: p.specialization }))
+      .catch(() => {})
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [needsAvatar])
+
+  const isMember = user?.role === 'Client' || user?.role === 'Performer'
+  const closeMenu = () => setMenuPath(null)
 
   // меню закрывается по Escape
   useEffect(() => {
@@ -25,13 +43,6 @@ export default function Header() {
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
   }, [menuOpen])
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
 
   return (
     <header className={`site-header${scrolled ? ' scrolled' : ''}`}>
@@ -45,7 +56,16 @@ export default function Header() {
           <NavLink to="/how">Как это работает</NavLink>
         </nav>
 
-        <div className="header-actions">
+        <div className="header-actions hdr-main">
+          {showCart && (
+            <Link to="/favorites" className="cart-link fav-link" aria-label="Избранное">
+              <Heart size={27} strokeWidth={1.8} />
+              {favCount > 0 && (
+                <span key={favCount} className="cart-badge">{favCount}</span>
+              )}
+            </Link>
+          )}
+
           {showCart && (
             <Link to="/cart" className="cart-link" aria-label="Корзина">
               <ShoppingCart size={28} strokeWidth={1.8} />
@@ -54,6 +74,8 @@ export default function Header() {
               )}
             </Link>
           )}
+
+          {user?.role === 'Performer' && <NotificationsBell />}
 
           {user?.role === 'Client' || user?.role === 'Performer' ? (
             <UserMenu />
@@ -83,10 +105,50 @@ export default function Header() {
 
       {menuOpen && (
         <nav className="mobile-nav" aria-label="Меню">
+          {/* телефон: всё, что на компьютере спрятано в меню аватара, лежит здесь, в одном месте */}
+          {isMember && (
+            <>
+              <div className="mn-user">
+                <Avatar name={user.fullName} url={user.avatarUrl} size={44} />
+                <div>
+                  <div className="mn-user-name">{user.fullName}</div>
+                  <div className="mn-user-role">{user.role === 'Performer' ? 'Мастер' : 'Клиент'}</div>
+                </div>
+              </div>
+
+              {user.role === 'Performer' ? (
+                <>
+                  <NavLink to="/performer" end className="mn-link"><LayoutDashboard size={20} /> Панель мастера</NavLink>
+                  <NavLink to="/performer/profile" className="mn-link"><User size={20} /> Профиль</NavLink>
+                </>
+              ) : (
+                <>
+                  <NavLink to="/orders" className="mn-link"><ClipboardList size={20} /> Мои заказы</NavLink>
+                  <NavLink to="/favorites" className="mn-link">
+                    <Heart size={20} /> Избранное
+                    {favCount > 0 && <span className="mn-count">{favCount}</span>}
+                  </NavLink>
+                  <NavLink to="/profile" className="mn-link"><User size={20} /> Профиль</NavLink>
+                </>
+              )}
+              <div className="mn-sep" />
+            </>
+          )}
+
           <NavLink to="/" end>Каталог</NavLink>
           <NavLink to="/how">Как это работает</NavLink>
           <NavLink to="/about">О нас</NavLink>
           <NavLink to="/contacts">Контакты</NavLink>
+
+          {isMember && (
+            <>
+              <div className="mn-sep" />
+              <button type="button" className="mn-link mn-logout"
+                onClick={() => { closeMenu(); logout(); navigate('/') }}>
+                <LogOut size={20} /> Выйти
+              </button>
+            </>
+          )}
         </nav>
       )}
     </header>

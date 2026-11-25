@@ -31,7 +31,13 @@ export default function Footer() {
         </div>
       </div>
       <div className="footer-copy">
-        <div className="container">© {new Date().getFullYear()} FixHub. Все права защищены.</div>
+        <div className="container footer-copy-inner">
+          <span>© {new Date().getFullYear()} FixHub. Все права защищены.</span>
+          <span className="footer-legal">
+            <Link to="/terms">Условия использования</Link>
+            <Link to="/privacy">Политика конфиденциальности</Link>
+          </span>
+        </div>
       </div>
     </footer>
   )

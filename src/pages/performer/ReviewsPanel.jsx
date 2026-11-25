@@ -1,3 +1,4 @@
+import ComplaintButton from '../../components/ComplaintButton'
 import { useEffect, useState } from 'react'
 import { CircleAlert, Star } from 'lucide-react'
 import { getPerformerReviews } from '../../api/performer'
@@ -96,6 +97,7 @@ export default function ReviewsPanel() {
                 <Stars value={r.rating} />
                 <div className="pf-review-service">{r.serviceTitle}</div>
                 <p>{r.text}</p>
+                <ComplaintButton kind="Review" targetId={r.id} label="Пожаловаться на отзыв" />
               </div>
             </li>
           ))}

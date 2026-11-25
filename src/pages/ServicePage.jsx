@@ -1,12 +1,21 @@
+import ComplaintButton from '../components/ComplaintButton'
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
-  BadgeCheck, Briefcase, Camera, ChevronRight, CircleAlert, Droplet,
-  Minus, Plus, ShieldCheck, ShieldOff, ShoppingCart, Star,
+  BadgeCheck, Briefcase, Camera, ChevronRight, CircleAlert, Droplet, MapPin,
+  Minus, Plus, ShieldCheck, ShieldOff, ShoppingCart, Star, Zap,
 } from 'lucide-react'
 import { getCategories, getService, getServiceReviews } from '../api/catalog'
+import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
+import { useFavorites } from '../context/FavoritesContext'
+import { useToast } from '../context/ToastContext'
+import FavoriteButton from '../components/FavoriteButton'
+import MapView from '../components/MapView'
+import QuickOrderModal from '../components/QuickOrderModal'
+import ShareButton from '../components/ShareButton'
 import { resolveCategoryMeta } from '../utils/categoryMeta'
+import { useDocumentMeta } from '../utils/useDocumentMeta'
 import Button from '../components/Button'
 import './ServicePage.css'
 
@@ -54,6 +63,10 @@ function Stars({ value, size = 16 }) {
 export default function ServicePage() {
   const { id } = useParams()
   const { addToCart } = useCart()
+  const { serviceIds, toggleService } = useFavorites()
+  const { user } = useAuth()
+  const { show } = useToast()
+  const navigate = useNavigate()
 
   const [state, setState] = useState({ status: 'loading', service: null, error: '' })
   const [categories, setCategories] = useState([])
@@ -64,6 +77,7 @@ export default function ServicePage() {
   const [date, setDate] = useState(todayIso)
   const [comment, setComment] = useState('')
   const [adding, setAdding] = useState(false)
+  const [orderOpen, setOrderOpen] = useState(false)
 
   const minDate = useMemo(() => todayIso(), [])
 
@@ -89,6 +103,14 @@ export default function ServicePage() {
   }, [id])
 
   const { service } = state
+
+  useDocumentMeta({
+    title: service ? `${service.title} — ${service.performerName} | FixHub` : '',
+    description: service
+      ? `${service.categoryName}${service.performerCity ? `, ${service.performerCity}` : ''}. От ${service.price} BYN. ${service.description.slice(0, 140)}`
+      : '',
+    image: service?.photoUrl,
+  })
 
   const byId = useMemo(() => Object.fromEntries(categories.map((c) => [c.id, c])), [categories])
   const meta = useMemo(
@@ -118,6 +140,19 @@ export default function ServicePage() {
     setAdding(false)
   }
 
+  // «Заказать»: без корзины, сразу окно с адресом и телефоном
+  function handleOrderNow() {
+    if (!user) {
+      navigate('/login')
+      return
+    }
+    if (user.role !== 'Client') {
+      show('Заказывать услуги могут только клиенты', 'error')
+      return
+    }
+    setOrderOpen(true)
+  }
+
   if (state.status === 'loading') {
     return (
       <div className="container sp-page">
@@ -141,6 +176,8 @@ export default function ServicePage() {
   const unit = UNITS[service.unit] ?? ''
   const total = service.price * quantity
   const hiddenCount = reviews.total - reviews.items.length
+  const place = [service.performerCity, service.performerServiceArea].filter(Boolean).join(', ')
+  const hasPoint = service.performerLatitude != null && service.performerLongitude != null
 
   return (
     <div className="container sp-page">
@@ -180,12 +217,43 @@ export default function ServicePage() {
               ))}
             </div>
           </section>
+
+          {(place || hasPoint) && (
+            <section className="sp-card sp-where">
+              <h2>Где работает мастер</h2>
+              {place && <p className="sp-where-text"><MapPin size={17} /> {place}</p>}
+              {hasPoint && (
+                <MapView
+                  height={240}
+                  markers={[{
+                    id: service.performerId,
+                    lat: service.performerLatitude,
+                    lng: service.performerLongitude,
+                    title: service.performerName,
+                    subtitle: place,
+                  }]}
+                />
+              )}
+              <p className="sp-where-note">Точка на карте показывает район, а не точный адрес мастера.</p>
+            </section>
+          )}
         </div>
 
         {/* ===== правая колонка ===== */}
         <div className="sp-right">
           <section className="sp-card sp-order">
-            <span className="sp-tag">{service.categoryName}</span>
+            <div className="sp-top">
+              <span className="sp-tag">{service.categoryName}</span>
+              <div className="sp-top-actions">
+                <ShareButton path={`/share/services/${service.id}`} title={service.title} />
+                <FavoriteButton
+                  variant="pill"
+                  active={serviceIds.has(service.id)}
+                  label={service.title}
+                  onToggle={() => toggleService(service.id)}
+                />
+              </div>
+            </div>
             <h1>{service.title}</h1>
 
             <div className="sp-rating">
@@ -284,7 +352,11 @@ export default function ServicePage() {
               <b>{total} BYN</b>
             </div>
 
-            <Button block loading={adding} onClick={handleAdd}>
+            <Button block onClick={handleOrderNow}>
+              <Zap size={18} />
+              Заказать
+            </Button>
+            <Button block variant="outline" loading={adding} onClick={handleAdd}>
               <ShoppingCart size={18} />
               Добавить в корзину
             </Button>
@@ -320,6 +392,7 @@ export default function ServicePage() {
                         <b>{r.rating}.0</b>
                       </div>
                       <p>{r.text}</p>
+                      <ComplaintButton kind="Review" targetId={r.id} ownerId={r.clientId} />
                     </div>
                   </li>
                 ))}
@@ -328,6 +401,18 @@ export default function ServicePage() {
           </section>
         </div>
       </div>
+
+      {orderOpen && (
+        <QuickOrderModal
+          service={service}
+          quantity={quantity}
+          date={date}
+          comment={comment.trim()}
+          photo={service.photoUrl || meta.image}
+          color={meta.color}
+          onClose={() => setOrderOpen(false)}
+        />
+      )}
     </div>
   )
 }

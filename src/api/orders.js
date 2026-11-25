@@ -10,3 +10,6 @@ export const getMyReviews = () => api('/api/reviews/my')
 
 // { orderItemId, rating, text }
 export const createReview = (body) => api('/api/reviews', { method: 'POST', body })
+// заказ одной услуги без корзины: { serviceId, quantity, desiredDate, comment, address, contactName, contactPhone }
+// возвращает один заказ (не список, как оформление корзины)
+export const quickOrder = (body) => api('/api/orders/quick', { method: 'POST', body })

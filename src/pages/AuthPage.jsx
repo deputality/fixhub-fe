@@ -77,6 +77,7 @@ export default function AuthPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [role, setRole] = useState('Client')
+  const [agreed, setAgreed] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [fieldErrors, setFieldErrors] = useState({})
@@ -104,7 +105,9 @@ export default function AuthPage() {
     const errors = validate({ fullName, email, password }, isRegister)
     setFieldErrors(errors)
 
-    const firstInvalid = ['fullName', 'email', 'password'].find((k) => errors[k])
+    if (isRegister && !agreed) errors.agreed = 'Подтвердите согласие, чтобы зарегистрироваться'
+
+    const firstInvalid = ['fullName', 'email', 'password', 'agreed'].find((k) => errors[k])
     if (firstInvalid) {
       document.getElementById(firstInvalid)?.focus()
       return
@@ -126,6 +129,12 @@ export default function AuthPage() {
 
   async function handleGoogle() {
     setError('')
+    // через Google на странице регистрации создаётся аккаунт, поэтому согласие нужно и здесь
+    if (isRegister && !agreed) {
+      setFieldErrors((prev) => ({ ...prev, agreed: 'Подтвердите согласие, чтобы зарегистрироваться' }))
+      document.getElementById('agreed')?.focus()
+      return
+    }
     setGoogleLoading(true)
     try {
       const accessToken = await requestGoogleAccessToken(GOOGLE_CLIENT_ID)
@@ -271,6 +280,35 @@ export default function AuthPage() {
                       </button>
                     ))}
                   </div>
+                </div>
+              </div>
+            </div>
+
+            {/* согласие: плавно появляется только при регистрации */}
+            <div className={`collapse${isRegister ? ' open' : ''}`} aria-hidden={!isRegister}>
+              <div className="collapse-inner">
+                <div className="field">
+                  <label className={`consent${fieldErrors.agreed ? ' has-error' : ''}`} htmlFor="agreed">
+                    <input
+                      id="agreed"
+                      type="checkbox"
+                      checked={agreed}
+                      tabIndex={isRegister ? 0 : -1}
+                      onChange={(e) => {
+                        setAgreed(e.target.checked)
+                        setError('')
+                        setFieldErrors((prev) => (prev.agreed ? { ...prev, agreed: undefined } : prev))
+                      }}
+                    />
+                    <span>
+                      Я принимаю <Link to="/terms" target="_blank" tabIndex={isRegister ? 0 : -1}>Условия использования</Link> и
+                      даю согласие на обработку персональных данных согласно{' '}
+                      <Link to="/privacy" target="_blank" tabIndex={isRegister ? 0 : -1}>Политике конфиденциальности</Link>
+                    </span>
+                  </label>
+                  {fieldErrors.agreed && (
+                    <span className="field-error" role="alert"><CircleAlert size={15} />{fieldErrors.agreed}</span>
+                  )}
                 </div>
               </div>
             </div>

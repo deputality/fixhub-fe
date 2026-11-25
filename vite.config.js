@@ -7,6 +7,8 @@ export default defineConfig({
     proxy: {
       '/api': 'http://localhost:8080',
       '/uploads': 'http://localhost:8080',
+      // страницы для превью ссылок в мессенджерах (Open Graph) отдаёт бэкенд
+      '/share': 'http://localhost:8080',
     },
   },
 })
