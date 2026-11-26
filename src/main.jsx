@@ -8,6 +8,10 @@ import { ToastProvider } from './context/ToastContext'
 import App from './App'
 import './index.css'
 import './responsive.css'
+import './theme.css'
+import { initTheme } from './utils/theme'
+
+initTheme()
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

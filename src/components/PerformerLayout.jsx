@@ -5,9 +5,10 @@ import { getPerformerStats } from '../api/performer'
 import { getProfile } from '../api/profile'
 import Avatar from './Avatar'
 import { useAuth } from '../context/AuthContext'
-import { LOGO_SRC } from '../utils/brand'
+import { useLogoSrc } from '../utils/theme'
 import { useScrolled } from '../utils/useScrolled'
 import NotificationsBell from './NotificationsBell'
+import ThemeToggle from './ThemeToggle'
 import UserMenu from './UserMenu'
 import './PerformerLayout.css'
 
@@ -23,6 +24,7 @@ const SECTIONS = [
 
 export default function PerformerLayout() {
   const { user, logout, updateUser } = useAuth()
+  const logoSrc = useLogoSrc()
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const [stats, setStats] = useState(null)
@@ -62,13 +64,14 @@ export default function PerformerLayout() {
       <header className={`site-header${scrolled ? ' scrolled' : ''}`}>
         <div className="container site-header-inner">
           <Link to="/performer" className="site-logo" aria-label="FixHub">
-            <img src={LOGO_SRC} alt="FixHub" />
+            <img src={logoSrc} alt="FixHub" />
           </Link>
           <nav className="site-nav">
             <NavLink to="/" end>Каталог</NavLink>
             <NavLink to="/how">Как это работает</NavLink>
           </nav>
           <div className="header-actions">
+            <ThemeToggle />
             <NotificationsBell />
             <UserMenu inPanel />
           </div>

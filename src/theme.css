@@ -1,0 +1,285 @@
+/* Тема оформления. Файл сгенерирован: в остальных CSS светлые цвета заменены на переменные --bg-*, --bd-*, --tx-*.
+   В светлой теме значения равны прежним цветам, в тёмной (html[data-theme="dark"]) заменены на тёмные. */
+:root {
+  --ink-bg: #0f172a;
+  --surface-rgb: 255 255 255;
+  --bd-b7ebcb: #b7ebcb;
+  --bd-b8cdf7: #b8cdf7;
+  --bd-b9cbf2: #b9cbf2;
+  --bd-b9cbf3: #b9cbf3;
+  --bd-bcd0f7: #bcd0f7;
+  --bd-c5d3ee: #c5d3ee;
+  --bd-c9d8f5: #c9d8f5;
+  --bd-cbd5e1: #cbd5e1;
+  --bd-cfdcf5: #cfdcf5;
+  --bd-cfdcf6: #cfdcf6;
+  --bd-d5def0: #d5def0;
+  --bd-d6e3fb: #d6e3fb;
+  --bd-d9e3f7: #d9e3f7;
+  --bd-dbe3f3: #dbe3f3;
+  --bd-dde6f7: #dde6f7;
+  --bd-e1e9f8: #e1e9f8;
+  --bd-e1e9fb: #e1e9fb;
+  --bd-e2e8f0: #e2e8f0;
+  --bd-e3e9f4: #e3e9f4;
+  --bd-e3e9f5: #e3e9f5;
+  --bd-e3eafa: #e3eafa;
+  --bd-e5eaf3: #e5eaf3;
+  --bd-e6ecf7: #e6ecf7;
+  --bd-e6ecf8: #e6ecf8;
+  --bd-e6eefc: #e6eefc;
+  --bd-e8edf7: #e8edf7;
+  --bd-e8eefb: #e8eefb;
+  --bd-e9eef8: #e9eef8;
+  --bd-edf1f9: #edf1f9;
+  --bd-edf1fa: #edf1fa;
+  --bd-eef2f9: #eef2f9;
+  --bd-eef2fa: #eef2fa;
+  --bd-f0f3fa: #f0f3fa;
+  --bd-fda4af: #fda4af;
+  --bd-fecaca: #fecaca;
+  --bd-ffffff: #ffffff;
+  --bg-bfd4ff: #bfd4ff;
+  --bg-c7ecff: #c7ecff;
+  --bg-c9d6f5: #c9d6f5;
+  --bg-d5dded: #d5dded;
+  --bg-d8d2ff: #d8d2ff;
+  --bg-dbe5fb: #dbe5fb;
+  --bg-dbe7ff: #dbe7ff;
+  --bg-dcf5e7: #dcf5e7;
+  --bg-dcfce7: #dcfce7;
+  --bg-dfe9ff: #dfe9ff;
+  --bg-e0eaff: #e0eaff;
+  --bg-e0ecff: #e0ecff;
+  --bg-e4edff: #e4edff;
+  --bg-e5eaf3: #e5eaf3;
+  --bg-e5f7ec: #e5f7ec;
+  --bg-e6e1ff: #e6e1ff;
+  --bg-e6ecfb: #e6ecfb;
+  --bg-e6eeff: #e6eeff;
+  --bg-e8edf5: #e8edf5;
+  --bg-e8edf7: #e8edf7;
+  --bg-e8effc: #e8effc;
+  --bg-e8f0ff: #e8f0ff;
+  --bg-e8f3ff: #e8f3ff;
+  --bg-e8f7ee: #e8f7ee;
+  --bg-e9e3ff: #e9e3ff;
+  --bg-e9e6ff: #e9e6ff;
+  --bg-e9eef8: #e9eef8;
+  --bg-e9eff9: #e9eff9;
+  --bg-eaf1ff: #eaf1ff;
+  --bg-ecfdf3: #ecfdf3;
+  --bg-eef0ff: #eef0ff;
+  --bg-eef1f6: #eef1f6;
+  --bg-eef2f9: #eef2f9;
+  --bg-eef2fb: #eef2fb;
+  --bg-eef3fd: #eef3fd;
+  --bg-eef3ff: #eef3ff;
+  --bg-eff5ff: #eff5ff;
+  --bg-f0fdf4: #f0fdf4;
+  --bg-f1f5f9: #f1f5f9;
+  --bg-f1f5fd: #f1f5fd;
+  --bg-f1f5ff: #f1f5ff;
+  --bg-f3f6fc: #f3f6fc;
+  --bg-f3f7ff: #f3f7ff;
+  --bg-f3f8ff: #f3f8ff;
+  --bg-f4f7fc: #f4f7fc;
+  --bg-f5f8ff: #f5f8ff;
+  --bg-f6f8fd: #f6f8fd;
+  --bg-f6f9ff: #f6f9ff;
+  --bg-f7f9fd: #f7f9fd;
+  --bg-f8fafc: #f8fafc;
+  --bg-f8faff: #f8faff;
+  --bg-f9fbff: #f9fbff;
+  --bg-fafbff: #fafbff;
+  --bg-fafcff: #fafcff;
+  --bg-fdecd0: #fdecd0;
+  --bg-fee2e2: #fee2e2;
+  --bg-fef2f2: #fef2f2;
+  --bg-fef3c7: #fef3c7;
+  --bg-fff1f3: #fff1f3;
+  --bg-fff5f7: #fff5f7;
+  --bg-fff8e8: #fff8e8;
+  --bg-fff8f8: #fff8f8;
+  --bg-ffffff: #ffffff;
+  --tx-0b1a4a: #0b1a4a;
+  --tx-0f172a: #0f172a;
+  --tx-15803d: #15803d;
+  --tx-166534: #166534;
+  --tx-16a34a: #16a34a;
+  --tx-1e293b: #1e293b;
+  --tx-1e3a8a: #1e3a8a;
+  --tx-334155: #334155;
+  --tx-334e8a: #334e8a;
+  --tx-475569: #475569;
+  --tx-64748b: #64748b;
+  --tx-94a3b8: #94a3b8;
+  --tx-b45309: #b45309;
+  --tx-b91c1c: #b91c1c;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --ink-bg: #0f172a;
+  --surface-rgb: 24 28 37;
+  --bd-b7ebcb: #578f6c;
+  --bd-b8cdf7: #57698f;
+  --bd-b9cbf2: #57688f;
+  --bd-b9cbf3: #57688f;
+  --bd-bcd0f7: #576a8f;
+  --bd-c5d3ee: #5a6b8c;
+  --bd-c9d8f5: #586a8e;
+  --bd-cbd5e1: #525f6f;
+  --bd-cfdcf5: #5b6b8a;
+  --bd-cfdcf6: #5b6b8b;
+  --bd-d5def0: #616d84;
+  --bd-d6e3fb: #50607e;
+  --bd-d9e3f7: #55627b;
+  --bd-dbe3f3: #5c667b;
+  --bd-dde6f7: #515d73;
+  --bd-e1e9f8: #4b5569;
+  --bd-e1e9fb: #444f66;
+  --bd-e2e8f0: #38404c;
+  --bd-e3e9f4: #323a4a;
+  --bd-e3e9f5: #313949;
+  --bd-e3eafa: #444d63;
+  --bd-e5eaf3: #333a47;
+  --bd-e6ecf7: #2d3645;
+  --bd-e6ecf8: #2c3445;
+  --bd-e6eefc: #263144;
+  --bd-e8edf7: #2d3442;
+  --bd-e8eefb: #272f41;
+  --bd-e9eef8: #2b3241;
+  --bd-edf1f9: #292f3b;
+  --bd-edf1fa: #272d3b;
+  --bd-eef2f9: #282f3a;
+  --bd-eef2fa: #272d39;
+  --bd-f0f3fa: #272b37;
+  --bd-fda4af: #8f575e;
+  --bd-fecaca: #8f5757;
+  --bd-ffffff: #151b28;
+  --bg-bfd4ff: #43557b;
+  --bg-c7ecff: #3b6073;
+  --bg-c9d6f5: #445479;
+  --bg-d5dded: #4b556a;
+  --bg-d8d2ff: #383067;
+  --bg-dbe5fb: #323f5b;
+  --bg-dbe7ff: #2c3b59;
+  --bg-dcf5e7: #3b5c4a;
+  --bg-dcfce7: #30593e;
+  --bg-dfe9ff: #2a3753;
+  --bg-e0eaff: #2a3751;
+  --bg-e0ecff: #2a3951;
+  --bg-e4edff: #28344b;
+  --bg-e5eaf3: #272f3c;
+  --bg-e5f7ec: #233c2d;
+  --bg-e6e1ff: #302a50;
+  --bg-e6ecfb: #1f273b;
+  --bg-e6eeff: #273248;
+  --bg-e8edf5: #252d39;
+  --bg-e8edf7: #232b39;
+  --bg-e8effc: #1e2839;
+  --bg-e8f0ff: #263145;
+  --bg-e8f3ff: #263545;
+  --bg-e8f7ee: #23392c;
+  --bg-e9e3ff: #30294d;
+  --bg-e9e6ff: #2b2748;
+  --bg-e9eef8: #222a38;
+  --bg-e9eff9: #212a38;
+  --bg-eaf1ff: #1b2437;
+  --bg-ecfdf3: #1d3527;
+  --bg-eef0ff: #1b1e33;
+  --bg-eef1f6: #252a33;
+  --bg-eef2f9: #222833;
+  --bg-eef2fb: #1f2533;
+  --bg-eef3fd: #1d2433;
+  --bg-eef3ff: #1b2233;
+  --bg-eff5ff: #1b2432;
+  --bg-f0fdf4: #1d3123;
+  --bg-f1f5f9: #222930;
+  --bg-f1f5fd: #1d2430;
+  --bg-f1f5ff: #1b2130;
+  --bg-f3f6fc: #1f242e;
+  --bg-f3f7ff: #1b222e;
+  --bg-f3f8ff: #1b232e;
+  --bg-f4f7fc: #1f242d;
+  --bg-f5f8ff: #1c202c;
+  --bg-f6f8fd: #1e212a;
+  --bg-f6f9ff: #1c212b;
+  --bg-f7f9fd: #1e2229;
+  --bg-f8fafc: #1a202d;
+  --bg-f8faff: #1c1f28;
+  --bg-f9fbff: #1c2027;
+  --bg-fafbff: #181d2b;
+  --bg-fafcff: #181d2b;
+  --bg-fdecd0: #6b5634;
+  --bg-fee2e2: #4f2b2b;
+  --bg-fef2f2: #2f1c1c;
+  --bg-fef3c7: #74683c;
+  --bg-fff1f3: #301b1e;
+  --bg-fff5f7: #2c1c1f;
+  --bg-fff8e8: #453c26;
+  --bg-fff8f8: #281c1c;
+  --bg-ffffff: #151b28;
+  --tx-0b1a4a: #bdc9f0;
+  --tx-0f172a: #dce1ec;
+  --tx-15803d: #8de3ad;
+  --tx-166534: #a5e4bd;
+  --tx-16a34a: #6ee098;
+  --tx-1e293b: #ccd3dd;
+  --tx-1e3a8a: #849adb;
+  --tx-334155: #b5bdc8;
+  --tx-334e8a: #8c9cbe;
+  --tx-475569: #a2aab5;
+  --tx-64748b: #89929e;
+  --tx-94a3b8: #8792a1;
+  --tx-b45309: #ea9c60;
+  --tx-b91c1c: #d95a5a;
+
+  /* основные токены из index.css */
+  --navy: #e6ebf7;
+  --muted: #8d9bb8;
+  --border: #2a3350;
+  --bg: #0b0f19;
+  --blue: #4f8cff;
+  --blue-600: #7aa5ff;
+  --danger: #f05252;
+  --scroll-track: #141a2a;
+  --scroll-thumb: #34406a;
+  --sh-sm: 0 1px 2px rgba(0, 0, 0, .35), 0 2px 8px rgba(0, 0, 0, .3);
+  --sh-md: 0 4px 12px rgba(0, 0, 0, .4), 0 12px 28px rgba(0, 0, 0, .35);
+  --sh-lg: 0 10px 20px rgba(0, 0, 0, .45), 0 24px 48px rgba(0, 0, 0, .4);
+  --ring: 0 0 0 4px rgba(79, 140, 255, .28);
+}
+
+html[data-theme="dark"] body {
+  background:
+    radial-gradient(900px 500px at 100% -10%, rgba(79, 70, 229, .14), transparent 60%),
+    radial-gradient(800px 500px at -10% 30%, rgba(37, 99, 235, .12), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
+}
+
+/* поля ввода и подсказки в полях */
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder { color: #6b7896; }
+html[data-theme="dark"] input:-webkit-autofill {
+  -webkit-text-fill-color: var(--navy);
+  box-shadow: 0 0 0 1000px var(--bg-ffffff) inset;
+}
+
+/* фото и логотипы чуть приглушаем, чтобы не слепили на тёмном фоне */
+html[data-theme="dark"] img:not([src$=".svg"]) { filter: brightness(.92); }
+/* карта: светлые тайлы инвертируем в тёмные */
+html[data-theme="dark"] .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(.92) contrast(.9); }
+
+/* ===== переключатель темы ===== */
+.theme-toggle { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; padding: 0;
+  border: none; border-radius: 12px; background: none; color: var(--navy); cursor: pointer;
+  transition: background .2s, transform .25s var(--spring); }
+.theme-toggle:hover { background: var(--bg-eef3fd, rgba(37, 99, 235, .1)); transform: rotate(-12deg) scale(1.08); }
+.theme-toggle svg { display: block; }
+
+/* логотип для тёмного фона компактнее светлого, поэтому слегка увеличиваем */
+html[data-theme="dark"] .site-logo img { transform: scale(1.25); transform-origin: left center; }
+html[data-theme="dark"] .auth-logo img { transform: scale(1.25); transform-origin: left center; }

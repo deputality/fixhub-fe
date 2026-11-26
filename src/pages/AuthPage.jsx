@@ -8,11 +8,9 @@ import { useAuth } from '../context/AuthContext'
 import Button from '../components/Button'
 import Input from '../components/Input'
 import { requestGoogleAccessToken } from '../utils/google'
+import { useLogoSrc } from '../utils/theme'
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
-
-// если выгрузил логотип в SVG, поставь '/logo.svg'
-const LOGO_SRC = '/logo.svg'
 
 const FEATURES = [
   { icon: <ShieldCheck />, title: 'Проверенные специалисты', text: 'Проверяем документы и отзывы' },
@@ -68,6 +66,7 @@ function targetFor(role, from) {
 }
 
 export default function AuthPage() {
+  const logoSrc = useLogoSrc()
   const { pathname, state } = useLocation()
   const isRegister = pathname === '/register'
   const { login, register, loginWithGoogle } = useAuth()
@@ -156,7 +155,7 @@ export default function AuthPage() {
     <div className="auth-layout">
       <div className="auth-bg" aria-hidden="true"><i /><i /><i /></div>
       <Link to="/" className="auth-logo">
-        <img src={LOGO_SRC} alt="FixHub" />
+        <img src={logoSrc} alt="FixHub" />
       </Link>
 
       <main className="auth-main">

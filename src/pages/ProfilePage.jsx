@@ -9,6 +9,7 @@ import { useToast } from '../context/ToastContext'
 import { useAuthGuard } from '../utils/useAuthGuard'
 import Button from '../components/Button'
 import Input from '../components/Input'
+import AccountSecurity from '../components/AccountSecurity'
 import './ProfilePage.css'
 
 function initials(name = '') {
@@ -235,6 +236,9 @@ export default function ProfilePage() {
           )}
         </aside>
       </form>
+
+      {/* смена пароля у мастера лежит в «Настройках», удаление аккаунта общее */}
+      <AccountSecurity showPassword={!isPerformer} />
     </div>
   )
 }

@@ -5,14 +5,16 @@ import { getProfile } from '../api/profile'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
 import { useFavorites } from '../context/FavoritesContext'
-import { LOGO_SRC } from '../utils/brand'
+import { useLogoSrc } from '../utils/theme'
 import { useScrolled } from '../utils/useScrolled'
 import NotificationsBell from './NotificationsBell'
 import Avatar from './Avatar'
+import ThemeToggle from './ThemeToggle'
 import UserMenu from './UserMenu'
 
 export default function Header() {
   const { user, logout, updateUser } = useAuth()
+  const logoSrc = useLogoSrc()
   const { count } = useCart()
   const { count: favCount } = useFavorites()
   const showCart = !user || user.role === 'Client'
@@ -48,7 +50,7 @@ export default function Header() {
     <header className={`site-header${scrolled ? ' scrolled' : ''}`}>
       <div className="container site-header-inner">
         <Link to="/" className="site-logo">
-          <img src={LOGO_SRC} alt="FixHub" />
+          <img src={logoSrc} alt="FixHub" />
         </Link>
 
         <nav className="site-nav">
@@ -57,6 +59,7 @@ export default function Header() {
         </nav>
 
         <div className="header-actions hdr-main">
+          <ThemeToggle />
           {showCart && (
             <Link to="/favorites" className="cart-link fav-link" aria-label="Избранное">
               <Heart size={27} strokeWidth={1.8} />
