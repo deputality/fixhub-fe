@@ -1,0 +1,11 @@
+.user-menu { position: relative; }
+.user-menu-btn { display: flex; align-items: center; gap: 12px; padding: 4px 10px 4px 4px; border: none; border-radius: var(--r-pill);
+  background: none; color: var(--text); font: inherit; cursor: pointer; transition: background .2s; }
+.user-menu-btn:hover { background: var(--surface-3); }
+.user-menu-btn svg { transition: transform .2s; }
+.user-menu-btn svg.flip { transform: rotate(180deg); }
+.user-menu-list { position: absolute; right: 0; top: calc(100% + 8px); z-index: var(--z-menu); min-width: 200px; padding: 6px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); box-shadow: var(--sh-md); animation: rise .2s var(--ease-out); }
+.user-menu-list a, .user-menu-list button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px;
+  border: none; border-radius: var(--r-sm); background: none; color: var(--text); font: inherit; font-size: 14px; cursor: pointer; text-align: left; }
+.user-menu-list a:hover, .user-menu-list button:hover { background: var(--surface-3); color: var(--blue); }

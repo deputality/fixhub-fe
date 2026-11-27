@@ -4,7 +4,7 @@ import {
   Scissors, Shield, Shirt, Smartphone, Snowflake, Sofa, Sparkles, SprayCan, Tag, Truck, Tv, Utensils,
   Wifi, Wrench, Zap,
 } from 'lucide-react'
-import FaucetIcon from '../components/FaucetIcon'
+import FaucetIcon from '../components/common/FaucetIcon'
 
 // Набор иконок, из которых админ выбирает значок категории.
 // key сохраняется в базе, поэтому уже выданные ключи переименовывать нельзя.

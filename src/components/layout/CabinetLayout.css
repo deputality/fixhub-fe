@@ -1,0 +1,18 @@
+.cab { display: grid; grid-template-columns: var(--side-w) minmax(0, 1fr); gap: 32px; max-width: var(--w-wide); margin: 0 auto; padding: 0 var(--gutter); min-height: calc(100vh - 68px); }
+.cab-side { padding: 30px 0; }
+.cab-side nav { position: sticky; top: 98px; display: flex; flex-direction: column; gap: 6px; }
+.cab-side a, .cab-side button { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: none;
+  border-radius: var(--r-md); background: none; color: var(--text-muted); font: inherit; font-size: 15px; cursor: pointer; text-align: left;
+  transition: background .2s, color .2s; }
+.cab-side a:hover, .cab-side button:hover { background: var(--surface-3); color: var(--blue); }
+.cab-side a.active { background: var(--accent-soft-2); color: var(--blue); font-weight: 500; }
+.cab-content { min-width: 0; padding: 32px 0 56px; }
+
+/* телефон: разделы кабинета лежат в меню ☰ в шапке сайта, поэтому боковая колонка скрыта
+   (порог 700px тот же, с которого в шапке появляется ☰) */
+@media (max-width: 700px) {
+  .cab { grid-template-columns: minmax(0, 1fr); }
+  .cab-side { display: none; }
+  .cab { padding: 0 var(--gutter); }
+  .cab-content { padding: 20px 0 40px; }
+}

@@ -1,0 +1,60 @@
+/* ===== профиль ===== */
+.prof-title { margin: 0 0 8px; font-size: 36px; font-weight: 800; letter-spacing: -.025em; animation: rise .6s var(--ease-out) both; }
+.prof-lead { margin: 0 0 22px; font-size: 16px; color: var(--text-muted); animation: rise .6s var(--ease-out) .06s both; }
+
+.prof-head { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; padding: 20px 24px; margin-bottom: 20px; background: var(--surface);
+  border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--sh-sm); animation: rise .6s var(--ease-out) .1s both; }
+.prof-avatar { width: 84px; height: 84px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border-radius: 50%;
+  background: var(--grad); color: #fff; font-size: 28px; font-weight: 700; box-shadow: 0 8px 20px rgba(37, 99, 235, .3); }
+.prof-who { flex: 1; min-width: 160px; }
+.prof-name { font-size: 24px; font-weight: 800; letter-spacing: -.02em; overflow-wrap: anywhere; }
+.prof-role { margin-top: 4px; font-size: 14px; color: var(--text-muted); }
+.prof-numbers { display: flex; gap: 32px; padding-left: 32px; border-left: 1px solid var(--line); }
+.prof-numbers > div { display: flex; flex-direction: column; gap: 3px; }
+.prof-numbers b { display: flex; align-items: center; gap: 6px; font-size: 28px; font-weight: 800; letter-spacing: -.02em; }
+.prof-numbers span { font-size: 13px; color: var(--text-2); }
+.prof-numbers small { font-size: 12px; color: var(--text-faint); }
+
+.prof-grid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 20px; align-items: start; }
+.prof-main { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.prof-card { padding: 22px 24px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--sh-sm); animation: rise .6s var(--ease-out) .14s both; }
+.prof-card h2 { margin: 0 0 16px; font-size: 19px; font-weight: 800; letter-spacing: -.01em; }
+.prof-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.prof-wide { grid-column: 1 / -1; }
+.prof-hint { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 12px; color: var(--text-faint); }
+.field-box:has(input:disabled) { background: var(--surface-2); color: var(--text-faint); }
+.prof .field-input:disabled { color: var(--text-muted); cursor: not-allowed; }
+
+.prof-textarea { width: 100%; padding: 12px 14px; resize: vertical; min-height: 120px; background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r-md); font: inherit; font-size: 15px; line-height: 1.5; color: var(--text); outline: none;
+  transition: border-color .25s, box-shadow .25s; }
+.prof-textarea::placeholder { color: var(--text-faint); }
+.prof-textarea:hover { border-color: var(--line-strong); }
+.prof-textarea:focus { border-color: var(--blue); box-shadow: var(--ring); }
+
+.prof-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.prof-actions .btn { min-width: 190px; }
+
+.prof-side { display: flex; flex-direction: column; gap: 18px; position: sticky; top: 90px; }
+.prof-pill { display: inline-block; padding: 5px 12px; border-radius: var(--r-sm); font-size: 12px; font-weight: 600; }
+.prof-pill.on { background: var(--success-bg); color: var(--success-text); }
+.prof-pill.off { background: var(--surface-3); color: var(--text-muted); }
+.prof-text { margin: 12px 0 14px; font-size: 14px; line-height: 1.5; color: var(--text-muted); }
+.prof-link { font-size: 14px; font-weight: 600; color: var(--blue); }
+.prof-link:hover { color: var(--blue-600); text-decoration: underline; }
+
+.prof-sk-title { width: 260px; height: 36px; border-radius: var(--r-sm); margin-bottom: 22px; }
+.prof-sk-head { height: 124px; border-radius: var(--r-lg); margin-bottom: 20px; }
+.prof-sk-card { height: 260px; border-radius: var(--r-lg); }
+
+@media (max-width: 1000px) {
+  .prof-grid { grid-template-columns: 1fr; }
+  .prof-side { position: static; }
+  .prof-numbers { padding-left: 0; border-left: none; width: 100%; }
+}
+@media (max-width: 640px) {
+  .prof-title { font-size: 28px; }
+  .prof-fields { grid-template-columns: 1fr; }
+  .prof-actions .btn { flex: 1; min-width: 0; }
+  .prof-head { padding: 16px; }
+}

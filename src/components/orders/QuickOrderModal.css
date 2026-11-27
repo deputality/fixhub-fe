@@ -1,0 +1,7 @@
+.quick-order { display: flex; flex-direction: column; gap: 14px; }
+.quick-summary { display: flex; flex-direction: column; gap: 3px; padding: 14px 16px; background: var(--surface-2);
+  border: 1px solid var(--line); border-radius: var(--r-md); font-size: 14px; color: var(--text-muted); }
+.quick-summary > b { font-size: 16px; color: var(--text); }
+.quick-total { margin-top: 6px; padding-top: 8px; border-top: 1px dashed var(--line-strong); display: flex; justify-content: space-between; }
+.quick-total b { font-size: 18px; color: var(--text); }
+.quick-note { margin: 0; text-align: center; font-size: 13px; color: var(--text-faint); }

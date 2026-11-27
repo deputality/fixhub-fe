@@ -1,0 +1,87 @@
+/* ===== мои заказы ===== */
+.ord-page h1 { margin: 0 0 10px; font-size: 40px; font-weight: 800; letter-spacing: -.025em; }
+.ord-lead { max-width: 640px; margin: 0 0 24px; font-size: 16px; line-height: 1.45; color: var(--text-2); }
+
+.ord-filters { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 22px; }
+.ord-chip { display: inline-flex; align-items: center; min-height: var(--ctl-h); padding: 0 24px; border: 1px solid var(--line); border-radius: var(--r-pill); background: var(--surface);
+  color: var(--text); font: inherit; font-size: 15px; cursor: pointer;
+  transition: background .2s, color .2s, border-color .2s, transform .2s var(--ease-out); }
+.ord-chip:hover { border-color: var(--blue); color: var(--blue); transform: translateY(-1px); }
+.ord-chip.active { background: var(--blue); border-color: var(--blue); color: #fff; box-shadow: 0 6px 16px rgba(37, 99, 235, .28); }
+
+.ord-panel { padding: 8px 18px 18px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--sh-sm); }
+
+.ord-head, .ord-row { display: grid; align-items: center; column-gap: 16px;
+  grid-template-columns: minmax(220px, 1.7fr) minmax(150px, 1.1fr) minmax(110px, .8fr) minmax(110px, .8fr) 80px minmax(170px, 1.1fr); }
+.ord-head { padding: 18px 0 14px; border-bottom: 1px solid var(--line); font-size: 14px; color: var(--text-2); }
+.ord-list { list-style: none; margin: 0; padding: 0; }
+.ord-row { padding: 16px 0; border-bottom: 1px solid var(--line); animation: rise .5s var(--ease-out) both; }
+
+.ord-service { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.ord-photo { position: relative; display: flex; align-items: center; justify-content: center; width: 64px; height: 60px;
+  flex-shrink: 0; border-radius: var(--r-sm); overflow: hidden; color: #fff;
+  background: linear-gradient(135deg, var(--cat), color-mix(in srgb, var(--cat) 55%, var(--surface))); }
+.ord-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.ord-service-info { min-width: 0; font-size: 13px; }
+.ord-title { font-weight: 500; line-height: 1.3; }
+.ord-sub { margin-top: 4px; color: var(--text-faint); }
+.ord-num { margin-top: 8px; color: var(--text-muted); font-size: 12px; }
+
+.ord-master { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.ord-master-name { font-size: 13px; font-weight: 500; }
+.ord-master-phone { display: inline-flex; align-items: center; gap: 5px; margin-top: 3px; font-size: 12px; color: var(--blue); }
+.ord-master-phone:hover { text-decoration: underline; }
+.ord-master-rate { display: flex; align-items: center; gap: 4px; margin-top: 3px; font-size: 12px; }
+.ord-master-rate i { font-style: normal; color: var(--text-faint); }
+
+.ord-date { font-size: 13px; }
+.ord-time { margin-top: 6px; color: var(--text-faint); }
+.ord-sum { font-size: 16px; font-weight: 500; }
+
+.ord-status { display: inline-block; padding: 5px 14px; border-radius: var(--r-pill); color: #fff; font-size: 13px; white-space: nowrap; }
+.ord-st-new { background: var(--st-new); }
+.ord-st-confirmed { background: var(--st-confirmed); }
+.ord-st-progress { background: var(--st-progress); }
+.ord-st-done { background: var(--st-done); }
+.ord-st-cancelled { background: var(--st-cancelled); }
+
+.ord-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.ord-btn { min-height: var(--ctl-h-sm); padding: 0 14px; border: 1px solid transparent; border-radius: var(--r-sm); font: inherit; font-size: 13px; cursor: pointer;
+  transition: background .2s, color .2s, transform .2s var(--ease-out), box-shadow .2s; }
+.ord-btn:hover:not(:disabled) { transform: translateY(-1px); }
+.ord-btn-cancel { background: var(--surface); border-color: var(--danger); color: var(--danger); }
+.ord-btn-cancel:hover { background: var(--danger-bg); }
+.ord-btn-review { background: var(--blue); color: #fff; }
+.ord-btn-review:hover { background: var(--blue-600); box-shadow: 0 6px 14px rgba(37, 99, 235, .3); }
+.ord-btn-off { background: var(--surface-3); border-color: var(--line-strong); color: var(--text-faint); cursor: default; }
+
+.ord-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 18px; }
+.ord-total { color: var(--blue); font-size: 13px; }
+.ord-foot .pagination { margin: 0; }
+
+/* отзыв */
+.ord-review-form { display: flex; flex-direction: column; gap: 14px; }
+.ord-review-service { font-weight: 600; }
+.ord-stars-input { display: flex; gap: 4px; }
+.ord-stars-input button { display: flex; padding: 2px; border: none; background: none; cursor: pointer; transition: transform .15s var(--spring); }
+.ord-stars-input button:hover { transform: scale(1.15); }
+.ord-review-form .sp-comment, .ord-review-form .sp-date { width: 100%; font: inherit; font-size: 15px; color: var(--text); background: var(--surface);
+  border: 1px solid var(--line); border-radius: var(--r-md); outline: none; transition: border-color .25s, box-shadow .25s; }
+.ord-review-form .sp-date { height: var(--ctl-h); padding: 0 12px; }
+.ord-review-form .sp-comment { padding: 11px 12px; resize: vertical; }
+.ord-review-form .sp-comment:focus, .ord-review-form .sp-date:focus { border-color: var(--blue); box-shadow: var(--ring); }
+.ord-review-form .sp-field { display: flex; flex-direction: column; gap: 6px; }
+.ord-review-form .sp-label { font-size: 13px; color: var(--text-muted); }
+
+@media (max-width: 1100px) {
+  .ord-head { display: none; }
+  .ord-row { grid-template-columns: minmax(0, 1fr) auto; row-gap: 12px; }
+  .ord-service { grid-column: 1 / -1; }
+  .ord-master { grid-column: 1; }
+  .ord-date, .ord-sum { grid-column: 1; }
+  .ord-actions { grid-column: 1 / -1; }
+}
+@media (max-width: 560px) {
+  .ord-page h1 { font-size: 30px; }
+  .ord-chip { min-height: var(--ctl-h-sm); padding: 0 16px; }
+}

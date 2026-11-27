@@ -5,8 +5,10 @@ import { getCategories } from '../../api/catalog'
 import { useToast } from '../../context/ToastContext'
 import { resolveCategoryMeta } from '../../utils/categoryMeta'
 import { useAuthGuard } from '../../utils/useAuthGuard'
-import Button from '../../components/Button'
-import ServiceFormModal from '../../components/ServiceFormModal'
+import Button from '../../components/common/Button'
+import ServiceFormModal from '../../components/performer/ServiceFormModal'
+import VerificationLimitNotice from '../../components/performer/VerificationLimitNotice'
+import { useVerificationLimits } from '../../utils/useVerificationLimits'
 
 const UNITS = { Hour: 'час', Piece: 'шт.' }
 
@@ -22,6 +24,7 @@ export default function ServicesPanel({ createRequest = 0, hideAdd = false }) {
   const [manualCreate, setManualCreate] = useState(false)
   const [closedAt, setClosedAt] = useState(0)
   const [busyId, setBusyId] = useState(null)
+  const verification = useVerificationLimits()
 
   useEffect(() => {
     let cancelled = false
@@ -39,8 +42,18 @@ export default function ServicesPanel({ createRequest = 0, hideAdd = false }) {
   }, [guard])
 
   const byId = useMemo(() => Object.fromEntries(categories.map((c) => [c.id, c])), [categories])
-  const creating = manualCreate || createRequest > closedAt
+  const maxServices = verification?.limits.maxServices ?? null
+  const atLimit = maxServices !== null && state.items.length >= maxServices
+  const creating = !atLimit && (manualCreate || createRequest > closedAt)
   const formOpen = creating || editing !== null
+
+  // кнопка «Добавить услугу» снаружи: при лимите вместо формы говорим, почему нельзя
+  useEffect(() => {
+    if (atLimit && createRequest > closedAt) {
+      show(`Непроверенный мастер может опубликовать не больше ${maxServices} услуг`, 'error')
+      setClosedAt(createRequest)
+    }
+  }, [atLimit, createRequest, closedAt, maxServices, show])
 
   function closeForm() {
     setManualCreate(false)
@@ -80,9 +93,18 @@ export default function ServicesPanel({ createRequest = 0, hideAdd = false }) {
           <p className="pf-panel-lead">Услуги, которые клиенты видят в каталоге. Скрытые услуги в каталоге не показываются.</p>
         </div>
         {!hideAdd && (
-          <Button onClick={() => setManualCreate(true)}><Plus size={18} /> Добавить услугу</Button>
+          <Button onClick={() => setManualCreate(true)} disabled={atLimit}
+            title={atLimit ? `Не больше ${maxServices} услуг, пока профиль не проверен` : undefined}>
+            <Plus size={18} /> Добавить услугу
+          </Button>
         )}
       </div>
+
+      {verification && !verification.isVerified && maxServices !== null && (
+        <VerificationLimitNotice>
+          Профиль не проверен: можно добавить не больше {maxServices} услуг (сейчас {state.items.length}).
+        </VerificationLimitNotice>
+      )}
 
       {state.status === 'loading' && (
         <div aria-hidden="true">{[0, 1, 2].map((i) => <div key={i} className="skeleton pf-sk-row" />)}</div>

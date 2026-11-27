@@ -3,8 +3,9 @@ import { CircleAlert } from 'lucide-react'
 import { getMySchedule, saveMySchedule } from '../../api/schedule'
 import { useToast } from '../../context/ToastContext'
 import { useAuthGuard } from '../../utils/useAuthGuard'
-import Button from '../../components/Button'
-import '../../components/Features.css'
+import Button from '../../components/common/Button'
+import Select from '../../components/common/Select'
+import '../../components/common/Features.css'
 
 const DAYS = [
   { n: 1, label: 'Понедельник' }, { n: 2, label: 'Вторник' }, { n: 3, label: 'Среда' },
@@ -100,13 +101,13 @@ export default function SchedulePanel() {
                   {row.on ? (
                     <div className="sch-times">
                       <span>с</span>
-                      <select value={row.start} aria-label={`${d.label}: начало`} onChange={(e) => patch(d.n, { start: e.target.value })}>
-                        {options(START_OPTIONS, row.start).map((t) => <option key={t} value={t}>{t}</option>)}
-                      </select>
+                      <Select className="sch-select" value={row.start} ariaLabel={`${d.label}: начало`}
+                        onChange={(v) => patch(d.n, { start: v })}
+                        options={options(START_OPTIONS, row.start).map((t) => ({ value: t, label: t }))} />
                       <span>до</span>
-                      <select value={row.end} aria-label={`${d.label}: окончание`} onChange={(e) => patch(d.n, { end: e.target.value })}>
-                        {options(END_OPTIONS, row.end).map((t) => <option key={t} value={t}>{t}</option>)}
-                      </select>
+                      <Select className="sch-select" value={row.end} ariaLabel={`${d.label}: окончание`}
+                        onChange={(v) => patch(d.n, { end: v })}
+                        options={options(END_OPTIONS, row.end).map((t) => ({ value: t, label: t }))} />
                     </div>
                   ) : (
                     <span className="sch-off">Выходной</span>
