@@ -1,4 +1,4 @@
-.ava { flex-shrink: 0; border-radius: 50%; object-fit: cover; background: var(--bg-e6ecfb); }
+.ava { flex-shrink: 0; border-radius: 50%; object-fit: cover; background: var(--surface-3); }
 /* инициалы в том же фирменном стиле, что и .avatar на карточках сайта */
-.ava-text { display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--bg-dbe7ff), var(--bg-e6e1ff));
+.ava-text { display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--accent-soft-2), var(--violet-soft));
   color: var(--blue); font-weight: 700; user-select: none; }

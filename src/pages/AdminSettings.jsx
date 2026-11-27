@@ -92,11 +92,11 @@ export default function AdminSettings() {
         <div className="form-alert adm-alert" role="alert"><CircleAlert size={18} /><span>{state.error}. Обновите страницу.</span></div>
       )}
 
-      {state.status === 'loading' && <i className="skel" style={{ height: 260, maxWidth: 720, borderRadius: 14 }} />}
+      {state.status === 'loading' && <i className="adm-skel" style={{ height: 260, maxWidth: 720, borderRadius: 14 }} />}
 
       {profile && (
         <form className="adm-panel as-settings" onSubmit={submit} noValidate>
-          <div className="panel-head"><h2>Личные данные</h2></div>
+          <div className="adm-panel-head"><h2>Личные данные</h2></div>
 
           {formError && <div className="form-alert as-form-alert" role="alert"><CircleAlert size={18} /><span>{formError}</span></div>}
 

@@ -3,9 +3,9 @@ html { -webkit-text-size-adjust: 100%; }
 img, video { max-width: 100%; }
 
 /* мобильное меню в шапке */
-.burger { display: none; padding: 8px; border: none; border-radius: 10px; background: none; color: var(--navy); cursor: pointer;
+.burger { display: none; padding: 8px; border: none; border-radius: var(--r-md); background: none; color: var(--text); cursor: pointer;
   transition: background .2s, transform .25s var(--spring); }
-.burger:hover { background: var(--bg-eef3fd); }
+.burger:hover { background: var(--surface-3); }
 .burger:active { transform: scale(.92); }
 .mobile-nav { display: none; }
 
@@ -21,22 +21,22 @@ img, video { max-width: 100%; }
 @media (max-width: 700px) {
   .burger { display: flex; }
   .mobile-nav { display: flex; flex-direction: column; position: absolute; left: 0; right: 0; top: 100%; padding: 8px 12px 14px;
-    background: var(--bg-ffffff); border-bottom: 1px solid var(--bd-e9eef8); box-shadow: 0 16px 30px rgba(15, 23, 42, .1); animation: rise .25s var(--ease-out); }
-  .mobile-nav a { padding: 13px 10px; border-radius: 10px; color: var(--navy); font-weight: 500; transition: background .2s, color .2s; }
-  .mobile-nav a:hover, .mobile-nav a.active { background: var(--bg-f3f7ff); color: var(--blue); }
+    background: var(--surface); border-bottom: 1px solid var(--line); box-shadow: 0 16px 30px rgba(15, 23, 42, .1); animation: rise .25s var(--ease-out); }
+  .mobile-nav a { padding: 13px 10px; border-radius: var(--r-md); color: var(--text); font-weight: 500; transition: background .2s, color .2s; }
+  .mobile-nav a:hover, .mobile-nav a.active { background: var(--accent-soft); color: var(--blue); }
   .mobile-nav { max-height: calc(100vh - 68px); overflow-y: auto; }
 
   /* блок пользователя и его разделы внутри меню */
   .mn-user { display: flex; align-items: center; gap: 12px; padding: 8px 10px 12px; }
-  .mn-user-name { font-weight: 600; color: var(--navy); line-height: 1.25; }
-  .mn-user-role { font-size: 13px; color: var(--tx-94a3b8); }
-  .mobile-nav .mn-link { display: flex; align-items: center; gap: 12px; width: 100%; padding: 13px 10px; border: none; border-radius: 10px;
-    background: none; color: var(--navy); font: inherit; font-weight: 500; text-align: left; cursor: pointer; }
-  .mobile-nav .mn-link:hover, .mobile-nav .mn-link.active { background: var(--bg-f3f7ff); color: var(--blue); }
+  .mn-user-name { font-weight: 600; color: var(--text); line-height: 1.25; }
+  .mn-user-role { font-size: 13px; color: var(--text-faint); }
+  .mobile-nav .mn-link { display: flex; align-items: center; gap: 12px; width: 100%; padding: 13px 10px; border: none; border-radius: var(--r-md);
+    background: none; color: var(--text); font: inherit; font-weight: 500; text-align: left; cursor: pointer; }
+  .mobile-nav .mn-link:hover, .mobile-nav .mn-link.active { background: var(--accent-soft); color: var(--blue); }
   .mn-count { margin-left: auto; min-width: 22px; height: 22px; padding: 0 6px; display: flex; align-items: center; justify-content: center;
-    border-radius: 999px; background: var(--bg-e4edff); color: var(--blue); font-size: 12px; font-weight: 700; }
-  .mn-sep { height: 1px; margin: 6px 10px; background: var(--bg-e9eef8); }
-  .mn-logout { color: #dc2626 !important; }
+    border-radius: var(--r-pill); background: var(--accent-soft-2); color: var(--blue); font-size: 12px; font-weight: 700; }
+  .mn-sep { height: 1px; margin: 6px 10px; background: var(--surface-3); }
+  .mn-logout { color: var(--danger) !important; }
 
   /* в шапке на сайте остаются логотип, корзина и ☰: сердце и аватар переехали в меню */
   .hdr-main .fav-link, .hdr-main .user-menu { display: none; }
@@ -54,7 +54,6 @@ img, video { max-width: 100%; }
 }
 
 @media (max-width: 480px) {
-  .container { padding: 0 14px; }
   .sp-page { padding-top: 12px; }
   .sp-order h1 { font-size: 24px; }
   .sp-card { padding: 16px; }

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { CircleAlert, ClipboardList, MapPin, Phone, Wrench } from 'lucide-react'
 import {
   completeOrder, confirmOrder, getIncomingOrders, rejectOrder, startOrder,
@@ -12,6 +12,7 @@ import ReasonModal from '../../components/ReasonModal'
 import OrderChat from '../../components/OrderChat'
 import Pagination from '../../components/Pagination'
 import { useUnreadChats } from '../../utils/useUnreadChats'
+import { useLiveRefresh } from '../../realtime/useChat'
 
 const PAGE_SIZE = 5
 
@@ -76,6 +77,24 @@ export default function OrdersPanel({ onChanged }) {
       })
     return () => { cancelled = true }
   }, [filter, guard])
+
+  // Новый заказ или смена статуса приходят сами, без перезагрузки страницы
+  const currentFilter = useRef(filter)
+  useEffect(() => { currentFilter.current = filter })
+
+  const refresh = useCallback(() => {
+    const asked = currentFilter.current
+    getIncomingOrders(asked === 'all' ? '' : asked)
+      .then((orders) => {
+        // пока шёл запрос, мастер мог переключить вкладку: чужой список не показываем
+        if (currentFilter.current !== asked) return
+        setResult({ key: asked, orders, error: '' })
+      })
+      .catch(() => { /* тихое обновление: при сбое остаётся прежний список */ })
+    onChanged?.()
+  }, [onChanged])
+
+  useLiveRefresh(refresh)
 
   const loading = result.key !== filter
   const orders = result.orders

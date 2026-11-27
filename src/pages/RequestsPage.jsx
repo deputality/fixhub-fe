@@ -9,7 +9,9 @@ import { useAuthGuard } from '../utils/useAuthGuard'
 import { validateContact } from '../utils/contactForm'
 import Button from '../components/Button'
 import Input from '../components/Input'
+import DatePicker from '../components/DatePicker'
 import Modal from '../components/Modal'
+import Select from '../components/Select'
 import '../components/Features.css'
 import './OrdersPage.css'
 
@@ -34,6 +36,20 @@ function NewRequestModal({ categories, onClose, onCreated }) {
   const guard = useAuthGuard()
   const roots = categories.filter((c) => !c.parentId)
   const childrenOf = (id) => categories.filter((c) => c.parentId === id)
+
+  // как раньше: категория с подкатегориями служит заголовком группы, выбираются только подкатегории
+  const categoryOptions = [
+    { value: '', label: 'Выберите категорию' },
+    ...roots.flatMap((root) => {
+      const kids = childrenOf(root.id)
+      return kids.length === 0
+        ? [{ value: String(root.id), label: root.name }]
+        : [
+            { value: `group-${root.id}`, label: root.name, disabled: true },
+            ...kids.map((k) => ({ value: String(k.id), label: k.name, depth: 1 })),
+          ]
+    }),
+  ]
 
   const [categoryId, setCategoryId] = useState('')
   const [title, setTitle] = useState('')
@@ -85,23 +101,20 @@ function NewRequestModal({ categories, onClose, onCreated }) {
   return (
     <Modal title="Новый запрос цены" size="lg" onClose={() => !busy && onClose()}>
       <form className="rq-form" onSubmit={submit} noValidate>
-        <label className="reason-field">
+        <div className="reason-field">
           <span className="field-label">Категория</span>
-          <select value={categoryId} onChange={bind(setCategoryId, 'category')}>
-            <option value="">Выберите категорию</option>
-            {roots.map((root) => {
-              const kids = childrenOf(root.id)
-              return kids.length === 0
-                ? <option key={root.id} value={root.id}>{root.name}</option>
-                : (
-                  <optgroup key={root.id} label={root.name}>
-                    {kids.map((k) => <option key={k.id} value={k.id}>{k.name}</option>)}
-                  </optgroup>
-                )
-            })}
-          </select>
+          <Select
+            value={categoryId}
+            ariaLabel="Категория"
+            onChange={(v) => {
+              setCategoryId(v)
+              setFormError('')
+              setErrors((prev) => (prev.category ? { ...prev, category: undefined } : prev))
+            }}
+            options={categoryOptions}
+          />
           {errors.category && <span className="field-error" role="alert"><CircleAlert size={15} />{errors.category}</span>}
-        </label>
+        </div>
         <Input id="rq-title" label="Что нужно сделать" placeholder="Например: заменить смеситель на кухне" maxLength={200}
           value={title} onChange={bind(setTitle, 'title')} error={errors.title} />
         <label className="reason-field">
@@ -117,10 +130,10 @@ function NewRequestModal({ categories, onClose, onCreated }) {
           value={phone} onChange={bind(setPhone, 'phone')} error={errors.phone} />
         <Input id="rq-name" label="Имя" icon={<User size={20} />} placeholder="Иван Петров" maxLength={200}
           value={name} onChange={bind(setName, 'name')} error={errors.name} />
-        <label className="reason-field">
+        <div className="reason-field">
           <span className="field-label">Желаемая дата (необязательно)</span>
-          <input type="date" min={todayIso()} value={date} onChange={(e) => setDate(e.target.value)} />
-        </label>
+          <DatePicker value={date} min={todayIso()} onChange={setDate} ariaLabel="Желаемая дата" clearable />
+        </div>
         {formError && <div className="form-alert" role="alert"><CircleAlert size={18} /><span>{formError}</span></div>}
         <div className="modal-actions">
           <Button type="button" variant="outline" onClick={onClose} disabled={busy}>Отмена</Button>

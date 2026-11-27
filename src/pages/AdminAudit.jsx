@@ -81,7 +81,7 @@ export default function AdminAudit() {
       </header>
 
       <section className="adm-panel">
-        <div className="panel-head">
+        <div className="adm-panel-head">
           <h2>Последние действия</h2>
           <div className="as-filter">
             <Select value={filter} onChange={changeFilter} options={FILTERS} ariaLabel="Фильтр журнала" />
@@ -97,7 +97,7 @@ export default function AdminAudit() {
             </span>
           </div>
         ) : (
-          <div className="table-wrap">
+          <div className="adm-table-wrap">
             <table className={`adm-table as-table-audit${loading ? ' is-loading' : ''}`}>
               <thead>
                 <tr>
@@ -112,7 +112,7 @@ export default function AdminAudit() {
                   const action = ACTIONS[a.action] ?? { label: a.action, tone: 'neutral' }
                   return (
                     <tr key={a.id}>
-                      <td className="cell-date" data-label="Дата">{formatDateTime(a.createdAt)}</td>
+                      <td className="adm-cell-date" data-label="Дата">{formatDateTime(a.createdAt)}</td>
                       <td data-label="Администратор">{a.adminName}</td>
                       <td data-label="Действие"><span className={`as-act ${action.tone}`}>{action.label}</span></td>
                       <td className="as-target" data-label="Объект">
@@ -124,17 +124,17 @@ export default function AdminAudit() {
                 })}
 
                 {!loading && data.items.length === 0 && (
-                  <tr className="row-empty"><td colSpan={4}>Действий пока нет.</td></tr>
+                  <tr className="adm-row-empty"><td colSpan={4}>Действий пока нет.</td></tr>
                 )}
                 {data.key === null && Array.from({ length: 8 }, (_, i) => (
-                  <tr key={`sk-${i}`} className="row-skel"><td colSpan={4}><i className="skel" /></td></tr>
+                  <tr key={`sk-${i}`} className="adm-row-skel"><td colSpan={4}><i className="adm-skel" /></td></tr>
                 ))}
               </tbody>
             </table>
           </div>
         )}
 
-        <div className="panel-foot">
+        <div className="adm-panel-foot">
           <span>Всего записей: <b>{data.total.toLocaleString('ru-RU')}</b></span>
           <Pagination page={page} totalPages={data.totalPages} onChange={setPage} />
         </div>

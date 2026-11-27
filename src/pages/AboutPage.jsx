@@ -11,7 +11,7 @@ const VALUES = [
 
 export default function AboutPage() {
   return (
-    <div className="container ip">
+    <div className="container container--narrow ip">
       <header className="ip-head">
         <h1>О нас</h1>
         <p>
@@ -35,7 +35,7 @@ export default function AboutPage() {
 
       <Reveal as="section" className="ip-block">
         <h2>Кому подходит FixHub</h2>
-        <p style={{ margin: 0, maxWidth: 720, fontSize: 15, lineHeight: 1.6, color: '#475569' }}>
+        <p style={{ margin: 0, maxWidth: 720, fontSize: 15, lineHeight: 1.6, color: 'var(--text-muted)' }}>
           Клиентам, которым нужно починить технику, прибраться, сделать ремонт сантехники, найти репетитора или фотографа.
           И мастерам, которые хотят получать заявки, показывать свои услуги и накапливать рейтинг в одном месте.
         </p>

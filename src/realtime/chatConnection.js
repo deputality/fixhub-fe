@@ -8,7 +8,7 @@ import { HubConnectionBuilder, HubConnectionState, LogLevel } from '@microsoft/s
 // пользоваться перестали: например, после выхода из аккаунта.
 
 const HUB_URL = '/hubs/chat'
-const EVENTS = ['MessageReceived', 'MessagesRead', 'UserTyping', 'UnreadChanged', 'NotificationsChanged']
+const EVENTS = ['MessageReceived', 'MessagesRead', 'UserTyping', 'UnreadChanged', 'NotificationsChanged', 'OrdersChanged']
 const STOP_DELAY_MS = 1500
 const RETRY_MS = 5000
 const RETRY_DELAYS = [0, 1000, 2000, 4000, 8000, 15000]

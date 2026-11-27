@@ -5,7 +5,7 @@ import './LegalLayout.css'
 // sections: [{ id, title, paragraphs: [string | { list: [string] }] }]
 export default function LegalLayout({ title, lead, sections, other }) {
   return (
-    <div className="container lg">
+    <div className="container container--narrow lg">
       <header className="lg-head">
         <h1>{title}</h1>
         <p>{lead}</p>

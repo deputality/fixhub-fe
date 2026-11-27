@@ -35,7 +35,7 @@ function Steps({ items }) {
 
 export default function HowItWorksPage() {
   return (
-    <div className="container ip">
+    <div className="container container--narrow ip">
       <header className="ip-head">
         <h1>Как это работает</h1>
         <p>FixHub соединяет клиентов с мастерами и специалистами: от ремонта техники до репетиторства и фотосессий. Всё занимает несколько шагов.</p>

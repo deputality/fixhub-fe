@@ -82,19 +82,19 @@ function descendantIds(list, id) {
 
 function StatCard({ icon, tone, label, value, note, loading }) {
   return (
-    <div className="stat">
-      <span className={`stat-icon ${tone}`}>{icon}</span>
-      <div className="stat-body">
-        <div className="stat-label">{label}</div>
+    <div className="adm-stat">
+      <span className={`adm-stat-icon ${tone}`}>{icon}</span>
+      <div className="adm-stat-body">
+        <div className="adm-stat-label">{label}</div>
         {loading ? (
           <>
-            <i className="skel" style={{ width: 50, height: 28, margin: '8px 0 10px' }} />
-            <i className="skel" style={{ width: 140, height: 12 }} />
+            <i className="adm-skel" style={{ width: 50, height: 28, margin: '8px 0 10px' }} />
+            <i className="adm-skel" style={{ width: 140, height: 12 }} />
           </>
         ) : (
           <>
-            <div className="stat-value">{value}</div>
-            <div className="stat-note">{note}</div>
+            <div className="adm-stat-value">{value}</div>
+            <div className="adm-stat-note">{note}</div>
           </>
         )}
       </div>
@@ -351,23 +351,23 @@ export default function AdminCategories() {
         </button>
       </div>
 
-      <div className="stats as-stats3">
+      <div className="adm-stats as-stats3">
         <StatCard
-          tone="tone-blue" icon={<LayoutGrid size={26} />} label="Всего категорий" loading={loading}
+          tone="adm-tone-blue" icon={<LayoutGrid size={26} />} label="Всего категорий" loading={loading}
           value={items.length} note="Включая скрытые категории"
         />
         <StatCard
-          tone="tone-green" icon={<Eye size={26} />} label="В каталоге" loading={loading}
+          tone="adm-tone-green" icon={<Eye size={26} />} label="В каталоге" loading={loading}
           value={visibleCount} note="Доступны клиентам для поиска"
         />
         <StatCard
-          tone="tone-gray" icon={<EyeOff size={26} />} label="Скрытые" loading={loading}
+          tone="adm-tone-gray" icon={<EyeOff size={26} />} label="Скрытые" loading={loading}
           value={hiddenCount} note="Не отображаются в каталоге"
         />
       </div>
 
       <section className="adm-panel">
-        <div className="panel-head">
+        <div className="adm-panel-head">
           <h2>Список категорий</h2>
           <span className="as-count">{items.length} {plural(items.length, ['категория', 'категории', 'категорий'])}</span>
         </div>
@@ -405,7 +405,7 @@ export default function AdminCategories() {
             </span>
           </div>
         ) : (
-          <div className="table-wrap">
+          <div className="adm-table-wrap">
             <table className="adm-table as-table-cats">
               <thead>
                 <tr>
@@ -419,7 +419,7 @@ export default function AdminCategories() {
               </thead>
               <tbody>
                 {loading && Array.from({ length: 5 }, (_, i) => (
-                  <tr key={`sk-${i}`} className="row-skel"><td colSpan={6}><i className="skel" style={{ height: 44 }} /></td></tr>
+                  <tr key={`sk-${i}`} className="adm-row-skel"><td colSpan={6}><i className="adm-skel" style={{ height: 44 }} /></td></tr>
                 ))}
 
                 {!loading && rows.map((c) => {
@@ -428,7 +428,7 @@ export default function AdminCategories() {
                   const Icon = meta.icon
                   return (
                     <tr key={c.id}>
-                      <td className="cell-id as-id">{String(c.id).padStart(2, '0')}</td>
+                      <td className="adm-cell-id as-id">{String(c.id).padStart(2, '0')}</td>
                       <td>
                         <div className="as-cat" style={{ paddingLeft: c.depth * 28 }}>
                           <span className="as-cat-icon" style={{ background: out ? '#64748b' : meta.color }}>
@@ -443,9 +443,9 @@ export default function AdminCategories() {
                       <td className="as-num">{num(c.servicesCount)}</td>
                       <td className="as-num">{num(c.performersCount)}</td>
                       <td>
-                        {!out && <span className="pill st-active">В каталоге</span>}
-                        {c.isHidden && <span className="pill st-hidden">Скрыта</span>}
-                        {!c.isHidden && out && <span className="pill st-hidden">Скрыта родителем</span>}
+                        {!out && <span className="adm-pill adm-st-active">В каталоге</span>}
+                        {c.isHidden && <span className="adm-pill adm-st-hidden">Скрыта</span>}
+                        {!c.isHidden && out && <span className="adm-pill adm-st-hidden">Скрыта родителем</span>}
                       </td>
                       <td>
                         <div className="as-actions">
@@ -460,7 +460,7 @@ export default function AdminCategories() {
                 })}
 
                 {!loading && rows.length === 0 && (
-                  <tr className="row-empty">
+                  <tr className="adm-row-empty">
                     <td colSpan={6}>{items.length === 0 ? 'Категорий пока нет. Добавьте первую.' : 'Ничего не найдено.'}</td>
                   </tr>
                 )}
@@ -469,7 +469,7 @@ export default function AdminCategories() {
           </div>
         )}
 
-        <div className="panel-foot">
+        <div className="adm-panel-foot">
           <span>Показано {rows.length} из {items.length} {plural(items.length, ['категории', 'категорий', 'категорий'])}</span>
           <span>Всего услуг: <b>{num(totalServices)}</b></span>
         </div>

@@ -1,0 +1,41 @@
+/* Календарь выбора даты: оформлен так же, как выпадающий список Select */
+.dp { position: relative; }
+.dp.open .dp-trigger { border-color: var(--blue); box-shadow: var(--ring); }
+.dp-trigger > svg:first-child { color: var(--text-muted); }
+.dp-value { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dp-value.empty { color: var(--text-faint); }
+.dp.open .dp-trigger > svg:last-child { color: var(--blue); transform: rotate(180deg); }
+.dp.compact .dp-trigger { height: var(--ctl-h-sm); border-radius: var(--r-md); }
+
+.dp-pop { position: fixed; z-index: var(--z-popover); width: 304px; padding: 14px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); color: var(--text);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, .05), 0 16px 32px rgba(15, 23, 42, .12), 0 32px 64px rgba(37, 99, 235, .14);
+  transform-origin: top center; animation: dropdown-in .22s var(--ease-out); }
+.dp-pop.up { transform-origin: bottom center; animation-name: dropdown-in-up; }
+
+.dp-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; font-size: 15px; }
+.dp-nav { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; padding: 0; border: none; border-radius: var(--r-sm);
+  background: none; color: var(--text); cursor: pointer; transition: background .15s, color .15s; }
+.dp-nav:hover:not(:disabled) { background: var(--accent-soft); color: var(--blue); }
+.dp-nav:disabled { color: var(--text-faint); opacity: .45; cursor: default; }
+
+.dp-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.dp-weekdays { margin-bottom: 4px; }
+.dp-weekdays span { padding: 6px 0; text-align: center; font-size: 12px; font-weight: 600; color: var(--text-muted); }
+
+.dp-day { height: 38px; padding: 0; border: 1px solid transparent; border-radius: var(--r-sm); background: none;
+  color: var(--text); font: inherit; font-size: 14px; cursor: pointer; transition: background .15s, color .15s, border-color .15s; }
+.dp-day:hover:not(:disabled) { background: var(--accent-soft); }
+.dp-day.today { border-color: var(--line-strong); color: var(--blue); font-weight: 600; }
+.dp-day.selected { background: var(--blue); border-color: var(--blue); color: #fff; font-weight: 600; }
+.dp-day:disabled { color: var(--text-faint); opacity: .45; cursor: default; }
+
+.dp-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
+.dp-foot button { padding: 6px 10px; border: none; border-radius: var(--r-sm); background: none; color: var(--blue); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+.dp-foot button:hover:not(:disabled) { background: var(--accent-soft); }
+.dp-foot button:disabled { color: var(--text-faint); opacity: .5; cursor: default; }
+
+/* на телефоне вместо выпадашки — нижняя панель */
+.dp-pop.sheet { left: 0; right: 0; bottom: 0; top: auto; width: auto; border: none; border-radius: var(--r-lg) var(--r-lg) 0 0;
+  padding: 20px 16px calc(14px + env(safe-area-inset-bottom)); transform-origin: bottom center; animation: sheet-in .3s var(--ease-out); }
+.dp-pop.sheet .dp-day { height: 44px; }

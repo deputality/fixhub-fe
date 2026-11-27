@@ -95,7 +95,7 @@ export default function AdminReviews() {
       </header>
 
       <section className="adm-panel">
-        <div className="panel-head">
+        <div className="adm-panel-head">
           <h2>Список отзывов</h2>
           <div className="as-filter">
             <Select value={filter} onChange={changeFilter} options={FILTERS} ariaLabel="Фильтр отзывов" />
@@ -111,7 +111,7 @@ export default function AdminReviews() {
             </span>
           </div>
         ) : (
-          <div className="table-wrap">
+          <div className="adm-table-wrap">
             <table className={`adm-table as-table-reviews${loading ? ' is-loading' : ''}`}>
               <thead>
                 <tr>
@@ -128,21 +128,21 @@ export default function AdminReviews() {
               <tbody key={data.key}>
                 {data.items.map((r) => (
                   <tr key={r.id} className={r.isHidden ? 'as-row-hidden' : ''}>
-                    <td className="cell-id">#{r.id}</td>
+                    <td className="adm-cell-id">#{r.id}</td>
                     <td>{r.clientName}</td>
                     <td className="as-service">{r.serviceTitle}</td>
                     <td><Stars value={r.rating} /></td>
                     <td className="as-text">{r.text}<ReviewPhotos photos={r.photoUrls} /><ReviewReply review={r} /></td>
-                    <td className="cell-date">{formatDateTime(r.createdAt)}</td>
+                    <td className="adm-cell-date">{formatDateTime(r.createdAt)}</td>
                     <td>
-                      <span className={`pill ${r.isHidden ? 'st-blocked' : 'st-active'}`}>
+                      <span className={`adm-pill ${r.isHidden ? 'adm-st-blocked' : 'adm-st-active'}`}>
                         {r.isHidden ? 'Скрыт' : 'Виден'}
                       </span>
                     </td>
                     <td>
                       <button
                         type="button"
-                        className={`act-btn ${r.isHidden ? 'unblock' : 'block'}`}
+                        className={`adm-act-btn ${r.isHidden ? 'unblock' : 'block'}`}
                         disabled={busyId === r.id}
                         onClick={() => toggle(r)}
                       >
@@ -154,17 +154,17 @@ export default function AdminReviews() {
                 ))}
 
                 {!loading && data.items.length === 0 && (
-                  <tr className="row-empty"><td colSpan={8}>Отзывов не найдено.</td></tr>
+                  <tr className="adm-row-empty"><td colSpan={8}>Отзывов не найдено.</td></tr>
                 )}
                 {data.key === null && Array.from({ length: PAGE_SIZE }, (_, i) => (
-                  <tr key={`sk-${i}`} className="row-skel"><td colSpan={8}><i className="skel" /></td></tr>
+                  <tr key={`sk-${i}`} className="adm-row-skel"><td colSpan={8}><i className="adm-skel" /></td></tr>
                 ))}
               </tbody>
             </table>
           </div>
         )}
 
-        <div className="panel-foot">
+        <div className="adm-panel-foot">
           <span>Всего отзывов: <b>{data.total.toLocaleString('ru-RU')}</b></span>
           <Pagination page={page} totalPages={data.totalPages} onChange={setPage} />
         </div>

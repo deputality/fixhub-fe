@@ -2,17 +2,17 @@
 .acc { display: grid; gap: 20px; margin-top: 20px; }
 .acc-card { max-width: 560px; }
 .acc-form { display: grid; gap: 16px; }
-.acc-text { margin: 0 0 16px; font-size: 14px; line-height: 1.55; color: var(--tx-475569); }
-.acc-hint { font-size: 12px; line-height: 1.5; color: var(--tx-94a3b8); }
+.acc-text { margin: 0 0 16px; font-size: 14px; line-height: 1.55; color: var(--text-muted); }
+.acc-hint { font-size: 12px; line-height: 1.5; color: var(--text-faint); }
 .acc-row { display: flex; flex-wrap: wrap; gap: 12px; }
-.acc-ok { display: flex; align-items: center; gap: 8px; padding: 12px 14px; border-radius: 10px;
-  background: var(--bg-dcf5e7); color: var(--tx-166534); font-size: 14px; font-weight: 500; }
+.acc-ok { display: flex; align-items: center; gap: 8px; padding: 12px 14px; border-radius: var(--r-md);
+  background: var(--success-bg); color: var(--success-text); font-size: 14px; font-weight: 500; }
 
 /* опасная зона: красная рамка и красная кнопка */
-.acc-danger { border-color: var(--bd-fecaca); }
-.acc-danger h2 { color: var(--tx-b91c1c); }
-.acc-del-btn { color: var(--tx-b91c1c); border-color: var(--bd-fda4af); }
-.acc-del-btn:hover:not(:disabled) { background: var(--bg-fef2f2); color: var(--tx-b91c1c); }
+.acc-danger { border-color: var(--line-danger); }
+.acc-danger h2 { color: var(--danger-text); }
+.acc-del-btn { color: var(--danger-text); border-color: var(--line-danger); }
+.acc-del-btn:hover:not(:disabled) { background: var(--danger-bg); color: var(--danger-text); }
 
 @media (max-width: 700px) {
   .acc-card { max-width: none; }

@@ -126,6 +126,7 @@ export default function Select({ value, onChange, options, id, ariaLabel, classN
 
   function choose(index) {
     const option = options[index]
+    if (option?.disabled) return
     setOpen(false)
     if (option && String(option.value) !== String(value)) onChange(option.value)
   }
@@ -225,8 +226,9 @@ export default function Select({ value, onChange, options, id, ariaLabel, classN
                   id={`${listId}-${index}`}
                   role="option"
                   aria-selected={isSelected}
-                  className={`dropdown-option${index === active ? ' active' : ''}${isSelected ? ' selected' : ''}${option.depth ? ' child' : ''}`}
-                  onMouseMove={() => { if (index !== active) { byKeyboard.current = false; setActive(index) } }}
+                  className={`dropdown-option${index === active ? ' active' : ''}${isSelected ? ' selected' : ''}${option.depth ? ' child' : ''}${option.disabled ? ' disabled' : ''}`}
+                  aria-disabled={option.disabled || undefined}
+                  onMouseMove={() => { if (!option.disabled && index !== active) { byKeyboard.current = false; setActive(index) } }}
                   onClick={() => choose(index)}
                 >
                   <span>{option.label}</span>

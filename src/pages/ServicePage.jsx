@@ -10,6 +10,7 @@ import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
 import { useFavorites } from '../context/FavoritesContext'
 import { useToast } from '../context/ToastContext'
+import DatePicker from '../components/DatePicker'
 import FavoriteButton from '../components/FavoriteButton'
 import MapView from '../components/MapView'
 import QuickOrderModal from '../components/QuickOrderModal'
@@ -49,7 +50,7 @@ function formatDate(iso) {
 
 function Stars({ value, size = 16 }) {
   return (
-    <span className="stars" aria-label={`Оценка ${value} из 5`}>
+    <span className="sp-stars" aria-label={`Оценка ${value} из 5`}>
       {[1, 2, 3, 4, 5].map((n) => (
         <Star
           key={n}
@@ -336,16 +337,15 @@ export default function ServicePage() {
                 </div>
               </div>
 
-              <label className="sp-field">
+              <div className="sp-field">
                 <span className="sp-label">Желаемая дата</span>
-                <input
-                  type="date"
-                  className="sp-date"
+                <DatePicker
                   value={date}
                   min={minDate}
-                  onChange={(e) => { setDate(e.target.value); setTime('') }}
+                  ariaLabel="Желаемая дата"
+                  onChange={(v) => { setDate(v); setTime('') }}
                 />
-              </label>
+              </div>
             </div>
 
             <SlotPicker

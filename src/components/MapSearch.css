@@ -1,10 +1,10 @@
 .map-search { position: relative; margin-bottom: 10px; }
 .map-search-row { display: flex; gap: 8px; }
-.map-search-row input { flex: 1; min-width: 0; height: 44px; padding: 0 16px; border: 1px solid var(--bd-e2e8f0); border-radius: 8px; background: var(--bg-ffffff); font: inherit; }
+.map-search-row input { flex: 1; min-width: 0; height: var(--ctl-h); padding: 0 16px; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--surface); font: inherit; }
 .map-search-row input:focus { border-color: var(--blue); outline: none; box-shadow: var(--ring); }
-.map-search-btn { height: 44px; padding: 0 18px; border: 0; border-radius: 8px; background: var(--blue); color: #fff; font: inherit; cursor: pointer; }
+.map-search-btn { height: var(--ctl-h); padding: 0 18px; border: 0; border-radius: var(--r-sm); background: var(--blue); color: #fff; font: inherit; cursor: pointer; }
 .map-search-btn:disabled { opacity: .6; cursor: default; }
-.map-search-list { position: absolute; z-index: 1000; left: 0; right: 0; margin: 4px 0 0; padding: 4px; list-style: none; background: var(--bg-ffffff); border: 1px solid var(--bd-e2e8f0); border-radius: 8px; box-shadow: 0 8px 24px rgba(15, 23, 42, .12); }
-.map-search-list button { width: 100%; padding: 10px 12px; border: 0; border-radius: 6px; background: none; text-align: left; font: inherit; cursor: pointer; }
+.map-search-list { position: absolute; z-index: var(--z-popover); left: 0; right: 0; margin: 4px 0 0; padding: 4px; list-style: none; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-sm); box-shadow: 0 8px 24px rgba(15, 23, 42, .12); }
+.map-search-list button { width: 100%; padding: 10px 12px; border: 0; border-radius: var(--r-sm); background: none; text-align: left; font: inherit; cursor: pointer; }
 .map-search-list button:hover { background: rgba(37, 99, 235, .08); }
 .map-search-note { margin: 6px 0 0; font-size: 14px; opacity: .8; }

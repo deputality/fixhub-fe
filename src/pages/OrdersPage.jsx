@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { CircleAlert, ClipboardList, Phone, RotateCw, Star } from 'lucide-react'
 import { cancelOrder, createReview, getMyOrders, getMyReviews, repeatOrder } from '../api/orders'
@@ -9,10 +9,12 @@ import { useCart } from '../context/CartContext'
 import { useToast } from '../context/ToastContext'
 import { resolveCategoryMeta } from '../utils/categoryMeta'
 import { useUnreadChats } from '../utils/useUnreadChats'
+import { useLiveRefresh } from '../realtime/useChat'
 import Button from '../components/Button'
 import ChatButton from '../components/ChatButton'
 import OrderChat from '../components/OrderChat'
 import Modal from '../components/Modal'
+import Select from '../components/Select'
 import OrderHistory from '../components/OrderHistory'
 import PhotoPicker from '../components/PhotoPicker'
 import ReasonModal from '../components/ReasonModal'
@@ -22,11 +24,11 @@ import './OrdersPage.css'
 const PAGE_SIZE = 6
 
 const STATUSES = {
-  New: { label: 'Новый', cls: 'st-new' },
-  Confirmed: { label: 'Подтверждён', cls: 'st-confirmed' },
-  InProgress: { label: 'В работе', cls: 'st-progress' },
-  Completed: { label: 'Выполнен', cls: 'st-done' },
-  Cancelled: { label: 'Отменён', cls: 'st-cancelled' },
+  New: { label: 'Новый', cls: 'ord-st-new' },
+  Confirmed: { label: 'Подтверждён', cls: 'ord-st-confirmed' },
+  InProgress: { label: 'В работе', cls: 'ord-st-progress' },
+  Completed: { label: 'Выполнен', cls: 'ord-st-done' },
+  Cancelled: { label: 'Отменён', cls: 'ord-st-cancelled' },
 }
 
 const FILTERS = [
@@ -61,7 +63,7 @@ function StarsInput({ value, onChange }) {
   const [hover, setHover] = useState(0)
   const shown = hover || value
   return (
-    <div className="stars-input" onMouseLeave={() => setHover(0)}>
+    <div className="ord-stars-input" onMouseLeave={() => setHover(0)}>
       {[1, 2, 3, 4, 5].map((n) => (
         <button
           key={n}
@@ -104,16 +106,15 @@ function ReviewModal({ order, reviewedIds, onClose, onDone }) {
 
   return (
     <Modal title="Оставить отзыв" onClose={onClose}>
-      <form onSubmit={submit} className="review-form">
+      <form onSubmit={submit} className="ord-review-form">
         {free.length > 1 && (
-          <label className="sp-field">
+          <div className="sp-field">
             <span className="sp-label">Услуга</span>
-            <select className="sp-date" value={itemId} onChange={(e) => setItemId(Number(e.target.value))}>
-              {free.map((i) => <option key={i.id} value={i.id}>{i.serviceTitle}</option>)}
-            </select>
-          </label>
+            <Select value={itemId} onChange={(v) => setItemId(Number(v))} ariaLabel="Услуга"
+              options={free.map((i) => ({ value: i.id, label: i.serviceTitle }))} />
+          </div>
         )}
-        {free.length === 1 && <div className="review-service">{free[0].serviceTitle}</div>}
+        {free.length === 1 && <div className="ord-review-service">{free[0].serviceTitle}</div>}
 
         <StarsInput value={rating} onChange={(n) => { setRating(n); setError('') }} />
 
@@ -164,6 +165,12 @@ export default function OrdersPage() {
   const live = useRef({})
   useEffect(() => { live.current = { logout, navigate, show } })
 
+  // свежие данные для тихого обновления: что уже показано и какие услуги уже подгружены
+  const shown = useRef({ orders: [], services: {} })
+  // после собственной отмены не показываем второе уведомление о том же заказе
+  const quietUntil = useRef(0)
+  useEffect(() => { shown.current = { orders: state.orders, services: services } })
+
   function handleAuthError(err) {
     if (err?.status !== 401) return false
     live.current.logout()
@@ -197,6 +204,38 @@ export default function OrdersPage() {
     return () => { cancelled = true }
   }, [])
 
+  // Заказ принят, выполнен или отменён мастером: страница обновляется сама, без перезагрузки.
+  // Показываем уведомление и подгружаем фото новых мастеров
+  const refreshOrders = useCallback(() => {
+    Promise.all([getMyOrders(), getMyReviews().catch(() => null)])
+      .then(([orders, reviews]) => {
+        const before = new Map(shown.current.orders.map((o) => [o.id, o.status]))
+        if (before.size > 0 && Date.now() > quietUntil.current) {
+          orders.forEach((o) => {
+            const was = before.get(o.id)
+            if (was && was !== o.status) {
+              live.current.show(`Заказ №${o.id}: ${(STATUSES[o.status]?.label ?? o.status).toLowerCase()}`)
+            }
+          })
+        }
+
+        setState({ status: 'ready', orders, error: '' })
+        if (reviews) setReviewedIds(new Set(reviews.map((r) => r.orderItemId)))
+
+        const missing = [...new Set(orders.map((o) => o.items[0]?.serviceId).filter(Boolean))]
+          .filter((id) => !shown.current.services[id])
+        if (missing.length === 0) return
+        Promise.allSettled(missing.map((id) => getService(id))).then((results) => {
+          const map = {}
+          results.forEach((r) => { if (r.status === 'fulfilled') map[r.value.id] = r.value })
+          setServices((s) => ({ ...s, ...map }))
+        })
+      })
+      .catch(() => { /* тихое обновление: при сбое остаётся прежний список */ })
+  }, [])
+
+  useLiveRefresh(refreshOrders)
+
   const byId = useMemo(() => Object.fromEntries(categories.map((c) => [c.id, c])), [categories])
 
   const filtered = useMemo(
@@ -209,6 +248,7 @@ export default function OrdersPage() {
 
   async function confirmCancel(reason) {
     try {
+      quietUntil.current = Date.now() + 4000
       await cancelOrder(cancelTarget.id, reason)
       setState((s) => ({
         ...s,

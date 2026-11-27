@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Calendar, ChevronDown, Minus, Plus, Star, Trash2, Wrench } from 'lucide-react'
+import { Minus, Plus, Star, Trash2, Wrench } from 'lucide-react'
+import DatePicker from './DatePicker'
 import SlotPicker from './SlotPicker'
 
 const UNITS = { Hour: 'час', Piece: 'шт.' }
@@ -13,11 +14,6 @@ function initials(name) {
     .map((word) => word[0])
     .join('')
     .toUpperCase()
-}
-
-function formatDate(iso) {
-  const [y, m, d] = iso.split('-')
-  return y && m && d ? `${d}.${m}.${y}` : 'Выберите дату'
 }
 
 export default function CartItem({ item, meta, minDate, removing, onQuantity, onField, onSave, onRemove }) {
@@ -75,22 +71,16 @@ export default function CartItem({ item, meta, minDate, removing, onQuantity, on
 
           <div className="cart-field grow">
             <span className="cart-label">Желаемая дата</span>
-            <label className="date-box">
-              <Calendar size={20} />
-              <span>{formatDate(item.desiredDate)}</span>
-              <ChevronDown size={18} />
-              <input
-                type="date"
-                min={minDate}
-                value={item.desiredDate}
-                aria-label="Желаемая дата"
-                onChange={(e) => {
-                  onField(item.id, { desiredDate: e.target.value, desiredTime: '' })
-                  onSave({ ...item, desiredDate: e.target.value, desiredTime: '' })
-                }}
-                onClick={(e) => { try { e.currentTarget.showPicker?.() } catch { /* не поддерживается */ } }}
-              />
-            </label>
+            <DatePicker
+              className="compact"
+              min={minDate}
+              value={item.desiredDate}
+              ariaLabel="Желаемая дата"
+              onChange={(v) => {
+                onField(item.id, { desiredDate: v, desiredTime: '' })
+                onSave({ ...item, desiredDate: v, desiredTime: '' })
+              }}
+            />
           </div>
         </div>
 

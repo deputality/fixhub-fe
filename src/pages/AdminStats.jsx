@@ -18,14 +18,14 @@ const money = (n) => n.toLocaleString('ru-RU', { minimumFractionDigits: 2, maxim
 
 function Block({ icon, tone, title, main, rows, loading }) {
   return (
-    <div className="stat as-block">
-      <span className={`stat-icon ${tone}`}>{icon}</span>
-      <div className="stat-body">
-        <div className="stat-label">{title}</div>
+    <div className="adm-stat as-block">
+      <span className={`adm-stat-icon ${tone}`}>{icon}</span>
+      <div className="adm-stat-body">
+        <div className="adm-stat-label">{title}</div>
         {loading ? (
-          <i className="skel" style={{ width: 90, height: 28, margin: '8px 0 12px' }} />
+          <i className="adm-skel" style={{ width: 90, height: 28, margin: '8px 0 12px' }} />
         ) : (
-          <div className="stat-value">{main}</div>
+          <div className="adm-stat-value">{main}</div>
         )}
         <dl className="as-rows">
           {rows.map(([label, value]) => (
@@ -85,9 +85,9 @@ export default function AdminStats() {
         <p>Подробные цифры по пользователям, услугам, заказам и отзывам платформы.</p>
       </header>
 
-      <div className="stats">
+      <div className="adm-stats">
         <Block
-          tone="tone-blue" icon={<Users size={28} />} title="Пользователи" loading={loading}
+          tone="adm-tone-blue" icon={<Users size={28} />} title="Пользователи" loading={loading}
           main={s && num(s.usersCount)}
           rows={[
             ['Клиенты', s && num(s.clientsCount)],
@@ -96,7 +96,7 @@ export default function AdminStats() {
           ]}
         />
         <Block
-          tone="tone-violet" icon={<LayoutGrid size={28} />} title="Услуги" loading={loading}
+          tone="adm-tone-violet" icon={<LayoutGrid size={28} />} title="Услуги" loading={loading}
           main={s && num(s.servicesCount)}
           rows={[
             ['Опубликованы', s && num(s.activeServicesCount)],
@@ -104,7 +104,7 @@ export default function AdminStats() {
           ]}
         />
         <Block
-          tone="tone-amber" icon={<ClipboardList size={28} />} title="Заказы" loading={loading}
+          tone="adm-tone-amber" icon={<ClipboardList size={28} />} title="Заказы" loading={loading}
           main={s && num(s.ordersCount)}
           rows={[
             ['За 30 дней', s && num(s.ordersLast30Days)],
@@ -112,7 +112,7 @@ export default function AdminStats() {
           ]}
         />
         <Block
-          tone="tone-green" icon={<MessageSquare size={28} />} title="Отзывы" loading={loading}
+          tone="adm-tone-green" icon={<MessageSquare size={28} />} title="Отзывы" loading={loading}
           main={s && num(s.reviewsCount)}
           rows={[
             ['Скрыто', s && num(s.hiddenReviewsCount)],
@@ -123,7 +123,7 @@ export default function AdminStats() {
 
       <div className="as-two">
         <section className="adm-panel">
-          <div className="panel-head"><h2>Заказы по статусам</h2></div>
+          <div className="adm-panel-head"><h2>Заказы по статусам</h2></div>
           <ul className="as-bars">
             {STATUSES.map((st) => {
               const value = s?.ordersByStatus[st.key] ?? 0
@@ -141,8 +141,8 @@ export default function AdminStats() {
         </section>
 
         <section className="adm-panel">
-          <div className="panel-head"><h2>Лучшие исполнители</h2></div>
-          <div className="table-wrap">
+          <div className="adm-panel-head"><h2>Лучшие исполнители</h2></div>
+          <div className="adm-table-wrap">
             <table className="adm-table as-table-top">
               <thead>
                 <tr>
@@ -154,18 +154,18 @@ export default function AdminStats() {
               </thead>
               <tbody>
                 {loading && Array.from({ length: 3 }, (_, i) => (
-                  <tr key={`sk-${i}`} className="row-skel"><td colSpan={4}><i className="skel" /></td></tr>
+                  <tr key={`sk-${i}`} className="adm-row-skel"><td colSpan={4}><i className="adm-skel" /></td></tr>
                 ))}
                 {s?.topPerformers.map((p, i) => (
                   <tr key={p.performerId}>
-                    <td className="cell-id">{i + 1}</td>
+                    <td className="adm-cell-id">{i + 1}</td>
                     <td>{p.performerName}</td>
                     <td>{num(p.completedOrders)}</td>
-                    <td className="cell-date">{money(p.completedAmount)} BYN</td>
+                    <td className="adm-cell-date">{money(p.completedAmount)} BYN</td>
                   </tr>
                 ))}
                 {s && s.topPerformers.length === 0 && (
-                  <tr className="row-empty"><td colSpan={4}>Выполненных заказов пока нет.</td></tr>
+                  <tr className="adm-row-empty"><td colSpan={4}>Выполненных заказов пока нет.</td></tr>
                 )}
               </tbody>
             </table>

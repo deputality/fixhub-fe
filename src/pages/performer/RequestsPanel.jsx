@@ -7,6 +7,7 @@ import { useAuthGuard } from '../../utils/useAuthGuard'
 import Button from '../../components/Button'
 import Input from '../../components/Input'
 import Modal from '../../components/Modal'
+import Select from '../../components/Select'
 import '../../components/Features.css'
 
 const STATUS = { Open: 'Открыт', Chosen: 'Мастер выбран', Cancelled: 'Отменён' }
@@ -57,12 +58,11 @@ function OfferModal({ request, services, onClose, onSaved }) {
         {services.length === 0 ? (
           <div className="form-alert" role="alert"><CircleAlert size={18} /><span>Сначала добавьте активную услугу в разделе «Мои услуги»</span></div>
         ) : (
-          <label className="reason-field">
+          <div className="reason-field">
             <span className="field-label">Услуга</span>
-            <select value={serviceId} onChange={(e) => setServiceId(e.target.value)}>
-              {sorted.map((s) => <option key={s.id} value={s.id}>{s.title}</option>)}
-            </select>
-          </label>
+            <Select value={serviceId} onChange={setServiceId} ariaLabel="Услуга"
+              options={sorted.map((s) => ({ value: String(s.id), label: s.title }))} />
+          </div>
         )}
         <Input id="offer-price" label="Ваша цена, BYN" type="number" min="0" step="0.01" placeholder="50"
           value={price} onChange={(e) => { setPrice(e.target.value); setError('') }} />

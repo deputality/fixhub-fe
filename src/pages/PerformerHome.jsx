@@ -60,7 +60,7 @@ export default function PerformerHome() {
 
       <div className="pf-stats">
         <div className="pf-stat">
-          <span className="pf-stat-icon tone-green"><CircleCheck size={30} /></span>
+          <span className="pf-stat-icon pf-tone-green"><CircleCheck size={30} /></span>
           <div>
             <div className="pf-stat-label">Выполнено заказов</div>
             <div className="pf-stat-value">{stats ? stats.completedOrders : '—'}</div>
@@ -68,7 +68,7 @@ export default function PerformerHome() {
           </div>
         </div>
         <div className="pf-stat">
-          <span className="pf-stat-icon tone-blue"><Coins size={30} /></span>
+          <span className="pf-stat-icon pf-tone-blue"><Coins size={30} /></span>
           <div>
             <div className="pf-stat-label">Общая сумма</div>
             <div className="pf-stat-value">{stats ? `${stats.completedAmount} BYN` : '—'}</div>
@@ -76,7 +76,7 @@ export default function PerformerHome() {
           </div>
         </div>
         <div className="pf-stat">
-          <span className="pf-stat-icon tone-amber"><Star size={30} fill="currentColor" /></span>
+          <span className="pf-stat-icon pf-tone-amber"><Star size={30} fill="currentColor" /></span>
           <div>
             <div className="pf-stat-label">Рейтинг</div>
             <div className="pf-stat-value">

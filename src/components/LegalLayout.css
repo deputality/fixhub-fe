@@ -1,30 +1,25 @@
-.lg { max-width: 1040px; padding-top: 48px; padding-bottom: 72px; }
-.lg-head { max-width: 680px; margin-bottom: 32px; }
+.lg { padding-top: 48px; padding-bottom: 72px; }
+.lg-head { margin-bottom: 32px; }
 .lg-head h1 { margin: 0 0 12px; font-size: 36px; font-weight: 800; letter-spacing: -.025em; }
-.lg-head p { margin: 0 0 12px; font-size: 16px; line-height: 1.55; color: var(--tx-475569); }
-.lg-date { display: inline-block; padding: 4px 12px; border-radius: 999px; background: var(--bg-e9eff9); color: var(--tx-64748b); font-size: 13px; }
+.lg-head p { margin: 0 0 12px; font-size: 16px; line-height: 1.55; color: var(--text-muted); }
+.lg-date { display: inline-block; padding: 4px 12px; border-radius: var(--r-pill); background: var(--surface-3); color: var(--text-muted); font-size: 13px; }
 
-.lg-body { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 40px; align-items: start; }
-.lg-toc { position: sticky; top: 96px; display: flex; flex-direction: column; gap: 2px; padding-left: 14px; border-left: 2px solid var(--bd-e1e9f8); }
-.lg-toc a { padding: 6px 0 6px 12px; margin-left: -14px; border-left: 2px solid transparent; color: var(--tx-64748b); font-size: 14px; line-height: 1.35;
+.lg-body { display: flex; flex-direction: column; gap: 28px; }
+.lg-toc { display: flex; flex-direction: column; gap: 2px; padding-left: 14px; border-left: 2px solid var(--line); }
+.lg-toc a { padding: 6px 0 6px 12px; margin-left: -14px; border-left: 2px solid transparent; color: var(--text-muted); font-size: 14px; line-height: 1.35;
   transition: color .2s, border-color .2s; }
 .lg-toc a:hover { color: var(--blue); border-left-color: var(--blue); }
 
-.lg-text { max-width: 720px; }
 .lg-text section { margin-bottom: 30px; scroll-margin-top: 96px; }
 .lg-text h2 { margin: 0 0 12px; font-size: 20px; letter-spacing: -.01em; }
-.lg-text p, .lg-text li { font-size: 15px; line-height: 1.65; color: var(--tx-334155); }
+.lg-text p, .lg-text li { font-size: 15px; line-height: 1.65; color: var(--text-2); }
 .lg-text p { margin: 0 0 12px; }
 .lg-text ul { margin: 0 0 12px; padding-left: 22px; }
 .lg-text li { margin-bottom: 6px; }
 .lg-text a, .lg-other a { color: var(--blue); }
 .lg-text a:hover { text-decoration: underline; }
-.lg-other { padding-top: 18px; border-top: 1px solid var(--bd-e1e9f8); font-size: 14px !important; color: var(--tx-64748b) !important; }
+.lg-other { padding-top: 18px; border-top: 1px solid var(--line); font-size: 14px !important; color: var(--text-muted) !important; }
 
-@media (max-width: 860px) {
-  .lg-body { grid-template-columns: minmax(0, 1fr); gap: 24px; }
-  .lg-toc { position: static; }
-}
 @media (max-width: 560px) {
   .lg { padding-top: 32px; padding-bottom: 48px; }
   .lg-head h1 { font-size: 26px; }

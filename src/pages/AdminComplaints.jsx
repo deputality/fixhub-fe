@@ -29,9 +29,9 @@ const REASONS = {
 }
 
 const STATUS = {
-  New: { label: 'Новая', cls: 'st-new' },
-  Resolved: { label: 'Принята', cls: 'st-active' },
-  Rejected: { label: 'Отклонена', cls: 'st-blocked' },
+  New: { label: 'Новая', cls: 'adm-st-attention' },
+  Resolved: { label: 'Принята', cls: 'adm-st-active' },
+  Rejected: { label: 'Отклонена', cls: 'adm-st-blocked' },
 }
 
 function formatDateTime(iso) {
@@ -169,7 +169,7 @@ export default function AdminComplaints() {
       </header>
 
       <section className="adm-panel">
-        <div className="panel-head">
+        <div className="adm-panel-head">
           <h2>Список жалоб</h2>
           <div className="as-filter">
             <Select value={filter} onChange={changeFilter} options={FILTERS} ariaLabel="Фильтр жалоб" />
@@ -191,10 +191,10 @@ export default function AdminComplaints() {
               return (
                 <article key={c.id} className="as-complaint">
                   <header className="as-complaint-head">
-                    <span className="pill st-verified">{c.kind === 'Review' ? 'На отзыв' : 'На мастера'}</span>
+                    <span className="adm-pill adm-st-verified">{c.kind === 'Review' ? 'На отзыв' : 'На мастера'}</span>
                     <b>{REASONS[c.reason] ?? c.reason}</b>
                     <span className="as-complaint-date">№{c.id} · {formatDateTime(c.createdAt)}</span>
-                    <span className={`pill ${status.cls}`}>{status.label}</span>
+                    <span className={`adm-pill ${status.cls}`}>{status.label}</span>
                   </header>
 
                   <p className="as-complaint-from">
@@ -207,23 +207,23 @@ export default function AdminComplaints() {
                       <>
                         <div className="as-target-top">
                           <Stars value={c.reviewRating ?? 0} />
-                          {c.reviewIsHidden && <span className="pill st-blocked">Отзыв скрыт</span>}
+                          {c.reviewIsHidden && <span className="adm-pill adm-st-blocked">Отзыв скрыт</span>}
                         </div>
                         <p>{c.reviewText ?? 'Отзыв удалён'}</p>
                       </>
                     )}
                     <div className="as-target-top">
                       <span>Мастер: <Link to={`/performers/${c.performerId}`} target="_blank" rel="noreferrer">{c.performerName}</Link></span>
-                      {c.performerIsBlocked && <span className="pill st-blocked">Заблокирован</span>}
+                      {c.performerIsBlocked && <span className="adm-pill adm-st-blocked">Заблокирован</span>}
                     </div>
                   </div>
 
                   {c.status === 'New' ? (
                     <div className="as-complaint-actions">
-                      <button type="button" className="act-btn verify" onClick={() => setDecision({ complaint: c, mode: 'resolve' })}>
+                      <button type="button" className="adm-act-btn verify" onClick={() => setDecision({ complaint: c, mode: 'resolve' })}>
                         <CircleCheck size={15} /> Принять
                       </button>
-                      <button type="button" className="act-btn unverify" onClick={() => setDecision({ complaint: c, mode: 'reject' })}>
+                      <button type="button" className="adm-act-btn unverify" onClick={() => setDecision({ complaint: c, mode: 'reject' })}>
                         <CircleX size={15} /> Отклонить
                       </button>
                     </div>
@@ -241,11 +241,11 @@ export default function AdminComplaints() {
                 {filter === 'New' ? 'Новых жалоб нет. Всё рассмотрено.' : 'Жалоб не найдено.'}
               </p>
             )}
-            {data.key === null && Array.from({ length: 3 }, (_, i) => <div key={i} className="skel as-complaint-skel" />)}
+            {data.key === null && Array.from({ length: 3 }, (_, i) => <div key={i} className="adm-skel as-complaint-skel" />)}
           </div>
         )}
 
-        <div className="panel-foot">
+        <div className="adm-panel-foot">
           <span>Всего жалоб: <b>{data.total.toLocaleString('ru-RU')}</b></span>
           <Pagination page={page} totalPages={data.totalPages} onChange={setPage} />
         </div>

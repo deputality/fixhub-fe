@@ -23,9 +23,9 @@ const PERIODS = [
 ]
 
 const ROLES = {
-  Client: { label: 'Клиент', cls: 'role-client' },
-  Performer: { label: 'Исполнитель', cls: 'role-performer' },
-  Admin: { label: 'Админ', cls: 'role-admin' },
+  Client: { label: 'Клиент', cls: 'adm-role-client' },
+  Performer: { label: 'Исполнитель', cls: 'adm-role-performer' },
+  Admin: { label: 'Админ', cls: 'adm-role-admin' },
 }
 
 // быстрые фильтры над таблицей пользователей
@@ -71,11 +71,11 @@ function useAuthGuard() {
 function Delta({ value, unit }) {
   if (value == null) return null
   if (value === 0) {
-    return <div className="delta flat"><Minus size={14} /> 0{unit}</div>
+    return <div className="adm-delta flat"><Minus size={14} /> 0{unit}</div>
   }
   const up = value > 0
   return (
-    <div className={`delta ${up ? 'up' : 'down'}`}>
+    <div className={`adm-delta ${up ? 'up' : 'down'}`}>
       {up ? <ArrowUp size={14} /> : <ArrowDown size={14} />}
       {Math.abs(value).toLocaleString('ru-RU')}{unit}
     </div>
@@ -84,20 +84,20 @@ function Delta({ value, unit }) {
 
 function StatCard({ icon, tone, label, value, delta, unit, loading }) {
   return (
-    <div className="stat">
-      <span className={`stat-icon ${tone}`}>{icon}</span>
-      <div className="stat-body">
-        <div className="stat-label">{label}</div>
+    <div className="adm-stat">
+      <span className={`adm-stat-icon ${tone}`}>{icon}</span>
+      <div className="adm-stat-body">
+        <div className="adm-stat-label">{label}</div>
         {loading ? (
           <>
-            <i className="skel" style={{ width: 110, height: 28, margin: '8px 0 10px' }} />
-            <i className="skel" style={{ width: 90, height: 12 }} />
+            <i className="adm-skel" style={{ width: 110, height: 28, margin: '8px 0 10px' }} />
+            <i className="adm-skel" style={{ width: 90, height: 12 }} />
           </>
         ) : (
           <>
-            <div className="stat-value">{value}</div>
+            <div className="adm-stat-value">{value}</div>
             <Delta value={delta} unit={unit} />
-            <div className="stat-note">за последние 7 дней</div>
+            <div className="adm-stat-note">за последние 7 дней</div>
           </>
         )}
       </div>
@@ -119,22 +119,22 @@ function StatCards({ state, onRetry }) {
   }
 
   return (
-    <div className="stats">
+    <div className="adm-stats">
       <StatCard
-        tone="tone-blue" icon={<Users size={28} />} label="Всего пользователей" loading={loading}
+        tone="adm-tone-blue" icon={<Users size={28} />} label="Всего пользователей" loading={loading}
         value={s && num(s.usersCount)} delta={s?.usersGrowthPercent} unit=" %"
       />
       <StatCard
-        tone="tone-violet" icon={<ClipboardList size={28} />} label="Всего заказов" loading={loading}
+        tone="adm-tone-violet" icon={<ClipboardList size={28} />} label="Всего заказов" loading={loading}
         value={s && num(s.ordersCount)} delta={s?.ordersGrowthPercent} unit=" %"
       />
       <StatCard
-        tone="tone-amber" icon={<Star size={28} />} label="Средний рейтинг" loading={loading}
+        tone="adm-tone-amber" icon={<Star size={28} />} label="Средний рейтинг" loading={loading}
         value={s && (s.averageRating == null ? '—' : s.averageRating.toLocaleString('ru-RU', { minimumFractionDigits: 1 }))}
         delta={s?.ratingChange} unit=""
       />
       <StatCard
-        tone="tone-green" icon={<Coins size={28} />} label="Общая сумма заказов" loading={loading}
+        tone="adm-tone-green" icon={<Coins size={28} />} label="Общая сумма заказов" loading={loading}
         value={s && <>{money(s.completedAmount)} <small>BYN</small></>}
         delta={s?.amountGrowthPercent} unit=" %"
       />
@@ -186,7 +186,7 @@ function OrdersChart({ points }) {
   const tipLeft = hover == null ? 0 : Math.min(90, Math.max(10, (x(hover) / W) * 100))
 
   return (
-    <div className="chart" onMouseLeave={() => setHover(null)}>
+    <div className="adm-chart" onMouseLeave={() => setHover(null)}>
       <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="График количества заказов по дням">
         <defs>
           <linearGradient id="chart-fill" x1="0" y1="0" x2="0" y2="1">
@@ -197,24 +197,24 @@ function OrdersChart({ points }) {
 
         {ticks.map((t) => (
           <g key={t}>
-            <line x1={PAD.l} x2={W - PAD.r} y1={y(t)} y2={y(t)} className="chart-grid" />
-            <text x={PAD.l - 10} y={y(t) + 4} textAnchor="end" className="chart-text">{t}</text>
+            <line x1={PAD.l} x2={W - PAD.r} y1={y(t)} y2={y(t)} className="adm-chart-grid" />
+            <text x={PAD.l - 10} y={y(t) + 4} textAnchor="end" className="adm-chart-text">{t}</text>
           </g>
         ))}
 
         {points.map((p, i) => (
           <g key={p.date}>
-            <line x1={x(i)} x2={x(i)} y1={PAD.t} y2={base} className="chart-grid" />
+            <line x1={x(i)} x2={x(i)} y1={PAD.t} y2={base} className="adm-chart-grid" />
             {i % labelEvery === 0 && (
-              <text x={x(i)} y={H - 10} textAnchor="middle" className="chart-text">{dayLabel(p.date)}</text>
+              <text x={x(i)} y={H - 10} textAnchor="middle" className="adm-chart-text">{dayLabel(p.date)}</text>
             )}
           </g>
         ))}
 
-        {hover != null && <line x1={x(hover)} x2={x(hover)} y1={PAD.t} y2={base} className="chart-guide" />}
+        {hover != null && <line x1={x(hover)} x2={x(hover)} y1={PAD.t} y2={base} className="adm-chart-guide" />}
 
-        <path d={area} fill="url(#chart-fill)" className="chart-area" />
-        <path d={line} pathLength="1" className="chart-line" />
+        <path d={area} fill="url(#chart-fill)" className="adm-chart-area" />
+        <path d={line} pathLength="1" className="adm-chart-line" />
 
         {points.map((p, i) => (
           <circle
@@ -222,7 +222,7 @@ function OrdersChart({ points }) {
             cx={x(i)}
             cy={y(p.count)}
             r={hover === i ? 6 : 4}
-            className="chart-dot"
+            className="adm-chart-dot"
             style={{ animationDelay: `${0.5 + (i / n) * 0.5}s` }}
           />
         ))}
@@ -241,7 +241,7 @@ function OrdersChart({ points }) {
       </svg>
 
       {hp && (
-        <div className="chart-tip" style={{ left: `${tipLeft}%`, top: `${(y(hp.count) / H) * 100}%` }}>
+        <div className="adm-chart-tip" style={{ left: `${tipLeft}%`, top: `${(y(hp.count) / H) * 100}%` }}>
           <b>{hp.count}</b> {ordersWord(hp.count)}
           <span>{dayLabel(hp.date)}</span>
         </div>
@@ -281,9 +281,9 @@ function OrdersPanel({ onAuthError }) {
 
   return (
     <section className="adm-panel">
-      <div className="panel-head">
+      <div className="adm-panel-head">
         <h2>Заказы по дням</h2>
-        <div className="period">
+        <div className="adm-period">
           <Calendar size={16} />
           <Select value={days} onChange={changeDays} options={PERIODS} ariaLabel="Период" />
         </div>
@@ -304,9 +304,9 @@ function OrdersPanel({ onAuthError }) {
           </span>
         </div>
       ) : chart.points.length === 0 ? (
-        <i className="skel" style={{ height: 250 }} />
+        <i className="adm-skel" style={{ height: 250 }} />
       ) : (
-        <div className={chart.status === 'loading' ? 'chart-wrap is-loading' : 'chart-wrap'}>
+        <div className={chart.status === 'loading' ? 'adm-chart-wrap is-loading' : 'adm-chart-wrap'}>
           <OrdersChart key={days} points={chart.points} />
         </div>
       )}
@@ -396,7 +396,7 @@ function UsersPanel({ onAuthError }) {
 
   return (
     <section className="adm-panel">
-      <div className="panel-head">
+      <div className="adm-panel-head">
         <h2>Пользователи</h2>
         <label className="adm-search">
           <Search size={16} />
@@ -435,7 +435,7 @@ function UsersPanel({ onAuthError }) {
           </span>
         </div>
       ) : (
-        <div className="table-wrap">
+        <div className="adm-table-wrap">
           <table className={`adm-table${loading ? ' is-loading' : ''}`}>
             <thead>
               <tr>
@@ -455,24 +455,24 @@ function UsersPanel({ onAuthError }) {
                 const busy = busyId === u.id
                 return (
                   <tr key={u.id}>
-                    <td className="cell-id" data-label="ID">#{u.id}</td>
-                    <td className="cell-main">
-                      <div className="cell-email">
-                        <span className="mini-avatar">{initials(u.fullName)}</span>
+                    <td className="adm-cell-id" data-label="ID">#{u.id}</td>
+                    <td className="adm-cell-main">
+                      <div className="adm-cell-email">
+                        <span className="adm-mini-avatar">{initials(u.fullName)}</span>
                         <a href={`mailto:${u.email}`} title={u.email}>{u.email}</a>
                       </div>
                     </td>
                     <td data-label="Имя">{u.fullName}</td>
-                    <td data-label="Роль"><span className={`pill ${role.cls}`}>{role.label}</span></td>
+                    <td data-label="Роль"><span className={`adm-pill ${role.cls}`}>{role.label}</span></td>
                     <td data-label="Статус">
-                      <span className={`pill ${u.isBlocked ? 'st-blocked' : 'st-active'}`}>
+                      <span className={`adm-pill ${u.isBlocked ? 'adm-st-blocked' : 'adm-st-active'}`}>
                         {u.isBlocked ? 'Заблокирован' : 'Активен'}
                       </span>
                     </td>
                     <td data-label="Проверка">
                       {u.role === 'Performer' ? (
-                        <div className="cell-verify">
-                          <span className={`pill ${u.isVerified ? 'st-verified' : 'st-unverified'}`}>
+                        <div className="adm-cell-verify">
+                          <span className={`adm-pill ${u.isVerified ? 'adm-st-verified' : 'adm-st-unverified'}`}>
                             {u.isVerified ? 'Проверен' : 'Не проверен'}
                           </span>
                           <button type="button" className="as-docs-link" onClick={() => setDocsUser(u)}>
@@ -480,19 +480,19 @@ function UsersPanel({ onAuthError }) {
                           </button>
                         </div>
                       ) : (
-                        <span className="cell-none">—</span>
+                        <span className="adm-cell-none">—</span>
                       )}
                     </td>
-                    <td className="cell-date" data-label="Регистрация">{formatDateTime(u.createdAt)}</td>
-                    <td className="cell-act">
+                    <td className="adm-cell-date" data-label="Регистрация">{formatDateTime(u.createdAt)}</td>
+                    <td className="adm-cell-act">
                       {u.role === 'Admin' ? (
-                        <span className="cell-none">—</span>
+                        <span className="adm-cell-none">—</span>
                       ) : (
-                        <div className="cell-actions">
+                        <div className="adm-cell-actions">
                           {u.role === 'Performer' && (
                             <button
                               type="button"
-                              className={`act-btn ${u.isVerified ? 'unverify' : 'verify'}`}
+                              className={`adm-act-btn ${u.isVerified ? 'unverify' : 'verify'}`}
                               disabled={busy}
                               onClick={() => toggleVerify(u)}
                             >
@@ -502,7 +502,7 @@ function UsersPanel({ onAuthError }) {
                           )}
                           <button
                             type="button"
-                            className={`act-btn ${u.isBlocked ? 'unblock' : 'block'}`}
+                            className={`adm-act-btn ${u.isBlocked ? 'unblock' : 'block'}`}
                             disabled={busy}
                             onClick={() => toggleBlock(u)}
                           >
@@ -517,17 +517,17 @@ function UsersPanel({ onAuthError }) {
               })}
 
               {!loading && data.items.length === 0 && (
-                <tr className="row-empty"><td colSpan={8}>Никого не нашли. Попробуйте изменить запрос или фильтр.</td></tr>
+                <tr className="adm-row-empty"><td colSpan={8}>Никого не нашли. Попробуйте изменить запрос или фильтр.</td></tr>
               )}
               {data.key === null && Array.from({ length: PAGE_SIZE }, (_, i) => (
-                <tr key={`sk-${i}`} className="row-skel"><td colSpan={8}><i className="skel" /></td></tr>
+                <tr key={`sk-${i}`} className="adm-row-skel"><td colSpan={8}><i className="adm-skel" /></td></tr>
               ))}
             </tbody>
           </table>
         </div>
       )}
 
-      <div className="panel-foot">
+      <div className="adm-panel-foot">
         <span>Всего пользователей: <b>{num(data.total)}</b></span>
         <Pagination page={page} totalPages={data.totalPages} onChange={setPage} />
       </div>

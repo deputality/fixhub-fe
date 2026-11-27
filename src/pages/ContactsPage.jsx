@@ -14,7 +14,7 @@ export default function ContactsPage() {
   const tel = CONTACTS.phone.replace(/[^\d+]/g, '')
 
   return (
-    <div className="container ip">
+    <div className="container container--narrow ip">
       <header className="ip-head">
         <h1>Контакты</h1>
         <p>Есть вопрос по заказу, работе сайта или вы хотите предложить идею? Напишите или позвоните нам.</p>

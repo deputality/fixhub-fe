@@ -129,7 +129,7 @@ export default function Filters({ categories, bounds, applied, onApply, onReset,
               className="star-btn"
               aria-label={`Рейтинг от ${n}`}
               onClick={() => setRating(rating === n ? 0 : n)}
-              style={{ color: n <= rating ? '#f59e0b' : '#cbd5e1' }}
+              style={{ color: n <= rating ? '#f59e0b' : 'var(--line-strong)' }}
             >
               <Star size={26} fill={n <= rating ? 'currentColor' : 'none'} />
             </button>
