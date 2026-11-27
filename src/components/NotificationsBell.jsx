@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Bell } from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
 import {
   getNotifications, getUnreadCount, markAllNotificationsRead, markNotificationRead,
 } from '../api/notifications'
@@ -14,6 +15,7 @@ function formatWhen(iso) {
 
 export default function NotificationsBell() {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [count, setCount] = useState(0)
   const [open, setOpen] = useState(false)
   const [items, setItems] = useState(null)
@@ -76,8 +78,16 @@ export default function NotificationsBell() {
       markNotificationRead(n.id).catch(() => {})
       setCount((c) => Math.max(0, c - 1))
     }
-    if (n.orderId) navigate('/performer/orders')
+    if (user?.role === 'Client') {
+      // клиент: предложения по запросам цены, ответы мастеров на отзывы, заказы
+      if (n.requestId || n.type === 'NewOffer') navigate('/requests')
+      else if (n.orderId || n.reviewId || n.type === 'ReviewReply') navigate('/orders')
+      return
+    }
+    if (n.type === 'OfferAccepted') navigate('/performer/orders')
+    else if (n.orderId) navigate('/performer/orders')
     else if (n.reviewId) navigate('/performer/reviews')
+    else if (n.requestId) navigate('/performer/requests')
     else if (n.type === 'ProfileVerified') navigate('/performer/profile')
   }
 

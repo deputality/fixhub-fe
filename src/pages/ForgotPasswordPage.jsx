@@ -5,10 +5,10 @@ import { forgotPassword } from '../api/auth'
 import Button from '../components/Button'
 import Input from '../components/Input'
 import './StaticPages.css'
-
-const LOGO_SRC = '/logo.svg'
+import { useLogoSrc } from '../utils/theme'
 
 export default function ForgotPasswordPage() {
+  const logoSrc = useLogoSrc()
   const [email, setEmail] = useState('')
   const [fieldError, setFieldError] = useState('')
   const [error, setError] = useState('')
@@ -36,7 +36,7 @@ export default function ForgotPasswordPage() {
   return (
     <div className="auth-layout">
       <div className="auth-bg" aria-hidden="true"><i /><i /><i /></div>
-      <Link to="/" className="auth-logo"><img src={LOGO_SRC} alt="FixHub" /></Link>
+      <Link to="/" className="auth-logo"><img src={logoSrc} alt="FixHub" /></Link>
 
       <main className="auth-solo">
         <section className="auth-card">

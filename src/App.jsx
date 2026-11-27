@@ -9,6 +9,7 @@ import CartPage from './pages/CartPage'
 import CatalogPage from './pages/CatalogPage'
 import ServicePage from './pages/ServicePage'
 import OrdersPage from './pages/OrdersPage'
+import RequestsPage from './pages/RequestsPage'
 import CabinetLayout from './components/CabinetLayout'
 import AdminLayout from './components/AdminLayout'
 import AdminPage from './pages/AdminPage'
@@ -20,7 +21,7 @@ import AdminAudit from './pages/AdminAudit'
 import AdminSettings from './pages/AdminSettings'
 import PerformerLayout from './components/PerformerLayout'
 import PerformerHome from './pages/PerformerHome'
-import { PerformerOrdersPage, PerformerPortfolioPage, PerformerReviewsPage, PerformerServicesPage } from './pages/PerformerSections'
+import { PerformerOrdersPage, PerformerPortfolioPage, PerformerRequestsPage, PerformerReviewsPage, PerformerSchedulePage, PerformerServicesPage } from './pages/PerformerSections'
 import ProfilePage from './pages/ProfilePage'
 import PerformerProfilePage from './pages/PerformerProfilePage'
 import OrderSentPage from './pages/OrderSentPage'
@@ -80,6 +81,7 @@ export default function App() {
             }
           >
             <Route path="/orders" element={<OrdersPage />} />
+            <Route path="/requests" element={<RequestsPage />} />
             <Route path="/cart/sent" element={<OrderSentPage />} />
             <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/profile" element={<ProfilePage />} />
@@ -96,6 +98,8 @@ export default function App() {
             <Route path="services" element={<PerformerServicesPage />} />
             <Route path="portfolio" element={<PerformerPortfolioPage />} />
             <Route path="orders" element={<PerformerOrdersPage />} />
+            <Route path="requests" element={<PerformerRequestsPage />} />
+            <Route path="schedule" element={<PerformerSchedulePage />} />
             <Route path="reviews" element={<PerformerReviewsPage />} />
             <Route path="profile" element={<PerformerProfilePage />} />
             <Route path="settings" element={<PerformerSettingsPage />} />

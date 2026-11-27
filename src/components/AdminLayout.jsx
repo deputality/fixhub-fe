@@ -4,6 +4,7 @@ import { ChartColumn, Flag, History, LayoutGrid, LogOut, Menu, Settings, Star, U
 import { getComplaintsCount } from '../api/admin'
 import { useAuth } from '../context/AuthContext'
 import NotificationsBell from './NotificationsBell'
+import ThemeToggle from './ThemeToggle'
 import './AdminLayout.css'
 
 const LOGO_SRC = '/logo-admin.svg'
@@ -73,6 +74,7 @@ export default function AdminLayout() {
         <header className="adm-top">
           <button type="button" className="adm-burger" onClick={() => setMenuOpen((v) => !v)}
             aria-label="Меню" aria-expanded={menuOpen}><Menu size={26} /></button>
+          <ThemeToggle />
           <NotificationsBell />
           <Link to="/admin/settings" className="adm-user" aria-label="Настройки профиля">
             <span className="adm-avatar">{initials(user?.fullName)}</span>

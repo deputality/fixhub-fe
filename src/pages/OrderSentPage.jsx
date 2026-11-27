@@ -112,7 +112,7 @@ export default function OrderSentPage() {
                     <div className="os-title">{r.serviceTitle}</div>
                     <div className="os-master">{r.order.performerName}</div>
                     <div className="os-meta">
-                      Желаемая дата: {formatDate(r.desiredDate)} <i>·</i> Количество: {r.quantity}
+                      Желаемая дата: {formatDate(r.desiredDate)}{r.desiredTime && `, ${String(r.desiredTime).slice(0, 5)}`} <i>·</i> Количество: {r.quantity}
                     </div>
                   </div>
                   <div className="os-right">

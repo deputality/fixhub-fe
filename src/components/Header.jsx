@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { ClipboardList, Heart, LayoutDashboard, LogOut, Menu, ShoppingCart, User, X } from 'lucide-react'
+import { ClipboardList, Heart, LayoutDashboard, LogOut, Menu, MessageSquareText, ShoppingCart, User, X } from 'lucide-react'
 import { getProfile } from '../api/profile'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
 import { useFavorites } from '../context/FavoritesContext'
-import { LOGO_SRC } from '../utils/brand'
+import { useLogoSrc } from '../utils/theme'
 import { useScrolled } from '../utils/useScrolled'
 import NotificationsBell from './NotificationsBell'
 import Avatar from './Avatar'
+import ThemeToggle from './ThemeToggle'
 import UserMenu from './UserMenu'
 
 export default function Header() {
   const { user, logout, updateUser } = useAuth()
+  const logoSrc = useLogoSrc()
   const { count } = useCart()
   const { count: favCount } = useFavorites()
   const showCart = !user || user.role === 'Client'
@@ -48,7 +50,7 @@ export default function Header() {
     <header className={`site-header${scrolled ? ' scrolled' : ''}`}>
       <div className="container site-header-inner">
         <Link to="/" className="site-logo">
-          <img src={LOGO_SRC} alt="FixHub" />
+          <img src={logoSrc} alt="FixHub" />
         </Link>
 
         <nav className="site-nav">
@@ -57,6 +59,7 @@ export default function Header() {
         </nav>
 
         <div className="header-actions hdr-main">
+          <ThemeToggle />
           {showCart && (
             <Link to="/favorites" className="cart-link fav-link" aria-label="Избранное">
               <Heart size={27} strokeWidth={1.8} />
@@ -75,7 +78,7 @@ export default function Header() {
             </Link>
           )}
 
-          {user?.role === 'Performer' && <NotificationsBell />}
+          {(user?.role === 'Performer' || user?.role === 'Client') && <NotificationsBell />}
 
           {user?.role === 'Client' || user?.role === 'Performer' ? (
             <UserMenu />
@@ -124,6 +127,7 @@ export default function Header() {
               ) : (
                 <>
                   <NavLink to="/orders" className="mn-link"><ClipboardList size={20} /> Мои заказы</NavLink>
+                  <NavLink to="/requests" className="mn-link"><MessageSquareText size={20} /> Запросы цены</NavLink>
                   <NavLink to="/favorites" className="mn-link">
                     <Heart size={20} /> Избранное
                     {favCount > 0 && <span className="mn-count">{favCount}</span>}

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Calendar, ChevronDown, Minus, Plus, Star, Trash2, Wrench } from 'lucide-react'
+import SlotPicker from './SlotPicker'
 
 const UNITS = { Hour: 'час', Piece: 'шт.' }
 
@@ -84,14 +85,25 @@ export default function CartItem({ item, meta, minDate, removing, onQuantity, on
                 value={item.desiredDate}
                 aria-label="Желаемая дата"
                 onChange={(e) => {
-                  onField(item.id, { desiredDate: e.target.value })
-                  onSave({ ...item, desiredDate: e.target.value })
+                  onField(item.id, { desiredDate: e.target.value, desiredTime: '' })
+                  onSave({ ...item, desiredDate: e.target.value, desiredTime: '' })
                 }}
                 onClick={(e) => { try { e.currentTarget.showPicker?.() } catch { /* не поддерживается */ } }}
               />
             </label>
           </div>
         </div>
+
+        <SlotPicker
+          performerId={item.performerId}
+          date={item.desiredDate}
+          value={item.desiredTime}
+          onLoaded={(has) => onField(item.id, { needTime: has })}
+          onChange={(t) => {
+            onField(item.id, { desiredTime: t })
+            onSave({ ...item, desiredTime: t })
+          }}
+        />
 
         <div className="cart-field">
           <label className="cart-label" htmlFor={`comment-${item.id}`}>Комментарий (необязательно)</label>

@@ -98,6 +98,7 @@ export default function PortfolioPanel() {
               <div className="pw-info">
                 <div className="pw-title">{item.title}</div>
                 {item.description && <div className="pw-desc">{item.description}</div>}
+                {item.photoUrls?.length > 0 && <div className="pw-desc">Ещё фото: {item.photoUrls.length}</div>}
               </div>
               <div className="pf-service-actions">
                 <button type="button" className="pf-icon-btn" onClick={() => setForm(item)} aria-label="Редактировать" title="Редактировать">

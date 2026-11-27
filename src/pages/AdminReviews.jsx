@@ -5,6 +5,7 @@ import { useToast } from '../context/ToastContext'
 import { useAuthGuard } from '../utils/useAuthGuard'
 import Pagination from '../components/Pagination'
 import Select from '../components/Select'
+import { ReviewPhotos, ReviewReply } from '../components/ReviewExtras'
 import './AdminPage.css'
 import './AdminSections.css'
 
@@ -131,7 +132,7 @@ export default function AdminReviews() {
                     <td>{r.clientName}</td>
                     <td className="as-service">{r.serviceTitle}</td>
                     <td><Stars value={r.rating} /></td>
-                    <td className="as-text">{r.text}</td>
+                    <td className="as-text">{r.text}<ReviewPhotos photos={r.photoUrls} /><ReviewReply review={r} /></td>
                     <td className="cell-date">{formatDateTime(r.createdAt)}</td>
                     <td>
                       <span className={`pill ${r.isHidden ? 'st-blocked' : 'st-active'}`}>

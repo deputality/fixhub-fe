@@ -98,6 +98,7 @@ export default function CartPage() {
         quantity: item.quantity,
         comment: item.comment,
         desiredDate: item.desiredDate || null,
+        desiredTime: item.desiredTime || null,
       })
     } catch (err) {
       if (handleAuthError(err)) return
@@ -114,6 +115,7 @@ export default function CartPage() {
         quantity: next,
         comment: item.comment,
         desiredDate: item.desiredDate || null,
+        desiredTime: item.desiredTime || null,
       })
     } catch (err) {
       patchItem(item.id, { quantity: item.quantity })
@@ -156,6 +158,12 @@ export default function CartPage() {
     const first = ['address', 'phone', 'name'].find((k) => errors[k])
     if (first) {
       document.getElementById(`order-${first}`)?.focus()
+      return
+    }
+
+    const noTime = items.find((i) => i.needTime && !i.desiredTime)
+    if (noTime) {
+      setFormError(`Выберите дату и время для услуги «${noTime.title}»`)
       return
     }
 

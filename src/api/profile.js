@@ -13,3 +13,7 @@ export const updateEmailNotifications = (emailNotifications) =>
 
 export const changePassword = (currentPassword, newPassword) =>
   api('/api/profile/password', { method: 'POST', body: { currentPassword, newPassword } })
+
+// Удаление аккаунта: данные обезличиваются, вход закрывается. Нужен пароль и отсутствие незавершённых заказов.
+export const deleteAccount = (password) =>
+  api('/api/profile/delete', { method: 'POST', body: { password } })

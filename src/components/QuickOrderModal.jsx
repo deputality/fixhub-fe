@@ -20,7 +20,7 @@ function formatDate(iso) {
 
 // «Заказать» без корзины: одна услуга и контакты в одном окне.
 // service, quantity, date, comment приходят со страницы услуги
-export default function QuickOrderModal({ service, quantity, date, comment, photo, color, onClose }) {
+export default function QuickOrderModal({ service, quantity, date, time, comment, photo, color, onClose }) {
   const { user } = useAuth()
   const navigate = useNavigate()
   const guard = useAuthGuard()
@@ -61,6 +61,7 @@ export default function QuickOrderModal({ service, quantity, date, comment, phot
         serviceId: service.id,
         quantity,
         desiredDate: date || null,
+        desiredTime: time || null,
         comment: comment || null,
         address: contact.address,
         contactName: contact.name,
@@ -92,7 +93,7 @@ export default function QuickOrderModal({ service, quantity, date, comment, phot
           <span>{service.performerName}</span>
           <span>
             {quantity} × {service.price} BYN{UNITS[service.unit] && ` / ${UNITS[service.unit]}`}
-            {' · '}дата: {formatDate(date)}
+            {' · '}дата: {formatDate(date)}{time && `, ${time}`}
           </span>
           <div className="quick-total">Итого <b>{total} BYN</b></div>
         </div>

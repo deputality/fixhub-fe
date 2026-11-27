@@ -13,6 +13,8 @@ import { useToast } from '../context/ToastContext'
 import FavoriteButton from '../components/FavoriteButton'
 import MapView from '../components/MapView'
 import QuickOrderModal from '../components/QuickOrderModal'
+import SlotPicker from '../components/SlotPicker'
+import { ReviewPhotos, ReviewReply } from '../components/ReviewExtras'
 import ShareButton from '../components/ShareButton'
 import { resolveCategoryMeta } from '../utils/categoryMeta'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
@@ -75,6 +77,8 @@ export default function ServicePage() {
 
   const [quantity, setQuantity] = useState(1)
   const [date, setDate] = useState(todayIso)
+  const [time, setTime] = useState('')
+  const [needTime, setNeedTime] = useState(false)
   const [comment, setComment] = useState('')
   const [adding, setAdding] = useState(false)
   const [orderOpen, setOrderOpen] = useState(false)
@@ -131,10 +135,15 @@ export default function ServicePage() {
 
   async function handleAdd() {
     if (adding) return
+    if (needTime && !time) {
+      show('Выберите время', 'error')
+      return
+    }
     setAdding(true)
     await addToCart(service.id, {
       quantity,
       desiredDate: date || null,
+      desiredTime: time || null,
       comment: comment.trim() || null,
     })
     setAdding(false)
@@ -148,6 +157,10 @@ export default function ServicePage() {
     }
     if (user.role !== 'Client') {
       show('Заказывать услуги могут только клиенты', 'error')
+      return
+    }
+    if (needTime && !time) {
+      show('Выберите время', 'error')
       return
     }
     setOrderOpen(true)
@@ -330,10 +343,18 @@ export default function ServicePage() {
                   className="sp-date"
                   value={date}
                   min={minDate}
-                  onChange={(e) => setDate(e.target.value)}
+                  onChange={(e) => { setDate(e.target.value); setTime('') }}
                 />
               </label>
             </div>
+
+            <SlotPicker
+              performerId={service.performerId}
+              date={date}
+              value={time}
+              onChange={setTime}
+              onLoaded={setNeedTime}
+            />
 
             <label className="sp-field">
               <span className="sp-label">Комментарий (необязательно)</span>
@@ -392,6 +413,8 @@ export default function ServicePage() {
                         <b>{r.rating}.0</b>
                       </div>
                       <p>{r.text}</p>
+                      <ReviewPhotos photos={r.photoUrls} />
+                      <ReviewReply review={r} performerName={service.performerName} />
                       <ComplaintButton kind="Review" targetId={r.id} ownerId={r.clientId} />
                     </div>
                   </li>
@@ -407,6 +430,7 @@ export default function ServicePage() {
           service={service}
           quantity={quantity}
           date={date}
+          time={time}
           comment={comment.trim()}
           photo={service.photoUrl || meta.image}
           color={meta.color}
