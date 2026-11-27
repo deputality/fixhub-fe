@@ -3,11 +3,16 @@ import { Check, CheckCheck, MapPin, Phone, Send } from 'lucide-react'
 import { getOrderMessages, sendOrderMessage } from '../api/messages'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
+import { invokeChat } from '../realtime/chatConnection'
+import { useChatConnection, useChatEvent, useChatState } from '../realtime/useChat'
 import { useAuthGuard } from '../utils/useAuthGuard'
 import Modal from './Modal'
 import './OrderChat.css'
 
-const POLL_MS = 5000
+// Пока WebSocket недоступен, чат по-старому обновляется раз в 5 секунд
+const FALLBACK_POLL_MS = 5000
+const TYPING_SHOW_MS = 3500
+const TYPING_SEND_MS = 2000
 
 function dayKey(iso) {
   const d = new Date(iso)
@@ -37,10 +42,17 @@ export default function OrderChat({ order, title, peerName, peerPhone, peerHint,
   const [state, setState] = useState({ status: 'loading', items: [], error: '' })
   const [text, setText] = useState('')
   const [sending, setSending] = useState(false)
+  const [typing, setTyping] = useState(false)
   const listRef = useRef(null)
   const stick = useRef(true)
+  const typingTimer = useRef(0)
+  const lastTypingSent = useRef(0)
 
   const closed = order.status === 'Cancelled'
+
+  useChatConnection()
+  const chatState = useChatState()
+  const live = chatState === 'Connected'
 
   const load = useCallback(() => {
     getOrderMessages(order.id)
@@ -51,24 +63,105 @@ export default function OrderChat({ order, title, peerName, peerPhone, peerHint,
       })
   }, [order.id, guard])
 
-  // подгружаем сразу и потом раз в 5 секунд, пока чат открыт
+  // Эффектам ниже нужна всегда актуальная load, но перезапускаться при её смене они не должны:
+  // иначе каждая перерисовка заново входила бы в комнату заказа
+  const loadRef = useRef(load)
   useEffect(() => {
-    load()
+    loadRef.current = load
+  })
+
+  // История подгружается сразу, не дожидаясь WebSocket
+  useEffect(() => {
+    loadRef.current()
+  }, [order.id])
+
+  // Когда соединение готово (и после каждого переподключения): входим в комнату заказа и заново
+  // загружаем историю, чтобы не потерять сообщения, пришедшие, пока связи не было
+  useEffect(() => {
+    if (!live) return undefined
+    let cancelled = false
+    invokeChat('JoinOrder', order.id)
+      .catch(() => {})
+      .finally(() => { if (!cancelled) loadRef.current() })
+    return () => {
+      cancelled = true
+      invokeChat('LeaveOrder', order.id).catch(() => {})
+    }
+  }, [live, order.id])
+
+  // Запасной вариант: без WebSocket спрашиваем сервер раз в 5 секунд, как раньше
+  useEffect(() => {
+    if (live) return undefined
     const t = setInterval(() => {
-      if (document.visibilityState === 'visible') load()
-    }, POLL_MS)
+      if (document.visibilityState === 'visible') loadRef.current()
+    }, FALLBACK_POLL_MS)
     return () => clearInterval(t)
-  }, [load])
+  }, [live])
+
+  // Сообщение открытого чата считается прочитанным, только если вкладка на экране
+  const markRead = useCallback(() => {
+    if (document.visibilityState === 'visible') invokeChat('MarkRead', order.id).catch(() => {})
+  }, [order.id])
+
+  useEffect(() => {
+    document.addEventListener('visibilitychange', markRead)
+    return () => document.removeEventListener('visibilitychange', markRead)
+  }, [markRead])
+
+  const append = useCallback((message) => {
+    setState((s) => (s.items.some((m) => m.id === message.id)
+      ? s
+      : { ...s, status: 'ready', items: [...s.items, message] }))
+  }, [])
+
+  useChatEvent('MessageReceived', (message) => {
+    if (message.orderId !== order.id) return
+    append(message)
+    if (message.senderId !== user.id) {
+      setTyping(false)
+      markRead()
+    }
+  })
+
+  // собеседник прочитал: мои сообщения получают вторую галочку
+  useChatEvent('MessagesRead', ({ orderId, readerId }) => {
+    if (orderId !== order.id || readerId === user.id) return
+    setState((s) => ({ ...s, items: s.items.map((m) => (m.senderId === user.id ? { ...m, isRead: true } : m)) }))
+  })
+
+  useChatEvent('UserTyping', ({ orderId, userId }) => {
+    if (orderId !== order.id || userId === user.id) return
+    setTyping(true)
+    clearTimeout(typingTimer.current)
+    typingTimer.current = setTimeout(() => setTyping(false), TYPING_SHOW_MS)
+  })
+
+  useEffect(() => () => clearTimeout(typingTimer.current), [])
 
   // новое сообщение: прокручиваем вниз, если человек и так был внизу
   useEffect(() => {
     const el = listRef.current
     if (el && stick.current) el.scrollTop = el.scrollHeight
-  }, [state.items.length, state.status])
+  }, [state.items.length, state.status, typing])
 
   function onScroll(e) {
     const el = e.currentTarget
     stick.current = el.scrollHeight - el.scrollTop - el.clientHeight < 80
+  }
+
+  // Отправка: по WebSocket, а если соединения нет, обычным запросом
+  async function deliver(value) {
+    if (live) {
+      try {
+        const result = await invokeChat('SendMessage', order.id, value)
+        if (!result.ok) throw { error: result.error, status: result.status }
+        return result.message
+      } catch (err) {
+        // ошибка сервера (например, «заказ отменён»): показываем её; обрыв связи: пробуем обычным запросом
+        if (err?.error) throw err
+      }
+    }
+    return sendOrderMessage(order.id, value)
   }
 
   async function submit(e) {
@@ -77,14 +170,24 @@ export default function OrderChat({ order, title, peerName, peerPhone, peerHint,
     if (!value || sending) return
     setSending(true)
     try {
-      const message = await sendOrderMessage(order.id, value)
+      const message = await deliver(value)
       stick.current = true
       setText('')
-      setState((s) => ({ ...s, status: 'ready', items: [...s.items, message] }))
+      append(message)
     } catch (err) {
       if (!guard(err)) show(err?.error ?? 'Не удалось отправить сообщение', 'error')
     } finally {
       setSending(false)
+    }
+  }
+
+  function onChange(e) {
+    setText(e.target.value)
+    // «печатает...» отправляем не чаще раза в пару секунд
+    const now = Date.now()
+    if (live && e.target.value && now - lastTypingSent.current > TYPING_SEND_MS) {
+      lastTypingSent.current = now
+      invokeChat('Typing', order.id).catch(() => {})
     }
   }
 
@@ -142,7 +245,18 @@ export default function OrderChat({ order, title, peerName, peerPhone, peerHint,
               </div>
             )
           })}
+
+          {typing && (
+            <div className="chat-typing" aria-live="polite">
+              <span className="chat-dots" aria-hidden="true"><i /><i /><i /></span>
+              {peerName ? `${peerName} печатает` : 'Собеседник печатает'}
+            </div>
+          )}
         </div>
+
+        {(chatState === 'Reconnecting' || chatState === 'Disconnected') && state.status === 'ready' && (
+          <div className="chat-offline" role="status">Нет соединения. Сообщения могут приходить с задержкой.</div>
+        )}
 
         {closed ? (
           <div className="chat-closed">Заказ отменён, писать в чат больше нельзя</div>
@@ -153,7 +267,7 @@ export default function OrderChat({ order, title, peerName, peerPhone, peerHint,
               maxLength={1000}
               placeholder="Напишите сообщение..."
               value={text}
-              onChange={(e) => setText(e.target.value)}
+              onChange={onChange}
               onKeyDown={onKeyDown}
               aria-label="Сообщение"
             />

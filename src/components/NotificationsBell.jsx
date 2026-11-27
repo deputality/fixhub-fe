@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext'
 import {
   getNotifications, getUnreadCount, markAllNotificationsRead, markNotificationRead,
 } from '../api/notifications'
+import { useChatConnection, useChatEvent } from '../realtime/useChat'
 import './NotificationsBell.css'
 
 const POLL_MS = 60000
@@ -25,6 +26,20 @@ export default function NotificationsBell() {
   const refreshCount = useCallback(() => {
     getUnreadCount().then((d) => setCount(d.count)).catch(() => {})
   }, [])
+
+  const loadList = useCallback(() => {
+    getNotifications()
+      .then((d) => setItems(d.items))
+      .catch(() => setItems([]))
+  }, [])
+
+  // колокольчик есть на каждой странице, поэтому именно он держит WebSocket открытым.
+  // Сервер сам сообщает о новых уведомлениях, опрос раз в минуту остаётся как запасной
+  useChatConnection()
+  useChatEvent('NotificationsChanged', () => {
+    refreshCount()
+    if (open) loadList()
+  })
 
   // счётчик обновляем раз в минуту
   useEffect(() => {
@@ -67,9 +82,7 @@ export default function NotificationsBell() {
     if (open) return setOpen(false)
     setOpen(true)
     setItems(null)
-    getNotifications()
-      .then((d) => setItems(d.items))
-      .catch(() => setItems([]))
+    loadList()
   }
 
   async function openItem(n) {
