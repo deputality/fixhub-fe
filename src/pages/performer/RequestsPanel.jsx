@@ -4,11 +4,13 @@ import { getMyServices } from '../../api/performer'
 import { getPerformerRequests, saveOffer, withdrawOffer } from '../../api/requests'
 import { useToast } from '../../context/ToastContext'
 import { useAuthGuard } from '../../utils/useAuthGuard'
-import Button from '../../components/Button'
-import Input from '../../components/Input'
-import Modal from '../../components/Modal'
-import Select from '../../components/Select'
-import '../../components/Features.css'
+import Button from '../../components/common/Button'
+import Input from '../../components/common/Input'
+import Modal from '../../components/common/Modal'
+import Select from '../../components/common/Select'
+import VerificationLimitNotice from '../../components/performer/VerificationLimitNotice'
+import { useVerificationLimits } from '../../utils/useVerificationLimits'
+import '../../components/common/Features.css'
 
 const STATUS = { Open: 'Открыт', Chosen: 'Мастер выбран', Cancelled: 'Отменён' }
 const OFFER = { Pending: 'Ждёт выбора клиента', Accepted: 'Ваше предложение выбрано', Rejected: 'Клиент выбрал другого', Withdrawn: 'Отозвано' }
@@ -88,6 +90,8 @@ export default function RequestsPanel() {
   const [state, setState] = useState({ status: 'loading', items: [], error: '' })
   const [services, setServices] = useState([])
   const [target, setTarget] = useState(null)
+  const verification = useVerificationLimits()
+  const canOffer = verification?.limits.canSendOffers !== false
 
   useEffect(() => {
     let cancelled = false
@@ -132,6 +136,12 @@ export default function RequestsPanel() {
       <h2>Запросы клиентов</h2>
       <p className="pf-panel-lead">Клиенты описывают задачу, вы предлагаете свою цену, клиент выбирает мастера.</p>
 
+      {!canOffer && (
+        <VerificationLimitNotice>
+          Пока профиль не проверен, вы видите запросы клиентов, но не можете предлагать цену.
+        </VerificationLimitNotice>
+      )}
+
       {state.status === 'loading' && <div aria-hidden="true">{[0, 1, 2].map((i) => <div key={i} className="skeleton pf-sk-row" />)}</div>}
       {state.status === 'error' && <div className="form-alert" role="alert"><CircleAlert size={18} /><span>{state.error}</span></div>}
       {state.status === 'ready' && items.length === 0 && (
@@ -175,7 +185,7 @@ export default function RequestsPanel() {
                 )}
                 {r.status === 'Open' && (
                   <div className="rq-actions">
-                    <Button onClick={() => setTarget(r)}>{active && offer.status === 'Pending' ? 'Изменить предложение' : 'Предложить цену'}</Button>
+                    <Button onClick={() => setTarget(r)} disabled={!canOffer}>{active && offer.status === 'Pending' ? 'Изменить предложение' : 'Предложить цену'}</Button>
                     {active && offer.status === 'Pending' && (
                       <button type="button" className="rv-link danger" onClick={() => withdraw(r)}>Отозвать</button>
                     )}

@@ -3,15 +3,19 @@ import { CircleAlert, Images, Pencil, Plus, Trash2 } from 'lucide-react'
 import { deletePortfolioItem, getMyPortfolio } from '../../api/portfolio'
 import { useToast } from '../../context/ToastContext'
 import { useAuthGuard } from '../../utils/useAuthGuard'
-import Button from '../../components/Button'
-import Modal from '../../components/Modal'
-import PortfolioFormModal from '../../components/PortfolioFormModal'
+import Button from '../../components/common/Button'
+import Modal from '../../components/common/Modal'
+import PortfolioFormModal from '../../components/performer/PortfolioFormModal'
+import VerificationLimitNotice from '../../components/performer/VerificationLimitNotice'
+import { useVerificationLimits } from '../../utils/useVerificationLimits'
 
-const MAX_ITEMS = 30
+// запасное значение, пока сервер не сообщил настоящий лимит
+const DEFAULT_MAX_ITEMS = 30
 
 export default function PortfolioPanel() {
   const { show } = useToast()
   const guard = useAuthGuard()
+  const verification = useVerificationLimits()
 
   const [state, setState] = useState({ status: 'loading', items: [], error: '' })
   // form: false (закрыто) | null (новая работа) | объект (редактирование)
@@ -54,7 +58,8 @@ export default function PortfolioPanel() {
   }
 
   const { items } = state
-  const full = items.length >= MAX_ITEMS
+  const maxItems = verification?.limits.maxPortfolioItems ?? DEFAULT_MAX_ITEMS
+  const full = items.length >= maxItems
 
   return (
     <section className="pf-panel">
@@ -66,10 +71,16 @@ export default function PortfolioPanel() {
             Работы видны на вашей публичной странице.
           </p>
         </div>
-        <Button onClick={() => setForm(null)} disabled={full} title={full ? `Не больше ${MAX_ITEMS} работ` : undefined}>
+        <Button onClick={() => setForm(null)} disabled={full} title={full ? `Не больше ${maxItems} работ` : undefined}>
           <Plus size={18} /> Добавить работу
         </Button>
       </div>
+
+      {verification && !verification.isVerified && (
+        <VerificationLimitNotice>
+          Профиль не проверен: в портфолио можно добавить не больше {maxItems} работ (сейчас {items.length}).
+        </VerificationLimitNotice>
+      )}
 
       {state.status === 'loading' && (
         <div aria-hidden="true">{[0, 1].map((i) => <div key={i} className="skeleton pf-sk-row" />)}</div>

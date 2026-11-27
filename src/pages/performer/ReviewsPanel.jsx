@@ -1,11 +1,11 @@
-import ComplaintButton from '../../components/ComplaintButton'
+import ComplaintButton from '../../components/feedback/ComplaintButton'
 import { useEffect, useState } from 'react'
 import { CircleAlert, Star } from 'lucide-react'
 import { deleteReviewReply, getPerformerReviews, replyToReview } from '../../api/performer'
 import { useToast } from '../../context/ToastContext'
-import Button from '../../components/Button'
-import { ReviewPhotos, ReviewReply } from '../../components/ReviewExtras'
-import '../../components/Features.css'
+import Button from '../../components/common/Button'
+import { ReviewPhotos, ReviewReply } from '../../components/feedback/ReviewExtras'
+import '../../components/common/Features.css'
 import { useAuthGuard } from '../../utils/useAuthGuard'
 
 const PAGE = 6

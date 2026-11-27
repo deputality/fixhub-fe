@@ -9,8 +9,8 @@ import { join, relative } from 'node:path'
 const SRC = new URL('../src', import.meta.url).pathname
 const SHARED_FILES = ['index.css', 'responsive.css', 'theme.css'] // общие файлы могут переопределять чужие классы
 const LOCAL_OK = {
-  'components/MapView.css': ['z-index'],       // слои внутри изолированного .map-view, нумерация Leaflet
-  'components/PortfolioGallery.css': ['max-width'], // просмотр фото на весь экран, не контент страницы
+  'components/catalog/MapView.css': ['z-index'],       // слои внутри изолированного .map-view, нумерация Leaflet
+  'components/catalog/PortfolioGallery.css': ['max-width'], // просмотр фото на весь экран, не контент страницы
 }
 // мелкие радиусы (скроллбар, подчёркивание) допустимы числом
 const SMALL_RADIUS = /^(0|50%|inherit|[1-4]px)$/

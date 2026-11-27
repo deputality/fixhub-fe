@@ -1,5 +1,5 @@
 import { Camera, Car, Cpu, GraduationCap, Monitor, Scissors, SprayCan, Truck, Wrench, Zap } from 'lucide-react'
-import FaucetIcon from '../components/FaucetIcon'
+import FaucetIcon from '../components/common/FaucetIcon'
 import { FALLBACK_ICON, HEX_COLOR, ICON_BY_KEY, autoColor } from './categoryIcons'
 
 // «сантехник» должна стоять раньше «техник», иначе «Сантехника» попадёт в ремонт техники

@@ -3,9 +3,9 @@ import { CircleAlert } from 'lucide-react'
 import { getMySchedule, saveMySchedule } from '../../api/schedule'
 import { useToast } from '../../context/ToastContext'
 import { useAuthGuard } from '../../utils/useAuthGuard'
-import Button from '../../components/Button'
-import Select from '../../components/Select'
-import '../../components/Features.css'
+import Button from '../../components/common/Button'
+import Select from '../../components/common/Select'
+import '../../components/common/Features.css'
 
 const DAYS = [
   { n: 1, label: 'Понедельник' }, { n: 2, label: 'Вторник' }, { n: 3, label: 'Среда' },
