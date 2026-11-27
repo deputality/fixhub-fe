@@ -7,7 +7,8 @@ import { useToast } from '../../context/ToastContext'
 import { useAuthGuard } from '../../utils/useAuthGuard'
 import Button from '../../components/Button'
 import ChatButton from '../../components/ChatButton'
-import Modal from '../../components/Modal'
+import OrderHistory from '../../components/OrderHistory'
+import ReasonModal from '../../components/ReasonModal'
 import OrderChat from '../../components/OrderChat'
 import Pagination from '../../components/Pagination'
 import { useUnreadChats } from '../../utils/useUnreadChats'
@@ -46,10 +47,12 @@ function formatDate(iso) {
 function formatTime(iso) {
   return new Date(iso).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
 }
-function formatDesired(iso) {
-  const [y, m, d] = String(iso).split('-')
-  return `${d}.${m}.${y}`
+function formatDesired(iso, time) {
+  const [y, m, d] = String(iso).slice(0, 10).split('-')
+  return `${d}.${m}.${y}${time ? ` в ${String(time).slice(0, 5)}` : ''}`
 }
+
+const REJECT_PRESETS = ['Нет свободного времени', 'Не работаю в этом районе', 'Не оказываю такую услугу', 'Нужно уточнить детали']
 
 export default function OrdersPanel({ onChanged }) {
   const { show } = useToast()
@@ -88,10 +91,10 @@ export default function OrdersPanel({ onChanged }) {
     setPage(1)
   }
 
-  async function run(order, action, okMessage) {
+  async function run(order, action, okMessage, reason) {
     setBusyId(order.id)
     try {
-      const updated = await action(order.id)
+      const updated = await action(order.id, reason)
       setResult((r) => ({
         ...r,
         orders: filter === 'all' || updated.status === filter
@@ -109,8 +112,8 @@ export default function OrdersPanel({ onChanged }) {
     }
   }
 
-  async function confirmReject() {
-    const ok = await run(rejectTarget, rejectOrder, 'Заказ отклонён')
+  async function confirmReject(reason) {
+    const ok = await run(rejectTarget, rejectOrder, 'Заказ отклонён', reason)
     if (ok) setRejectTarget(null)
   }
 
@@ -175,7 +178,8 @@ export default function OrdersPanel({ onChanged }) {
             const first = order.items[0]
             const extra = order.items.length - 1
             const comment = order.items.find((i) => i.comment)?.comment
-            const desired = order.items.find((i) => i.desiredDate)?.desiredDate
+            const desiredItem = order.items.find((i) => i.desiredDate)
+            const desired = desiredItem?.desiredDate
             return (
               <li key={order.id} className="pf-order">
                 <div className="pf-order-main">
@@ -187,7 +191,11 @@ export default function OrdersPanel({ onChanged }) {
                     </div>
                     {comment && <div className="pf-order-sub">Комментарий: {comment}</div>}
                     <div className="pf-order-sub pf-order-geo"><MapPin size={14} /> {order.address}</div>
-                    <div className="pf-order-num">Заказ №{order.id}{desired && ` · на ${formatDesired(desired)}`}</div>
+                    <div className="pf-order-num">Заказ №{order.id}{desired && ` · на ${formatDesired(desired, desiredItem.desiredTime)}`}</div>
+                    {order.status === 'Cancelled' && order.cancelReason && (
+                      <div className="cancel-reason"><b>Причина отмены:</b> {order.cancelReason}</div>
+                    )}
+                    <OrderHistory orderId={order.id} />
                   </div>
                 </div>
 
@@ -237,15 +245,14 @@ export default function OrdersPanel({ onChanged }) {
       )}
 
       {rejectTarget && (
-        <Modal title="Отклонить заказ?" onClose={() => busyId === null && setRejectTarget(null)}>
-          <p className="modal-text">
-            Заказ №{rejectTarget.id} от клиента {rejectTarget.clientName} будет отменён. Клиент получит уведомление.
-          </p>
-          <div className="modal-actions">
-            <Button variant="outline" onClick={() => setRejectTarget(null)} disabled={busyId !== null}>Назад</Button>
-            <Button variant="danger" onClick={confirmReject} loading={busyId === rejectTarget.id}>Отклонить заказ</Button>
-          </div>
-        </Modal>
+        <ReasonModal
+          title="Отклонить заказ?"
+          text={`Заказ №${rejectTarget.id} от клиента ${rejectTarget.clientName} будет отменён. Клиент получит уведомление с причиной.`}
+          presets={REJECT_PRESETS}
+          confirmLabel="Отклонить заказ"
+          onConfirm={confirmReject}
+          onClose={() => setRejectTarget(null)}
+        />
       )}
     </section>
   )

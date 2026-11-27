@@ -61,3 +61,10 @@
 @media (prefers-reduced-motion: reduce) {
   .pg-lb, .pg-item, .pg-shot img, .pg-lb-nav { animation: none; transition: none; }
 }
+
+/* дополнительные фото работы */
+.pg-shot i.pg-more { left: auto; right: 8px; background: rgba(15, 23, 42, .72); }
+.pg-thumbs { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.pg-thumbs button { width: 56px; height: 56px; padding: 0; border: 2px solid transparent; border-radius: 8px; overflow: hidden; cursor: pointer; opacity: .65; background: none; }
+.pg-thumbs button.active, .pg-thumbs button:hover { opacity: 1; border-color: #fff; }
+.pg-thumbs img { width: 100%; height: 100%; object-fit: cover; display: block; }

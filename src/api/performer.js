@@ -25,7 +25,9 @@ export const getIncomingOrders = (status) =>
   api(`/api/performer/orders${status ? `?status=${status}` : ''}`)
 
 export const confirmOrder = (id) => api(`/api/orders/${id}/confirm`, { method: 'POST' })
-export const rejectOrder = (id) => api(`/api/orders/${id}/reject`, { method: 'POST' })
+// reason обязательна (3–500 символов)
+export const rejectOrder = (id, reason) =>
+  api(`/api/orders/${id}/reject`, { method: 'POST', body: { reason } })
 export const startOrder = (id) => api(`/api/orders/${id}/start`, { method: 'POST' })
 export const completeOrder = (id) => api(`/api/orders/${id}/complete`, { method: 'POST' })
 
@@ -33,3 +35,9 @@ export const completeOrder = (id) => api(`/api/orders/${id}/complete`, { method:
 // { rating, reviewCount, reviews: { items, page, totalPages, totalCount } }
 export const getPerformerReviews = ({ page = 1, pageSize = 10 } = {}) =>
   api(`/api/performer/reviews?page=${page}&pageSize=${pageSize}`)
+
+// ответ мастера на отзыв (до 1000 символов); возвращают обновлённый отзыв
+export const replyToReview = (id, text) =>
+  api(`/api/performer/reviews/${id}/reply`, { method: 'POST', body: { text } })
+export const deleteReviewReply = (id) =>
+  api(`/api/performer/reviews/${id}/reply`, { method: 'DELETE' })

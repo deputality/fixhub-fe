@@ -6,6 +6,7 @@ import { useAuthGuard } from '../utils/useAuthGuard'
 import Button from './Button'
 import Input from './Input'
 import Modal from './Modal'
+import PhotoPicker from './PhotoPicker'
 
 const MAX_PHOTO_BYTES = 5 * 1024 * 1024
 const PHOTO_TYPES = ['image/jpeg', 'image/png']
@@ -69,6 +70,7 @@ export default function PortfolioFormModal({ item, onClose, onSaved }) {
   const [description, setDescription] = useState(item?.description ?? '')
   const [beforeUrl, setBeforeUrl] = useState(item?.beforeUrl ?? '')
   const [afterUrl, setAfterUrl] = useState(item?.afterUrl ?? '')
+  const [photoUrls, setPhotoUrls] = useState(item?.photoUrls ?? [])
   const [beforeError, setBeforeError] = useState('')
   const [afterError, setAfterError] = useState('')
   const [titleError, setTitleError] = useState('')
@@ -89,6 +91,7 @@ export default function PortfolioFormModal({ item, onClose, onSaved }) {
       description: description.trim() || null,
       beforeUrl: beforeUrl || null,
       afterUrl,
+      photoUrls,
     }
     try {
       const saved = item ? await updatePortfolioItem(item.id, body) : await createPortfolioItem(body)
@@ -118,6 +121,9 @@ export default function PortfolioFormModal({ item, onClose, onSaved }) {
           <PhotoField label="Фото «после»" hint="Обязательно, JPG или PNG, до 5 МБ"
             url={afterUrl} onChange={(u) => { setAfterUrl(u); setAfterError('') }} error={afterError} setError={setAfterError} />
         </div>
+
+        <PhotoPicker label="Ещё фото" max={10} value={photoUrls} onChange={setPhotoUrls}
+          hint="До 10 дополнительных фото работы, JPG или PNG, до 5 МБ каждое" />
 
         {formError && <div className="form-alert" role="alert"><CircleAlert size={18} /><span>{formError}</span></div>}
 

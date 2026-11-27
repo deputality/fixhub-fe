@@ -17,6 +17,7 @@ export function PortfolioPair({ item, onOpen }) {
         <span className="pg-shot">
           <img src={item.afterUrl} alt="" loading="lazy" />
           {item.beforeUrl && <i className="after">После</i>}
+          {item.photoUrls?.length > 0 && <i className="pg-more">+{item.photoUrls.length} фото</i>}
         </span>
       </span>
       <span className="pg-caption">
@@ -24,6 +25,44 @@ export function PortfolioPair({ item, onOpen }) {
         {item.description && <span>{item.description}</span>}
       </span>
     </button>
+  )
+}
+
+// «до/после» и дополнительные фото работы: миниатюры внизу переключают снимок
+function LightboxShots({ item }) {
+  const extras = item.photoUrls ?? []
+  const [shot, setShot] = useState(-1)
+
+  return (
+    <>
+      {shot === -1 ? (
+        <div className={`pg-lb-pair${item.beforeUrl ? '' : ' single'}`}>
+          {item.beforeUrl && (
+            <div className="pg-lb-shot"><img src={item.beforeUrl} alt={`${item.title}: до`} /><i>До</i></div>
+          )}
+          <div className="pg-lb-shot">
+            <img src={item.afterUrl} alt={`${item.title}: ${item.beforeUrl ? 'после' : 'результат'}`} />
+            {item.beforeUrl && <i className="after">После</i>}
+          </div>
+        </div>
+      ) : (
+        <div className="pg-lb-pair single">
+          <div className="pg-lb-shot"><img src={extras[shot]} alt={`${item.title}: фото ${shot + 1}`} /></div>
+        </div>
+      )}
+      {extras.length > 0 && (
+        <div className="pg-thumbs">
+          <button type="button" className={shot === -1 ? 'active' : ''} aria-label="Результат" onClick={() => setShot(-1)}>
+            <img src={item.afterUrl} alt="" />
+          </button>
+          {extras.map((url, i) => (
+            <button key={url} type="button" className={shot === i ? 'active' : ''} aria-label={`Фото ${i + 1}`} onClick={() => setShot(i)}>
+              <img src={url} alt="" />
+            </button>
+          ))}
+        </div>
+      )}
+    </>
   )
 }
 
@@ -62,15 +101,7 @@ function Lightbox({ items, index, onClose, onMove }) {
       )}
 
       <figure className="pg-lb-body">
-        <div className={`pg-lb-pair${item.beforeUrl ? '' : ' single'}`}>
-          {item.beforeUrl && (
-            <div className="pg-lb-shot"><img src={item.beforeUrl} alt={`${item.title}: до`} /><i>До</i></div>
-          )}
-          <div className="pg-lb-shot">
-            <img src={item.afterUrl} alt={`${item.title}: ${item.beforeUrl ? 'после' : 'результат'}`} />
-            {item.beforeUrl && <i className="after">После</i>}
-          </div>
-        </div>
+        <LightboxShots key={item.id} item={item} />
         <figcaption>
           <b>{item.title}</b>
           {item.description && <span>{item.description}</span>}

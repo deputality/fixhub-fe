@@ -2,11 +2,11 @@ import { api } from './client'
 
 export const getCart = () => api('/api/cart')
 
-// extra (необязательно): { quantity, desiredDate, comment }
+// extra (необязательно): { quantity, desiredDate, desiredTime, comment }
 export const addToCart = (serviceId, extra = {}) =>
   api('/api/cart/items', { method: 'POST', body: { serviceId, quantity: 1, ...extra } })
 
-// изменить позицию: { quantity, comment, desiredDate }
+// изменить позицию: { quantity, comment, desiredDate, desiredTime }
 export const updateCartItem = (itemId, body) =>
   api(`/api/cart/items/${itemId}`, { method: 'PUT', body })
 
@@ -23,6 +23,7 @@ export function normalizeItem(raw) {
   return {
     id: raw.id ?? raw.cartItemId ?? raw.serviceId,
     serviceId: raw.serviceId ?? s.id,
+    performerId: raw.performerId ?? s.performerId,
     title: raw.title ?? raw.serviceTitle ?? s.title ?? 'Услуга',
     price: Number(raw.price ?? raw.unitPrice ?? s.price ?? 0),
     unit: raw.unit ?? s.unit,
@@ -34,5 +35,6 @@ export function normalizeItem(raw) {
     categoryId: raw.categoryId ?? s.categoryId,
     comment: raw.comment ?? '',
     desiredDate: String(raw.desiredDate ?? raw.preferredDate ?? '').slice(0, 10),
+    desiredTime: String(raw.desiredTime ?? '').slice(0, 5),
   }
 }

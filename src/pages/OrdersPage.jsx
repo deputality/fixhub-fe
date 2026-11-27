@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { CircleAlert, ClipboardList, Phone, Star } from 'lucide-react'
-import { cancelOrder, createReview, getMyOrders, getMyReviews } from '../api/orders'
+import { CircleAlert, ClipboardList, Phone, RotateCw, Star } from 'lucide-react'
+import { cancelOrder, createReview, getMyOrders, getMyReviews, repeatOrder } from '../api/orders'
+import { getCart } from '../api/cart'
 import { getCategories, getService } from '../api/catalog'
 import { useAuth } from '../context/AuthContext'
+import { useCart } from '../context/CartContext'
 import { useToast } from '../context/ToastContext'
 import { resolveCategoryMeta } from '../utils/categoryMeta'
 import { useUnreadChats } from '../utils/useUnreadChats'
@@ -11,6 +13,9 @@ import Button from '../components/Button'
 import ChatButton from '../components/ChatButton'
 import OrderChat from '../components/OrderChat'
 import Modal from '../components/Modal'
+import OrderHistory from '../components/OrderHistory'
+import PhotoPicker from '../components/PhotoPicker'
+import ReasonModal from '../components/ReasonModal'
 import Pagination from '../components/Pagination'
 import './OrdersPage.css'
 
@@ -41,6 +46,13 @@ function formatDate(iso) {
   return new Date(iso).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
+function formatDesired(iso, time) {
+  const [y, m, d] = String(iso).slice(0, 10).split('-')
+  return `${d}.${m}.${y}${time ? ` в ${String(time).slice(0, 5)}` : ''}`
+}
+
+const CANCEL_PRESETS = ['Передумал(а)', 'Нашёл(ла) другого мастера', 'Ошибся(лась) при заказе', 'Изменились планы']
+
 function formatTime(iso) {
   return new Date(iso).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
 }
@@ -70,6 +82,7 @@ function ReviewModal({ order, reviewedIds, onClose, onDone }) {
   const [itemId, setItemId] = useState(free[0]?.id)
   const [rating, setRating] = useState(0)
   const [text, setText] = useState('')
+  const [photos, setPhotos] = useState([])
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
 
@@ -81,7 +94,7 @@ function ReviewModal({ order, reviewedIds, onClose, onDone }) {
     setBusy(true)
     setError('')
     try {
-      await createReview({ orderItemId: itemId, rating, text: text.trim() })
+      await createReview({ orderItemId: itemId, rating, text: text.trim(), photoUrls: photos })
       onDone(itemId)
     } catch (err) {
       setError(err?.error ?? 'Не удалось отправить отзыв')
@@ -113,6 +126,9 @@ function ReviewModal({ order, reviewedIds, onClose, onDone }) {
           onChange={(e) => { setText(e.target.value); setError('') }}
         />
 
+        <PhotoPicker label="Фото (необязательно)" max={3} value={photos} onChange={setPhotos}
+          hint="До 3 фото, JPG или PNG, до 5 МБ" />
+
         {error && (
           <div className="form-alert" role="alert"><CircleAlert size={18} /><span>{error}</span></div>
         )}
@@ -129,6 +145,7 @@ function ReviewModal({ order, reviewedIds, onClose, onDone }) {
 export default function OrdersPage() {
   const { logout } = useAuth()
   const { show } = useToast()
+  const { setCount } = useCart()
   const navigate = useNavigate()
 
   const [state, setState] = useState({ status: 'loading', orders: [], error: '' })
@@ -139,7 +156,7 @@ export default function OrdersPage() {
   const [filter, setFilter] = useState('all')
   const [page, setPage] = useState(1)
   const [cancelTarget, setCancelTarget] = useState(null)
-  const [cancelBusy, setCancelBusy] = useState(false)
+  const [repeatBusy, setRepeatBusy] = useState(null)
   const [reviewTarget, setReviewTarget] = useState(null)
   const [chatOrder, setChatOrder] = useState(null)
   const { unread, refresh: refreshUnread } = useUnreadChats()
@@ -190,21 +207,35 @@ export default function OrdersPage() {
   const current = Math.min(page, totalPages)
   const visible = filtered.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE)
 
-  async function confirmCancel() {
-    setCancelBusy(true)
+  async function confirmCancel(reason) {
     try {
-      await cancelOrder(cancelTarget.id)
+      await cancelOrder(cancelTarget.id, reason)
       setState((s) => ({
         ...s,
-        orders: s.orders.map((o) => (o.id === cancelTarget.id ? { ...o, status: 'Cancelled' } : o)),
+        orders: s.orders.map((o) => (o.id === cancelTarget.id ? { ...o, status: 'Cancelled', cancelReason: reason } : o)),
       }))
       show('Заказ отменён')
       setCancelTarget(null)
     } catch (err) {
       if (handleAuthError(err)) return
-      show(err?.error ?? 'Не удалось отменить заказ', 'error')
+      const msg = err?.errors ? Object.values(err.errors).flat()[0] : err?.error
+      show(msg ?? 'Не удалось отменить заказ', 'error')
+    }
+  }
+
+  async function repeat(order) {
+    setRepeatBusy(order.id)
+    try {
+      const res = await repeatOrder(order.id)
+      getCart().then((c) => setCount(c.items.length)).catch(() => {})
+      if (res.skipped?.length) show(`В корзину добавлено: ${res.added}. Недоступно: ${res.skipped.join(', ')}`)
+      else show('Услуги из заказа добавлены в корзину')
+      if (res.added > 0) navigate('/cart')
+    } catch (err) {
+      if (handleAuthError(err)) return
+      show(err?.error ?? 'Не удалось повторить заказ', 'error')
     } finally {
-      setCancelBusy(false)
+      setRepeatBusy(null)
     }
   }
 
@@ -233,6 +264,11 @@ export default function OrdersPage() {
         )}
         {order.status === 'Completed' && !hasFreeItem && (
           <button type="button" className="ord-btn ord-btn-off" disabled>Отзыв оставлен</button>
+        )}
+        {(order.status === 'Completed' || order.status === 'Cancelled') && (
+          <button type="button" className="ord-btn ord-btn-review" disabled={repeatBusy === order.id} onClick={() => repeat(order)}>
+            <RotateCw size={13} /> Заказать снова
+          </button>
         )}
         {active && (
           <button type="button" className="ord-btn ord-btn-off" disabled title="Отзыв можно оставить после выполнения заказа">
@@ -263,6 +299,15 @@ export default function OrdersPage() {
             {first?.comment && <div className="ord-sub">{first.comment}</div>}
             {more > 0 && <div className="ord-sub">и ещё {more}</div>}
             <div className="ord-num">№ {order.id}</div>
+            {order.items.find((i) => i.desiredDate) && (
+              <div className="ord-sub">
+                На {formatDesired(order.items.find((i) => i.desiredDate).desiredDate, order.items.find((i) => i.desiredDate).desiredTime)}
+              </div>
+            )}
+            {order.status === 'Cancelled' && order.cancelReason && (
+              <div className="cancel-reason"><b>Причина отмены:</b> {order.cancelReason}</div>
+            )}
+            <OrderHistory orderId={order.id} />
           </div>
         </div>
 
@@ -367,15 +412,14 @@ export default function OrdersPage() {
       </section>
 
       {cancelTarget && (
-        <Modal title="Отменить заказ?" onClose={() => !cancelBusy && setCancelTarget(null)}>
-          <p className="modal-text">
-            Заказ № {cancelTarget.id} ({cancelTarget.items[0]?.serviceTitle}) будет отменён. Это действие нельзя отменить.
-          </p>
-          <div className="modal-actions">
-            <Button variant="outline" onClick={() => setCancelTarget(null)} disabled={cancelBusy}>Не отменять</Button>
-            <Button variant="danger" onClick={confirmCancel} loading={cancelBusy}>Отменить заказ</Button>
-          </div>
-        </Modal>
+        <ReasonModal
+          title="Отменить заказ?"
+          text={`Заказ № ${cancelTarget.id} (${cancelTarget.items[0]?.serviceTitle}) будет отменён. Это действие нельзя отменить.`}
+          presets={CANCEL_PRESETS}
+          confirmLabel="Отменить заказ"
+          onConfirm={confirmCancel}
+          onClose={() => setCancelTarget(null)}
+        />
       )}
 
       {chatOrder && (

@@ -1,7 +1,11 @@
 import ComplaintButton from '../../components/ComplaintButton'
 import { useEffect, useState } from 'react'
 import { CircleAlert, Star } from 'lucide-react'
-import { getPerformerReviews } from '../../api/performer'
+import { deleteReviewReply, getPerformerReviews, replyToReview } from '../../api/performer'
+import { useToast } from '../../context/ToastContext'
+import Button from '../../components/Button'
+import { ReviewPhotos, ReviewReply } from '../../components/ReviewExtras'
+import '../../components/Features.css'
 import { useAuthGuard } from '../../utils/useAuthGuard'
 
 const PAGE = 6
@@ -20,8 +24,44 @@ function Stars({ value }) {
   )
 }
 
+// Форма ответа мастера на отзыв
+function ReplyForm({ review, onSaved, onCancel }) {
+  const guard = useAuthGuard()
+  const { show } = useToast()
+  const [text, setText] = useState(review.replyText ?? '')
+  const [error, setError] = useState('')
+  const [busy, setBusy] = useState(false)
+
+  async function submit(e) {
+    e.preventDefault()
+    if (!text.trim()) return setError('Напишите ответ')
+    setBusy(true)
+    try {
+      onSaved(await replyToReview(review.id, text.trim()))
+      show('Ответ опубликован')
+    } catch (err) {
+      if (!guard(err)) setError(err?.error ?? 'Не удалось сохранить ответ')
+      setBusy(false)
+    }
+  }
+
+  return (
+    <form className="rv-reply-form" onSubmit={submit} noValidate>
+      <textarea className="sp-comment" rows={3} maxLength={1000} placeholder="Ваш публичный ответ клиенту"
+        value={text} onChange={(e) => { setText(e.target.value); setError('') }} autoFocus />
+      {error && <div className="form-alert" role="alert"><CircleAlert size={18} /><span>{error}</span></div>}
+      <div className="rv-reply-actions">
+        <Button type="submit" loading={busy}>Опубликовать</Button>
+        <Button type="button" variant="outline" onClick={onCancel} disabled={busy}>Отмена</Button>
+      </div>
+    </form>
+  )
+}
+
 export default function ReviewsPanel() {
   const guard = useAuthGuard()
+  const { show } = useToast()
+  const [replyingId, setReplyingId] = useState(null)
   const [state, setState] = useState({ status: 'loading', rating: null, total: 0, items: [], page: 1, totalPages: 1, error: '' })
   const [more, setMore] = useState(false)
 
@@ -51,6 +91,20 @@ export default function ReviewsPanel() {
       guard(err)
     } finally {
       setMore(false)
+    }
+  }
+
+  function applyReview(updated) {
+    setState((s) => ({ ...s, items: s.items.map((r) => (r.id === updated.id ? updated : r)) }))
+    setReplyingId(null)
+  }
+
+  async function removeReply(review) {
+    try {
+      applyReview(await deleteReviewReply(review.id))
+      show('Ответ удалён')
+    } catch (err) {
+      if (!guard(err)) show(err?.error ?? 'Не удалось удалить ответ', 'error')
     }
   }
 
@@ -97,6 +151,20 @@ export default function ReviewsPanel() {
                 <Stars value={r.rating} />
                 <div className="pf-review-service">{r.serviceTitle}</div>
                 <p>{r.text}</p>
+                <ReviewPhotos photos={r.photoUrls} />
+                <ReviewReply review={r} />
+                {replyingId === r.id ? (
+                  <ReplyForm review={r} onSaved={applyReview} onCancel={() => setReplyingId(null)} />
+                ) : (
+                  <div className="rv-reply-actions">
+                    <button type="button" className="rv-link" onClick={() => setReplyingId(r.id)}>
+                      {r.replyText ? 'Изменить ответ' : 'Ответить'}
+                    </button>
+                    {r.replyText && (
+                      <button type="button" className="rv-link danger" onClick={() => removeReply(r)}>Удалить ответ</button>
+                    )}
+                  </div>
+                )}
                 <ComplaintButton kind="Review" targetId={r.id} label="Пожаловаться на отзыв" />
               </div>
             </li>

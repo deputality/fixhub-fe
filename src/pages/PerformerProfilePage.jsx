@@ -12,6 +12,7 @@ import { useAuthGuard } from '../utils/useAuthGuard'
 import Avatar from '../components/Avatar'
 import MapView from '../components/MapView'
 import { getUserPosition, roundCoord } from '../utils/geo'
+import MapSearch from '../components/MapSearch'
 import './PerformerProfilePage.css'
 
 // в API одно поле fullName, а в макете «Имя» и «Фамилия»: делим по первому пробелу
@@ -261,13 +262,14 @@ export default function PerformerProfilePage() {
               </Field>
               <div className="pp-field pp-wide">
                 <span className="pp-label">Место на карте</span>
+                <MapSearch inputClassName="pp-input" onSelect={(p) => pickPoint(p.lat, p.lng)} />
                 <MapView height={260} picked={point} onPick={pickPoint} />
                 <div className="pp-map-actions">
                   <button type="button" className="link-btn" onClick={locateMe}>Определить по моему местоположению</button>
                   {point && <button type="button" className="link-btn" onClick={clearPoint}>Убрать точку</button>}
                 </div>
                 <span className="pp-hint">
-                  Нажмите на карту, чтобы поставить точку. Клиенты увидят район с точностью около 1 км,
+                  Найдите город в строке поиска над картой и при необходимости поправьте точку кликом по карте. Клиенты увидят район с точностью около 1 км,
                   а не ваш адрес: по ней считается расстояние в поиске «Рядом со мной».
                 </span>
               </div>

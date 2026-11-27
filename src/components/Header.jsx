@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { ClipboardList, Heart, LayoutDashboard, LogOut, Menu, ShoppingCart, User, X } from 'lucide-react'
+import { ClipboardList, Heart, LayoutDashboard, LogOut, Menu, MessageSquareText, ShoppingCart, User, X } from 'lucide-react'
 import { getProfile } from '../api/profile'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
@@ -78,7 +78,7 @@ export default function Header() {
             </Link>
           )}
 
-          {user?.role === 'Performer' && <NotificationsBell />}
+          {(user?.role === 'Performer' || user?.role === 'Client') && <NotificationsBell />}
 
           {user?.role === 'Client' || user?.role === 'Performer' ? (
             <UserMenu />
@@ -127,6 +127,7 @@ export default function Header() {
               ) : (
                 <>
                   <NavLink to="/orders" className="mn-link"><ClipboardList size={20} /> Мои заказы</NavLink>
+                  <NavLink to="/requests" className="mn-link"><MessageSquareText size={20} /> Запросы цены</NavLink>
                   <NavLink to="/favorites" className="mn-link">
                     <Heart size={20} /> Избранное
                     {favCount > 0 && <span className="mn-count">{favCount}</span>}

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ChevronDown, ClipboardList, Globe, Heart, LayoutDashboard, LogOut, User } from 'lucide-react'
+import { ChevronDown, ClipboardList, Globe, Heart, LayoutDashboard, LogOut, MessageSquareText, User } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import Avatar from './Avatar'
 import './UserMenu.css'
@@ -47,6 +47,7 @@ export default function UserMenu({ inPanel = false }) {
           ) : (
             <>
               <Link to="/orders" onClick={close}><ClipboardList size={18} /> Мои заказы</Link>
+              <Link to="/requests" onClick={close}><MessageSquareText size={18} /> Запросы цены</Link>
               <Link to="/favorites" onClick={close}><Heart size={18} /> Избранное</Link>
               <Link to="/profile" onClick={close}><User size={18} /> Профиль</Link>
             </>

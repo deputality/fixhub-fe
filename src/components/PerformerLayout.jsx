@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { Briefcase, ChevronDown, ClipboardList, House, Images, LogOut, Settings, Star, User } from 'lucide-react'
+import { Briefcase, CalendarClock, ChevronDown, ClipboardList, House, Images, LogOut, MessageSquareText, Settings, Star, User } from 'lucide-react'
 import { getPerformerStats } from '../api/performer'
 import { getProfile } from '../api/profile'
 import Avatar from './Avatar'
@@ -17,6 +17,8 @@ const SECTIONS = [
   { to: '/performer/services', label: 'Мои услуги', icon: Briefcase },
   { to: '/performer/portfolio', label: 'Портфолио', icon: Images },
   { to: '/performer/orders', label: 'Входящие заказы', icon: ClipboardList },
+  { to: '/performer/requests', label: 'Запросы клиентов', icon: MessageSquareText },
+  { to: '/performer/schedule', label: 'Расписание', icon: CalendarClock },
   { to: '/performer/reviews', label: 'Отзывы', icon: Star },
   { to: '/performer/profile', label: 'Профиль', icon: User },
   { to: '/performer/settings', label: 'Настройки', icon: Settings },
@@ -107,6 +109,8 @@ export default function PerformerLayout() {
               <ClipboardList size={22} strokeWidth={1.7} /> Входящие заказы
               {newOrders > 0 && <span key={newOrders} className="pf-badge">{newOrders}</span>}
             </NavLink>
+            <NavLink to="/performer/requests" onClick={closeMenu}><MessageSquareText size={22} strokeWidth={1.7} /> Запросы клиентов</NavLink>
+            <NavLink to="/performer/schedule" onClick={closeMenu}><CalendarClock size={22} strokeWidth={1.7} /> Расписание</NavLink>
             <NavLink to="/performer/reviews" onClick={closeMenu}><Star size={22} strokeWidth={1.7} /> Отзывы</NavLink>
             <NavLink to="/performer/profile" onClick={closeMenu}><User size={22} strokeWidth={1.7} /> Профиль</NavLink>
             <NavLink to="/performer/settings" onClick={closeMenu}><Settings size={22} strokeWidth={1.7} /> Настройки</NavLink>
